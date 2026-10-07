@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07070f">
+<title>The Summit Road</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); --page-bg: #07070f; --ink: #eef6e4; --dim: #a9c9b2; --glow: #8ff0b4; --u: 3.6px; --font: 'Pixelify Sans', 'VT323', 'Courier New', ui-monospace, monospace; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg: #05050b; } }
+:root[data-theme="dark"] { --page-bg: #05050b; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; }
+body { height: 100%; background: var(--page-bg); color: var(--ink); overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; font-family: var(--font); }
+#wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#stage { position: relative; overflow: hidden; width: 216px; height: 384px; cursor: pointer; }
+#c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: crisp-edges; image-rendering: pixelated; }
+.shade { text-shadow: 0 0 calc(var(--u) * 1.4) #05050b, 0 calc(var(--u) * 0.35) 0 #05050b; }
+#mute { position: absolute; z-index: 5; top: calc(var(--u) * 3); right: calc(var(--u) * 4); font: inherit; font-size: calc(var(--u) * 3.3); color: var(--dim); background: transparent; border: calc(var(--u) * 0.45) solid #35525b; padding: calc(var(--u) * 0.6) calc(var(--u) * 1.8); cursor: pointer; }
+#mute:focus-visible { outline: calc(var(--u) * 0.6) solid var(--glow); outline-offset: calc(var(--u) * 0.5); }
+#caption { position: absolute; z-index: 5; left: 8%; right: 8%; bottom: 7%; margin: 0; text-align: center; font-size: calc(var(--u) * 4.2); line-height: 1.35; color: var(--ink); opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
+#caption.on { opacity: 1; }
+#title { position: absolute; z-index: 7; inset: 0; display: flex; flex-direction: column; align-items: center; text-align: center; opacity: 0; transition: opacity 1.4s ease; pointer-events: none; }
+#title.on { opacity: 1; }
+#title h1 { margin: 58% 0 0; font-size: calc(var(--u) * 11); font-weight: 600; line-height: 1; color: var(--ink); }
+#title .sub { margin: calc(var(--u) * 2.4) 0 0; font-size: calc(var(--u) * 4); color: var(--dim); }
+#title .begin { position: absolute; bottom: 9%; left: 0; right: 0; margin: 0; font-size: calc(var(--u) * 4.4); color: var(--glow); animation: breathe 2.6s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { #title .begin { animation: none; } }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage" aria-label="The Summit Road: a warrior walks an endless mountain road toward a summit crowned with green lightning. Tap for lightning.">
+    <canvas id="c" width="216" height="384"></canvas>
+    <button id="mute" type="button" aria-pressed="false">Sound on</button>
+    <p id="caption" class="shade" aria-live="polite"></p>
+    <div id="title" class="shade">
+      <h1>The Summit Road</h1>
+      <p class="sub">A legend from before the Old Age</p>
+      <p class="begin">Tap to begin</p>
+    </div>
+  </div>
+</div>
+<script>
+/*__GAME__*/
+</script>
+</body>
+</html>

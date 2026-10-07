@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a110e">
+<title>Reachbound: Muster of the Reach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --page-bg: #0a110e;
+  --ink: #fbeec2;
+  --brass: #dcbf73;
+  --dim: #b7c7b1;
+  --mint: #86e0b4;
+  --solid: #0a110e;
+  --px: 1.8px;
+  --font: 'Pixelify Sans', 'VT323', 'Courier New', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg: #070c0a; } }
+:root[data-theme="dark"] { --page-bg: #070c0a; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; }
+body { height: 100%; background: var(--page-bg); color: var(--ink); overflow: hidden; font-family: var(--font); -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+#wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#stage { position: relative; overflow: hidden; width: 216px; height: 384px; }
+#c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: crisp-edges; image-rendering: pixelated; }
+.o { position: absolute; margin: 0; line-height: 1; white-space: nowrap; }
+.shade { text-shadow: 0 0 calc(var(--px) * 1.2) var(--solid), 0 calc(var(--px) * 0.5) 0 var(--solid); }
+#title { display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--px) * 4); font-size: calc(var(--px) * 8.4); font-weight: 600; letter-spacing: 0.04em; color: var(--brass); }
+#mute { font: inherit; font-size: calc(var(--px) * 6); font-weight: 400; color: var(--dim); background: none; border: none; padding: calc(var(--px) * 1) 0; cursor: pointer; }
+#portrait { background: none; border: none; padding: 0; cursor: pointer; }
+#caption { text-align: center; white-space: normal; font-size: calc(var(--px) * 7.6); line-height: 1.2; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+#caption.on { opacity: 1; }
+#caption.stone { color: var(--mint); font-weight: 600; letter-spacing: 0.14em; font-size: calc(var(--px) * 9); }
+#caption.pebble { color: var(--mint); }
+#caption.song { color: #f3d9b4; }
+#name { display: flex; align-items: center; justify-content: center; font-size: calc(var(--px) * 9.6); font-weight: 600; color: var(--ink); }
+.arrow { background: none; border: none; padding: 0; cursor: pointer; }
+#where { font-size: calc(var(--px) * 6.6); color: var(--dim); display: flex; align-items: center; }
+#avail { font-size: calc(var(--px) * 6.6); color: var(--mint); display: flex; align-items: center; justify-content: flex-end; }
+.stat { display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--px) * 3); font-size: calc(var(--px) * 8); }
+.stat .k { color: var(--ink); }
+.stat .v { color: var(--brass); font-weight: 600; }
+#lore { white-space: normal; font-size: calc(var(--px) * 7); line-height: 1.3; color: var(--dim); padding: calc(var(--px) * 2) calc(var(--px) * 3); overflow: hidden; }
+.thumb { background: none; border: none; padding: 0; cursor: pointer; }
+button:focus-visible { outline: calc(var(--px) * 1) solid var(--mint); outline-offset: calc(var(--px) * 0.5); }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="c" width="216" height="384"></canvas>
+    <div id="title" class="o shade"><span>Muster of the Reach</span><button id="mute" type="button" aria-pressed="false">Sound on</button></div>
+    <button id="portrait" class="o" type="button" aria-label="Tap to make it act"></button>
+    <p id="caption" class="o shade" aria-live="polite"></p>
+    <button id="prev" class="o arrow" type="button" aria-label="Previous creature"></button>
+    <p id="name" class="o shade"></p>
+    <button id="next" class="o arrow" type="button" aria-label="Next creature"></button>
+    <p id="where" class="o shade"></p>
+    <p id="avail" class="o shade"></p>
+    <p class="o stat"><span class="k">Attack</span><span class="v"></span></p>
+    <p class="o stat"><span class="k">Defense</span><span class="v"></span></p>
+    <p class="o stat"><span class="k">Damage</span><span class="v"></span></p>
+    <p class="o stat"><span class="k">Health</span><span class="v"></span></p>
+    <p class="o stat"><span class="k">Speed</span><span class="v"></span></p>
+    <p class="o stat"><span class="k">Growth</span><span class="v"></span></p>
+    <p id="lore" class="o"></p>
+    <button class="o thumb" type="button" aria-label="Pebble Folk"></button>
+    <button class="o thumb" type="button" aria-label="Stone Elder"></button>
+    <button class="o thumb" type="button" aria-label="Verdant Knight"></button>
+    <button class="o thumb" type="button" aria-label="The Fish"></button>
+    <button class="o thumb" type="button" aria-label="The Covenant's Hunter"></button>
+    <button class="o thumb" type="button" aria-label="Kolobok"></button>
+  </div>
+</div>
+<script>
+/*__GAME__*/
+</script>
+</body>
+</html>

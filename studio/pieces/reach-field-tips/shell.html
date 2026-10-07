@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16294a">
+<title>Reach Field Tips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); --page-bg: #0d1626; --px: 1.2px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg: #0a111e; } }
+:root[data-theme="dark"] { --page-bg: #0a111e; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; }
+body { height: 100%; background: var(--page-bg); overflow: hidden; -webkit-tap-highlight-color: transparent; }
+#wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#stage { position: relative; overflow: hidden; width: 320px; height: 400px; cursor: pointer; }
+#c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: crisp-edges; image-rendering: pixelated; }
+#nav { position: absolute; left: 0; right: 0; bottom: calc(var(--px) * 6); display: flex; justify-content: center; align-items: center; gap: calc(var(--px) * 10); font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; color: #f6ead2; text-shadow: 0 1px 0 #1a100a; font-size: calc(var(--px) * 9); }
+#nav button { font: inherit; color: #f6ead2; background: rgba(26, 16, 10, 0.72); border: calc(var(--px) * 0.8) solid #7a4f2d; padding: calc(var(--px) * 1) calc(var(--px) * 7); cursor: pointer; }
+#nav button:focus-visible { outline: 2px solid #f6ead2; outline-offset: 2px; }
+#tip { position: absolute; margin: 0; left: calc(var(--px) * 56); top: calc(var(--px) * 22); width: calc(var(--px) * 208); height: calc(var(--px) * 64); display: flex; align-items: center; justify-content: center; text-align: center; font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-weight: 600; font-size: calc(var(--px) * 11.6); line-height: 1.22; color: #f6ead2; text-shadow: 0 calc(var(--px) * 0.6) 0 #1a100a; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage" aria-label="Reach Field Tips: illustrated lore tips from the Verdant Reach. Swipe or use the arrows; tap the scene.">
+    <canvas id="c" width="320" height="400"></canvas>
+    <p id="tip" aria-live="polite"></p>
+    <div id="nav"><button id="prev" type="button" aria-label="Previous tip">&lsaquo;</button><span id="count"></span><button id="next" type="button" aria-label="Next tip">&rsaquo;</button></div>
+  </div>
+</div>
+<script>
+/*__GAME__*/
+</script>
+</body>
+</html>

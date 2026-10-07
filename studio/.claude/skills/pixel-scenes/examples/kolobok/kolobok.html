@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f0a1c">
+<title>Kolobok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --page-bg: #0f0a1c;
+  --ui-ink: #fff4dc;
+  --ui-dim: #efc3a4;
+  --ui-mint: #bff0cf;
+  --ui-solid: #0f0a1c;
+  --ui-edge: #8f425e;
+  --u: 3.6px;
+  --font: 'Pixelify Sans', 'VT323', 'Courier New', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --page-bg: #0b0716; }
+}
+:root[data-theme="dark"] { --page-bg: #0b0716; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; }
+body {
+  height: 100%;
+  background: var(--page-bg);
+  color: var(--ui-ink);
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font);
+}
+#wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#stage {
+  position: relative; overflow: hidden; width: 216px; height: 384px;
+  font-size: calc(var(--u) * 4.4); line-height: 1.35; color: var(--ui-ink);
+  touch-action: none; cursor: crosshair;
+}
+#c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: crisp-edges; image-rendering: pixelated; }
+.shade { text-shadow: 0 0 calc(var(--u) * 1.4) var(--ui-solid), 0 calc(var(--u) * 0.35) 0 var(--ui-solid); }
+
+#hud {
+  position: absolute; z-index: 5; top: calc(var(--u) * 3); left: calc(var(--u) * 4); right: calc(var(--u) * 4);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: calc(var(--u) * 3.3); pointer-events: none;
+}
+#count { opacity: 0.9; }
+#mute {
+  pointer-events: auto; font: inherit; color: var(--ui-ink); background: transparent; cursor: pointer;
+  border: calc(var(--u) * 0.45) solid var(--ui-edge); padding: calc(var(--u) * 0.6) calc(var(--u) * 1.8);
+  opacity: 0.85;
+}
+#mute:focus-visible, #again:focus-visible { outline: calc(var(--u) * 0.6) solid var(--ui-mint); outline-offset: calc(var(--u) * 0.5); }
+
+#caption {
+  position: absolute; z-index: 5; top: 12%; left: 8%; right: 8%; text-align: center;
+  font-size: calc(var(--u) * 4); color: var(--ui-ink);
+  opacity: 0; transition: opacity 0.9s ease; pointer-events: none;
+}
+#caption.on { opacity: 1; }
+#caption.song { color: var(--ui-dim); letter-spacing: 0.03em; }
+#caption.stone { color: var(--ui-mint); font-weight: 600; font-size: calc(var(--u) * 5.2); letter-spacing: 0.16em; }
+#caption.stone.on { animation: grind 0.12s steps(2, jump-none) 10; }
+#caption.pebble { color: var(--ui-mint); font-size: calc(var(--u) * 3.5); letter-spacing: 0.06em; }
+#prompt {
+  position: absolute; z-index: 5; left: 6%; right: 6%; bottom: 5%; text-align: center;
+  font-size: calc(var(--u) * 3.8); color: var(--ui-ink);
+  opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+}
+#prompt.on { opacity: 0.95; animation: breathe 2.4s ease-in-out infinite; }
+
+#title {
+  position: absolute; z-index: 7; inset: 0; display: flex; flex-direction: column; align-items: center;
+  text-align: center; opacity: 0; transition: opacity 1.1s ease; pointer-events: none;
+}
+#title.on { opacity: 1; }
+#title h1 {
+  margin: 19% 0 0; font-size: calc(var(--u) * 14); font-weight: 600; line-height: 1; letter-spacing: 0.02em;
+  color: var(--ui-ink);
+}
+#title .sub { margin: calc(var(--u) * 2.6) 0 0; font-size: calc(var(--u) * 4.2); color: var(--ui-dim); }
+#title .begin { position: absolute; bottom: 17%; left: 0; right: 0; margin: 0; font-size: calc(var(--u) * 4.6); animation: breathe 2.6s ease-in-out infinite; }
+#title .how { position: absolute; bottom: 10.5%; left: 10%; right: 10%; margin: 0; font-size: calc(var(--u) * 3.3); color: var(--ui-dim); }
+#title .found { position: absolute; bottom: 5.5%; left: 0; right: 0; margin: 0; font-size: calc(var(--u) * 3.1); color: var(--ui-mint); }
+
+#fade { position: absolute; z-index: 8; inset: 0; background: #000; opacity: 1; pointer-events: none; transition: opacity 0.6s ease; }
+
+#ending {
+  position: absolute; z-index: 9; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; padding: 0 11%;
+  background: linear-gradient(to bottom, transparent 8%, rgba(15, 10, 28, 0.72) 32%, rgba(15, 10, 28, 0.72) 68%, transparent 92%);
+  opacity: 0; transition: opacity 1.6s ease; pointer-events: none;
+}
+#ending.on { opacity: 1; pointer-events: auto; }
+#ending h2 { margin: 0; font-size: calc(var(--u) * 10); font-weight: 600; line-height: 1.05; color: #fff; }
+#endText { margin: calc(var(--u) * 4) 0 0; color: #f6ecdf; max-width: 30em; }
+#endFound { margin: calc(var(--u) * 4) 0 0; font-size: calc(var(--u) * 3.2); color: var(--ui-mint); }
+#again {
+  margin-top: calc(var(--u) * 5); font: inherit; color: #fff; background: transparent; cursor: pointer;
+  border: calc(var(--u) * 0.6) solid #fff; padding: calc(var(--u) * 1.8) calc(var(--u) * 5);
+}
+#again:hover { background: #fff; color: var(--ui-solid); }
+
+@keyframes breathe { 50% { opacity: 0.45; } }
+@keyframes grind { 50% { transform: translate(0.06em, 0.03em); } }
+@media (prefers-reduced-motion: reduce) {
+  #prompt.on, #title .begin, #caption.stone.on { animation: none; }
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage" aria-label="Kolobok: a giant invisible loaf rolls through the wheat. Tap to sling flour at it.">
+    <canvas id="c" width="216" height="384"></canvas>
+    <div id="hud"><span id="count" class="shade" aria-live="polite"></span><button id="mute" type="button" aria-pressed="false">Sound on</button></div>
+    <div id="caption" class="shade" aria-live="polite"></div>
+    <div id="prompt" class="shade"></div>
+    <div id="title" class="shade">
+      <h1>Kolobok</h1>
+      <p class="sub">A tale from the Verdant Reach</p>
+      <p class="begin">Tap to begin</p>
+      <p class="how">Tap to sling flour. Tap the stone to listen.</p>
+      <p class="found" id="found"></p>
+    </div>
+    <div id="fade"></div>
+    <div id="ending" aria-live="polite">
+      <h2 id="endTitle"></h2>
+      <p id="endText"></p>
+      <p id="endFound"></p>
+      <button id="again" type="button">Sling again</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Kolobok: a tale from the Verdant Reach.
+   Built on the Still Water engine rules: one hue-shifting ramp, clean bands with ordered dither only
+   at band edges, the light source in frame, hand-drawn silhouettes for anything that has to read as a thing. */
+(function () {
+'use strict';
+const IS_BROWSER = typeof window !== 'undefined' && typeof document !== 'undefined';
+
+// ---------------------------------------------------------------- constants
+const W = 216, HY = 170, H_MIN = 384, H_MAX = 470;
+let H = H_MIN;
+const CX = 108, FOC = 180, CAMH = 24;             // we stand on a hill, 24 m above the valley floor
+const SUNX = 62, SUNY = 146, SUNR = 7;
+const SUNDIR = (() => {
+  const x = (SUNX + 0.5 - CX) / FOC, y = (HY - SUNY - 0.5) / FOC, l = Math.hypot(x, y, 1);
+  return [x / l, y / l, 1 / l];
+})();
+const FLOUR_MAX = 9;
+const R0 = 15;                                     // the loaf's radius in metres, before anyone feeds it
+const POLE = { x: 13, z: 92, h: 4.6, intact: true };
+const XG0 = -210, ZG0 = 30, CELL = 1.5, NXG = 280, NZG = 394;   // track and dust grid over the valley
+const TW = 128, TH = 64;                           // flour texture wrapped on the loaf
+
+// ---------------------------------------------------------------- utils
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hash2(x, y, s) {
+  let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul((s | 0) + 1, 982451653);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+function hash3(x, y, z, s) {
+  let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(z | 0, 1440662683) ^ Math.imul((s | 0) + 1, 982451653);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+function vnoise(x, y, s) {
+  const xi = Math.floor(x), yi = Math.floor(y);
+  const xf = x - xi, yf = y - yi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const a = hash2(xi, yi, s), b = hash2(xi + 1, yi, s), c = hash2(xi, yi + 1, s), d = hash2(xi + 1, yi + 1, s);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function vnoise3(x, y, z, s) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+  const xf = x - xi, yf = y - yi, zf = z - zi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+  const a = lerp(hash3(xi, yi, zi, s), hash3(xi + 1, yi, zi, s), u);
+  const b = lerp(hash3(xi, yi + 1, zi, s), hash3(xi + 1, yi + 1, zi, s), u);
+  const c = lerp(hash3(xi, yi, zi + 1, s), hash3(xi + 1, yi, zi + 1, s), u);
+  const d = lerp(hash3(xi, yi + 1, zi + 1, s), hash3(xi + 1, yi + 1, zi + 1, s), u);
+  return lerp(lerp(a, b, v), lerp(c, d, v), w);
+}
+function fbm(x, y, s, oct) {
+  let f = 0, amp = 0.5, tot = 0;
+  for (let i = 0; i < oct; i++) { f += amp * vnoise(x, y, s + i * 131); tot += amp; x *= 2.02; y *= 2.02; amp *= 0.5; }
+  return f / tot;
+}
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16);
+// continuous ramp value -> integer index: clean bands, ordered dither only across the band edges
+function dith(f, x, y) {
+  const fl = Math.floor(f);
+  let fr = f - fl;
+  fr = fr < 0.28 ? 0 : fr > 0.72 ? 1 : (fr - 0.28) / 0.44;
+  return fl + (fr > BAYER[((y & 3) << 2) | (x & 3)] ? 1 : 0);
+}
+const ci = v => (v < 0 ? 0 : v > 11 ? 11 : v);
+
+// ---------------------------------------------------------------- palette
+const hexc = s => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+// one dusk ramp: indigo shadow > plum > rose > rust > gold > cream
+const RAMP = ['#0f0a1c', '#1b1230', '#2a1943', '#3d2150', '#552a5a', '#70345e', '#8f425e', '#ad5558', '#c96e4f', '#df8f4b', '#efb85a', '#fbe29a'].map(hexc);
+// accents 12-15: flour, lilac shade to powder white. 16: the mint of stone-folk eyes
+const ACC = ['#6f6384', '#9a8fae', '#c9c0d2', '#f1ebea', '#bff0cf'].map(hexc);
+const PAL = new Uint32Array(17), PALRGB = new Float32Array(17 * 3);
+function setPal(i, c, k) {
+  const r = clamp((c[0] * k) | 0, 0, 255), g = clamp((c[1] * k) | 0, 0, 255), b = clamp((c[2] * k) | 0, 0, 255);
+  PAL[i] = (0xff000000 | (b << 16) | (g << 8) | r) >>> 0;
+  PALRGB[i * 3] = r; PALRGB[i * 3 + 1] = g; PALRGB[i * 3 + 2] = b;
+}
+function buildPalette(dim) {
+  const k = 1 - clamp(dim, 0, 1) * 0.6;
+  for (let i = 0; i < 12; i++) setPal(i, RAMP[i], k);
+  for (let j = 0; j < ACC.length; j++) setPal(12 + j, ACC[j], k);
+}
+const FR = [12, 13, 14, 15, 11];                   // flour ramp: lilac shade > powder white > sunlit cream
+function fr(v, x, y) { const k = dith(v, x, y); return FR[k < 0 ? 0 : k > 4 ? 4 : k]; }
+
+// ---------------------------------------------------------------- sprites (hand-drawn)
+const CH = { '.': 255, '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, a: 10, b: 11, L: 12, M: 13, P: 14, F: 15, e: 16 };
+function sprite(rows) {
+  const h = rows.length, w = rows[0].length;
+  const data = new Uint8Array(w * h).fill(255);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const v = CH[rows[y][x]];
+    data[y * w + x] = v === undefined ? 255 : v;
+  }
+  return { w, h, data };
+}
+function mirror(s) {
+  const d = new Uint8Array(s.w * s.h);
+  for (let y = 0; y < s.h; y++) for (let x = 0; x < s.w; x++) d[y * s.w + x] = s.data[y * s.w + s.w - 1 - x];
+  return { w: s.w, h: s.h, data: d };
+}
+const MILL = sprite([
+  '...3...',
+  '..333..',
+  '.33333.',
+  '..333..',
+  '..333..',
+  '.43333.',
+  '.43333.',
+  '.43333.',
+  '4333333',
+  '4333333',
+  '4333333',
+  '4333333',
+]);
+// crows face left; they walk against the roll to stay on top
+const CROW_A = sprite(['.00...', '0000..', '.00000', '..0.0.']);
+const CROW_B = sprite(['......', '00....', '000000', '.0..0.']);
+const CROW_S = sprite(['.0..', '0000', '.0.0']);
+const CROW_T = sprite(['00.', '.00']);
+const CROW_AR = mirror(CROW_A), CROW_BR = mirror(CROW_B), CROW_SR = mirror(CROW_S), CROW_TR = mirror(CROW_T);
+const CROW_F = [sprite(['0...0', '.0.0.', '..0..']), sprite(['.....', '00.00', '..0..'])];
+const SACK_B = [sprite([
+  '..LM...',
+  '.MPPM..',
+  'MPPFPM.',
+  'MPFFPPM',
+  'MPPFPPM',
+  '.MPPPM.',
+  '..MMM..',
+]), sprite([
+  '...ML..',
+  '..MPPM.',
+  '.MPFPPM',
+  'MPPFFPM',
+  'MPPFPPM',
+  '.MPPPM.',
+  '..MMM..',
+])];
+const SACK_N = sprite(['.M.', 'PPP', 'PFP', 'MPM']);
+const SACK_S = sprite(['PF', 'MP']);
+// the flour bell: a sack hung over the road on a pole
+const POLE_A = sprite([
+  '1111111',
+  '.2....1',
+  '.2....1',
+  'PPF...1',
+  'PFP...1',
+  'MPP...1',
+  '.M....1',
+  '......1',
+  '......1',
+  '......1',
+]);
+const POLE_B = sprite([
+  '.......',
+  '.......',
+  '.......',
+  '.......',
+  '.......',
+  '.......',
+  '......1',
+  '......1',
+  '..1...1',
+  '1111111',
+]);
+const FONT = {
+  N: ['1..1', '11.1', '1.11', '1..1', '1..1'],
+  O: ['.11.', '1..1', '1..1', '1..1', '.11.'],
+  T: ['111', '.1.', '.1.', '.1.', '.1.'],
+  U: ['1..1', '1..1', '1..1', '1..1', '.11.'],
+  R: ['111.', '1..1', '111.', '1.1.', '1..1'],
+  S: ['.111', '1...', '.11.', '...1', '111.'],
+};
+let STONE = null;
+let STONEX = 12, STONEY = 0;
+// a stone elder: a leaning standing stone with a face, and the only human words it knows cut into it
+function genStone() {
+  const w = 31, h = 47;
+  const poly = [[11, 0], [16, 0], [20, 2], [23, 6], [25, 12], [26, 19], [27, 27], [28, 35], [29, 42], [30, 47], [0, 47], [1, 40], [2, 32], [3, 24], [4, 16], [6, 8], [8, 3]];
+  const inside = (px, py) => {
+    let c = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  const m = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) m[y * w + x] = inside(x + 0.5, y + 0.5) ? 1 : 0;
+  const In = (x, y) => x >= 0 && y >= 0 && x < w && y < h && m[y * w + x] === 1;
+  const data = new Uint8Array(w * h).fill(255);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!In(x, y)) continue;
+    let v = 1;
+    const n = fbm(x * 0.22, y * 0.18, 31, 3);
+    if (n > 0.64) v = 2; else if (n < 0.32) v = 0;
+    if (!In(x + 1, y) || !In(x, y - 1) || !In(x + 1, y - 1)) v = y < 5 || !In(x + 1, y) ? 7 : 6;   // sun rim, upper right
+    else if (!In(x + 2, y) || !In(x, y - 2)) v = 3;
+    if (!In(x - 1, y)) v = 0;
+    data[y * w + x] = v;
+  }
+  const eye = (ex, ey) => { for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 3; dx++) data[(ey + dy) * w + ex + dx] = 0; };
+  eye(9, 9); eye(17, 9);
+  const carve = (txt, x0, y0) => {
+    let cx = x0;
+    for (const ch of txt) {
+      const g = FONT[ch];
+      for (let r = 0; r < 5; r++) for (let c = 0; c < g[r].length; c++) if (g[r][c] === '1' && In(cx + c, y0 + r)) data[(y0 + r) * w + cx + c] = 5;
+      cx += g[0].length + 1;
+    }
+  };
+  carve('NOT', 9, 16);
+  carve('OURS', 6, 23);
+  return { w, h, data, eyes: [[11, 9], [19, 9]] };
+}
+function genPebble(w, h) {
+  const data = new Uint8Array(w * h).fill(255);
+  const cx = (w - 1) / 2, cy = (h - 1) / 2 + 0.15;
+  const In = (x, y) => x >= 0 && y >= 0 && x < w && y < h && ((x - cx) / (w / 2)) ** 2 + ((y - cy) / (h / 2)) ** 2 <= 1.02;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!In(x, y)) continue;
+    let v = 1;
+    if (!In(x, y - 1) || !In(x + 1, y - 1)) v = 6;
+    else if (!In(x - 1, y)) v = 0;
+    data[y * w + x] = v;
+  }
+  const ey = Math.max(1, Math.floor(h * 0.38));
+  const e1 = Math.floor(cx) - 1, e2 = Math.ceil(cx) + (w % 2 ? 1 : 0);
+  return { w, h, data, eyes: [[e1, ey], [Math.min(w - 1, e2), ey]] };
+}
+
+// ---------------------------------------------------------------- sky
+const SKY = new Uint8Array(W * HY);
+const HILL = new Uint8Array(W * HY).fill(255);
+const CLOUD = new Uint8Array(W * HY).fill(255);
+const NEAR_TOP = new Float32Array(W).fill(HY);
+const MILL_X = 157;
+let MILL_Y = 0;
+let HUBX = 0, HUBY = 0;
+function skyValue(x, y) {
+  const ty = y / HY;
+  const base = 1.5 + 6.7 * Math.pow(ty, 1.7);
+  const dx = x - SUNX, dy = y - SUNY, d2 = dx * dx + dy * dy;
+  const g = 2.2 * Math.exp(-d2 / 380) + 1.5 * Math.exp(-d2 / 3200);
+  const dyh = HY - y;
+  const hb = 1.6 * Math.exp(-(dyh * dyh) / 300) * (0.35 + 0.65 * Math.exp(-(dx * dx) / 9000));
+  return base + g + hb;
+}
+function genClouds() {
+  const rng = mulberry32(2024);
+  const clusters = [ // cx, cy, width, height, puffs, rmin, rmax
+    [150, 40, 150, 8, 30, 6, 13],
+    [26, 66, 76, 7, 16, 5, 10],
+    [172, 94, 88, 6, 18, 5, 9],
+    [114, 121, 54, 4, 10, 4, 7],
+  ];
+  const puffs = [];
+  for (const [cx, cy, cw, chh, n, r0, r1] of clusters) {
+    for (let k = 0; k < n; k++) {
+      const u = rng() * 2 - 1, v = rng() * 2 - 1;
+      const r = lerp(r0, r1, rng()) * (1 - 0.35 * Math.abs(u));
+      puffs.push({ qx: cx + u * cw * 0.5, qy: cy + v * chh * 0.5 - r * 0.15, qr: r, qb: cy + chh * 0.5 });
+    }
+  }
+  const dens = new Float32Array(W * HY);
+  for (let y = 0; y < HY; y++) for (let x = 0; x < W; x++) {
+    let d = 0;
+    for (let k = 0; k < puffs.length; k++) {
+      const p = puffs[k];
+      const dx = x - p.qx, dy = (y - p.qy) * 2.1;
+      const q = (dx * dx + dy * dy) / (p.qr * p.qr);
+      if (q < 1) { let kk = 1 - q; kk *= kk; if (y > p.qb) kk *= Math.exp(-(y - p.qb) / 1.5); d += kk; }
+    }
+    if (d > 0.02) d += (fbm(x * 0.06, y * 0.18, 11, 3) - 0.5) * 0.34 + (fbm(x * 0.2, y * 0.45, 23, 2) - 0.5) * 0.12;
+    const sd = Math.hypot(x - SUNX, y - SUNY);
+    d *= clamp((sd - 20) / 12, 0, 1);               // keep the sun clear
+    dens[y * W + x] = d;
+  }
+  const T = 0.3;
+  const S = (x, y) => { x = Math.round(x); y = Math.round(y); return x < 0 || x >= W || y < 0 || y >= HY ? 0 : dens[y * W + x]; };
+  for (let y = 0; y < HY; y++) for (let x = 0; x < W; x++) {
+    const d = dens[y * W + x];
+    if (d <= T) continue;
+    let lx = SUNX - x, ly = SUNY - y;
+    const ll = Math.hypot(lx, ly) || 1; lx /= ll; ly /= ll;
+    const shade = d - S(x + lx * 3, y + ly * 3);
+    let f = 3.4 + 3.2 * Math.exp(-(ll * ll) / 4500) + 1.6 * (y / HY);
+    if (shade > 0.03) f += 1.1 + clamp(shade * 5, 0, 1.6);
+    else if (shade < -0.05) f -= 0.5;
+    if (S(x, y + 2) <= T) f = Math.max(f + 1.0, 6.8 + 3.0 * Math.exp(-(ll * ll) / 6000));   // sunlit undersides
+    if (S(x, y - 1) <= T) f -= 0.7;
+    if (d - T < 0.05) f -= 0.4;
+    f += (vnoise(x * 0.4, y * 0.4, 77) - 0.5) * 0.4;
+    CLOUD[y * W + x] = ci(dith(f, x, y));
+  }
+}
+function genRidge(pts, rough, seed) {
+  const rng = mulberry32(seed);
+  const x0 = pts[0][0], x1 = pts[pts.length - 1][0];
+  const ys = new Float32Array(x1 - x0 + 1);
+  function sub(a, l, r) {
+    if (r - l < 2) return;
+    const m = (l + r) >> 1;
+    a[m] = lerp(a[l], a[r], (m - l) / (r - l)) + (rng() - 0.5) * (r - l) * rough;
+    sub(a, l, m); sub(a, m, r);
+  }
+  for (let k = 0; k < pts.length - 1; k++) {
+    const ax = pts[k][0], ay = pts[k][1], bx = pts[k + 1][0], by = pts[k + 1][1];
+    const n = bx - ax;
+    if (n <= 0) continue;
+    const seg = new Float32Array(n + 1);
+    seg[0] = ay; seg[n] = by;
+    sub(seg, 0, n);
+    for (let i = 0; i <= n; i++) ys[ax - x0 + i] = seg[i];
+  }
+  return { x0, ys };
+}
+function genHills() {
+  const far = genRidge([[-2, HY - 3], [26, HY - 5], [52, HY - 3], [80, HY - 5], [104, HY - 4], [128, HY - 7], [150, HY - 9], [176, HY - 8], [198, HY - 11], [218, HY - 9]], 0.3, 3);
+  for (let i = 0; i < far.ys.length; i++) {
+    const x = far.x0 + i;
+    if (x < 0 || x >= W) continue;
+    const top = Math.max(0, Math.ceil(far.ys[i]));
+    for (let y = top; y < HY; y++) {
+      let f = skyValue(x, y) - 1.7 - 0.25 * (y - top);   // hazy: just darker than the sky behind it
+      if (y === top) f += 0.6;
+      HILL[y * W + x] = ci(dith(f, x, y));
+    }
+  }
+  const near = genRidge([[106, HY], [122, HY - 3], [138, HY - 8], [150, HY - 12], [162, HY - 13], [178, HY - 11], [196, HY - 7], [218, HY - 5]], 0.22, 4);
+  for (let i = 0; i < near.ys.length; i++) {
+    const x = near.x0 + i;
+    if (x < 0 || x >= W) continue;
+    const top = Math.max(0, Math.ceil(near.ys[i]));
+    NEAR_TOP[x] = top;
+    const i0 = Math.max(0, i - 2), i1 = Math.min(near.ys.length - 1, i + 2);
+    const slope = (near.ys[i1] - near.ys[i0]) / Math.max(1, i1 - i0);
+    for (let y = top; y < HY; y++) {
+      let f = 4.9 + (fbm(x * 0.2, y * 0.3, 9, 2) - 0.5) * 0.6 - 0.12 * (y - top);
+      if (y - top < 1 && slope < 0.1) f += 1.6;           // rim on the slope that faces the sun
+      HILL[y * W + x] = ci(dith(f, x, y));
+    }
+  }
+}
+function genSky() {
+  genClouds();
+  genHills();
+  MILL_Y = Math.round(NEAR_TOP[MILL_X + 3]) - MILL.h + 2;
+  for (let j = 0; j < MILL.h; j++) for (let i = 0; i < MILL.w; i++) {
+    const v = MILL.data[j * MILL.w + i];
+    if (v !== 255) HILL[(MILL_Y + j) * W + MILL_X + i] = v;
+  }
+  HUBX = MILL_X + 3; HUBY = MILL_Y + 2;
+  const sr2 = (SUNR + 0.4) * (SUNR + 0.4), sr1 = (SUNR - 1) * (SUNR - 1);
+  for (let y = 0; y < HY; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x;
+    if (HILL[i] !== 255) { SKY[i] = HILL[i]; continue; }
+    if (CLOUD[i] !== 255) { SKY[i] = CLOUD[i]; continue; }
+    const dx = x - SUNX, dy = y - SUNY, d2 = dx * dx + dy * dy;
+    if (d2 <= sr2) { SKY[i] = d2 > sr1 ? 10 : 11; continue; }
+    SKY[i] = ci(dith(skyValue(x, y), x, y));
+  }
+}
+
+// ---------------------------------------------------------------- paths: the road, and the loaf's round
+function crom(p0, p1, p2, p3, t) {
+  const t2 = t * t, t3 = t2 * t;
+  return 0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
+}
+function buildPath(pts, closed, per) {
+  const n = pts.length, out = [];
+  const segs = closed ? n : n - 1;
+  for (let s = 0; s < segs; s++) {
+    const p0 = pts[closed ? (s - 1 + n) % n : Math.max(0, s - 1)], p1 = pts[s], p2 = pts[(s + 1) % n];
+    const p3 = pts[closed ? (s + 2) % n : Math.min(n - 1, s + 2)];
+    for (let k = 0; k < per; k++) {
+      const t = k / per;
+      out.push([crom(p0[0], p1[0], p2[0], p3[0], t), crom(p0[1], p1[1], p2[1], p3[1], t)]);
+    }
+  }
+  out.push(closed ? out[0].slice() : pts[n - 1].slice());
+  const L = [0];
+  for (let i = 1; i < out.length; i++) L.push(L[i - 1] + Math.hypot(out[i][0] - out[i - 1][0], out[i][1] - out[i - 1][1]));
+  return { pts: out, L, total: L[L.length - 1], closed };
+}
+function pathAt(P, s) {
+  if (P.closed) { s %= P.total; if (s < 0) s += P.total; } else s = clamp(s, 0, P.total);
+  let lo = 0, hi = P.L.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (P.L[m] <= s) lo = m; else hi = m; }
+  const a = P.pts[lo], b = P.pts[hi], seg = P.L[hi] - P.L[lo] || 1e-6;
+  const u = clamp((s - P.L[lo]) / seg, 0, 1);
+  return [lerp(a[0], b[0], u), lerp(a[1], b[1], u), (b[0] - a[0]) / seg, (b[1] - a[1]) / seg];
+}
+function nearestS(P, x, z) {
+  let best = 1e9, bs = 0;
+  for (let i = 0; i < P.pts.length; i++) {
+    const d = Math.hypot(P.pts[i][0] - x, P.pts[i][1] - z);
+    if (d < best) { best = d; bs = P.L[i]; }
+  }
+  return bs;
+}
+const ROAD_PTS = [[504, 2160], [-72, 270], [28.8, 123.4], [-6.6, 66.5], [3.1, 33.2], [2.3, 18.8], [2, 4]];
+const LOOP_PTS = [[-70, 230], [-38, 150], [14, 92], [40, 104], [62, 170], [36, 270], [-24, 320], [-86, 290]];
+let ROAD = null, LOOP = null, S_POLE = 0;
+function roadAtZ(z) {
+  const P = ROAD.pts;
+  if (z >= P[0][1]) return [P[0][0], 1];
+  let lo = 0, hi = P.length - 1;
+  if (z <= P[hi][1]) return [P[hi][0], 1];
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (P[m][1] >= z) lo = m; else hi = m; }
+  const a = P[lo], b = P[hi];
+  const u = (a[1] - z) / (a[1] - b[1] || 1e-6);
+  const slope = (b[0] - a[0]) / (b[1] - a[1] || 1e-6);
+  return [lerp(a[0], b[0], u), 1 / Math.sqrt(1 + slope * slope)];
+}
+
+// ---------------------------------------------------------------- buffers
+let IDX = null, ZB = null, OUT32 = null;
+function alloc() {
+  IDX = new Uint8Array(W * H);
+  ZB = new Float32Array(W * H);
+}
+const TRAIL = new Float32Array(NXG * NZG), TCA = new Float32Array(NXG * NZG), TSA = new Float32Array(NXG * NZG), DUST = new Float32Array(NXG * NZG);
+// sine table: the ground pass calls it for every pixel
+const SINN = 1024, SINT = new Float32Array(SINN);
+for (let i = 0; i < SINN; i++) SINT[i] = Math.sin((i / SINN) * Math.PI * 2);
+const fsin = a => SINT[((a * (SINN / (Math.PI * 2))) | 0) & (SINN - 1)];
+// numbers that change every frame live in a typed array, so no object shape ever changes under the renderer
+const FX = new Float64Array(3);   // [0] dust on the ground, [1] most flour on the loaf, [2] decay clock
+
+// ---------------------------------------------------------------- the valley floor (static per screen height)
+let GX, GZ, GB, GT, GPH, GN2, GC, GFX, GFZ, GNEAR;
+function isLake(x, y) {
+  const r = y - HY;
+  const x0 = 16 + 5 * vnoise(r * 0.9, 1, 61) - r * 2, x1 = 100 + 6 * vnoise(r * 0.9, 2, 62) + r * 3;
+  return x >= x0 && x <= x1;
+}
+function genGround() {
+  const n = W * (H - HY);
+  GX = new Float32Array(n); GZ = new Float32Array(n); GB = new Float32Array(n); GT = new Uint8Array(n);
+  GPH = new Float32Array(n); GN2 = new Float32Array(n); GC = new Int32Array(n); GFX = new Float32Array(n); GFZ = new Float32Array(n);
+  GNEAR = new Float32Array(n);
+  for (let y = HY; y < H; y++) {
+    const dy = y + 0.5 - HY, z = (FOC * CAMH) / dy;
+    const rd = roadAtZ(z);
+    for (let x = 0; x < W; x++) {
+      const k = (y - HY) * W + x;
+      const X = ((x + 0.5 - CX) * z) / FOC;
+      GX[k] = X; GZ[k] = z;
+      let v = 3.0 + 5.2 * Math.exp(-dy / 24);
+      v += 2.2 * Math.exp(-((x - SUNX) * (x - SUNX)) / 3200) * Math.exp(-dy / 26);   // wheat backlit toward the sun
+      const near = clamp((400 - z) / 320, 0, 1);
+      const pu = X * 0.94 + z * 0.34 + 17, pid = Math.floor(pu / 34), pf = pu / 34 - pid;   // field strips
+      v += (hash2(pid, 7, 3) - 0.5) * 0.9 * (0.35 + 0.65 * near);
+      if ((pf < 0.028 || pf > 0.972) && z < 420) v -= 0.6 * near;
+      const tex = clamp((85 - z) / 55, 0, 1);
+      if (tex > 0) v += (vnoise(X * 1.7, z * 0.3, 41) - 0.5) * 1.2 * tex;
+      let ty = 1;
+      const ld = Math.abs(X - rd[0]) * rd[1];
+      if (ld < 3.2 && z < 1400) {
+        ty = 2; v += 1.35;
+        if (Math.abs(ld - 1.3) < 0.32 && z < 170) v -= 0.8;   // cart ruts
+        if (ld > 2.75) v -= 0.4;
+      }
+      if (y < HY + 4 && isLake(x, y)) ty = 3;
+      GB[k] = v; GT[k] = ty;
+      GPH[k] = X * 0.055 + z * 0.075 + vnoise(X * 0.012, z * 0.012, 19) * 3.4 + 1000;
+      GN2[k] = vnoise(X * 0.9, z * 0.9, 57);
+      GNEAR[k] = clamp((260 - z) / 180, 0, 1);
+      const gx = (X - XG0) / CELL - 0.5, gz = (z - ZG0) / CELL - 0.5;
+      const ix = Math.floor(gx), iz = Math.floor(gz);
+      if (ix >= 0 && ix < NXG - 1 && iz >= 0 && iz < NZG - 1) { GC[k] = iz * NXG + ix; GFX[k] = gx - ix; GFZ[k] = gz - iz; } else GC[k] = -1;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- the hilltop we stand on
+let FG = null, EDGE = null, FG_Y0 = 0;
+const PEBS = [];
+function genForeground() {
+  FG = new Uint8Array(W * H).fill(255);
+  EDGE = new Float32Array(W);
+  let minE = H;
+  for (let x = 0; x < W; x++) {
+    EDGE[x] = H - 33 - 15 * smooth(150, 10, x) + 2.0 * Math.sin(x * 0.075 + 1) + (fbm(x * 0.09, 3.3, 88, 2) - 0.5) * 5;
+    minE = Math.min(minE, EDGE[x]);
+  }
+  for (let x = 0; x < W; x++) {
+    const top = Math.ceil(EDGE[x]);
+    for (let y = Math.max(0, top); y < H; y++) {
+      const d = y - top;
+      FG[y * W + x] = d === 0 ? 4 : d === 1 ? 2 : d < 5 && hash2(x, y, 5) > 0.7 ? 1 : 0;
+    }
+  }
+  const rng = mulberry32(77);
+  for (let k = 0; k < 170; k++) {
+    const x0 = Math.floor(rng() * W);
+    const hgt = Math.round(3 + rng() * (5 + 8 * smooth(170, 0, x0)));
+    const lean = (rng() - 0.5) * 0.8;
+    const top = Math.ceil(EDGE[x0]);
+    for (let j = 1; j <= hgt; j++) {
+      const x = Math.round(x0 + (lean * j * j) / hgt), y = top - j;
+      if (x < 0 || x >= W || y < 0) continue;
+      FG[y * W + x] = j === hgt ? (rng() < 0.5 ? 7 : 6) : j >= hgt - 1 ? 3 : 1;   // tips catch the low sun
+    }
+  }
+  STONEX = 12;
+  STONEY = Math.round(EDGE[27]) - STONE.h + 6;
+  PEBS.length = 0;
+  const pdefs = [[46, 7, 5, 0.1], [55, 5, 4, 0.47], [62, 6, 4, 0.73], [70, 4, 3, 0.29]];
+  for (const [px, pw, ph, phase] of pdefs) {
+    const s = genPebble(pw, ph);
+    PEBS.push({ spr: s, pbx: px, pby: Math.round(EDGE[px + (pw >> 1)]) - ph + 2, phase });
+  }
+  FG_Y0 = Math.max(0, Math.floor(minE) - 16);
+}
+
+// ---------------------------------------------------------------- flour on the loaf: a texture in the loaf's own frame
+const COV = new Float32Array(TW * TH), NTEX = new Float32Array(TW * TH);
+const TBX = new Float32Array(TW * TH), TBY = new Float32Array(TW * TH), TBZ = new Float32Array(TW * TH);
+function genTex() {
+  for (let j = 0; j < TH; j++) {
+    const lat = ((j + 0.5) / TH) * Math.PI - Math.PI / 2;
+    for (let i = 0; i < TW; i++) {
+      const lon = ((i + 0.5) / TW) * Math.PI * 2 - Math.PI;
+      const k = j * TW + i;
+      const bx = Math.cos(lat) * Math.cos(lon), by = Math.sin(lat), bz = Math.cos(lat) * Math.sin(lon);
+      TBX[k] = bx; TBY[k] = by; TBZ[k] = bz;
+      NTEX[k] = 0.6 * vnoise3(bx * 2.2 + 5, by * 2.2 + 5, bz * 2.2 + 5, 3) + 0.4 * vnoise3(bx * 5.5 + 9, by * 5.5 + 9, bz * 5.5 + 9, 4);
+    }
+  }
+}
+// three baker's slashes across the loaf's top: flour sinks into them, and they show it turning
+const SCORE = (() => {
+  const c = [0.3, 0.9, 0.3], cl = Math.hypot(c[0], c[1], c[2]);
+  const C = c.map(v => v / cl);
+  let n = [C[1], -C[0], 0];
+  const nl = Math.hypot(n[0], n[1], n[2]);
+  n = n.map(v => v / nl);
+  return { c: C, n, cap: 0.78, offs: [-0.2, 0, 0.2], w: 0.03 };
+})();
+// pebble folk it rolled over, still stuck in the crust
+const LUMPS = [];
+function genLumps() {
+  const rng = mulberry32(404);
+  LUMPS.length = 0;
+  for (let k = 0; k < 7; k++) {
+    const u = rng() * 2 - 1, a = rng() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+    const ang = 0.06 + rng() * 0.025;
+    LUMPS.push([s * Math.cos(a), u, s * Math.sin(a), Math.cos(ang), Math.cos(ang * 0.4), rng()]);
+  }
+}
+
+// ---------------------------------------------------------------- state
+const G = {
+  phase: 'title', t: 0, pt: 0, dim: 0, flour: FLOUR_MAX, hits: 0, thrown: 0, lastThrow: 0, hold: 0,
+  stoneTalk: 0, pebTalk: 0, stoneLine: 0, pebLine: 0, capUntil: 0, cawT: 6,
+};
+const B = { s: 0, x: 0, z: 0, hx: 1, hz: 0, R: R0, grow: 0, M: new Float64Array([1, 0, 0, 0, 1, 0, 0, 0, 1]), path: null, speed: 8.5, target: 8.5, frames: 0, jump: true };
+// all 3x3 matrices are Float64Array(9): one stable shape keeps the renderer optimised
+const ROT = new Float64Array(9);
+function rotAxis(x, y, z, a) {
+  const c = Math.cos(a), s = Math.sin(a), C = 1 - c, o = ROT;
+  o[0] = c + x * x * C; o[1] = x * y * C - z * s; o[2] = x * z * C + y * s;
+  o[3] = y * x * C + z * s; o[4] = c + y * y * C; o[5] = y * z * C - x * s;
+  o[6] = z * x * C - y * s; o[7] = z * y * C + x * s; o[8] = c + z * z * C;
+  return o;
+}
+function mul3(a, b, o) {
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) o[r * 3 + c] = a[r * 3] * b[c] + a[r * 3 + 1] * b[3 + c] + a[r * 3 + 2] * b[6 + c];
+  return o;
+}
+function ortho(M) {
+  let ax = M[0], ay = M[3], az = M[6];
+  let l = Math.hypot(ax, ay, az); ax /= l; ay /= l; az /= l;
+  let bx = M[1], by = M[4], bz = M[7];
+  const d = ax * bx + ay * by + az * bz;
+  bx -= d * ax; by -= d * ay; bz -= d * az;
+  l = Math.hypot(bx, by, bz); bx /= l; by /= l; bz /= l;
+  M[0] = ax; M[3] = ay; M[6] = az; M[1] = bx; M[4] = by; M[7] = bz;
+  M[2] = ay * bz - az * by; M[5] = az * bx - ax * bz; M[8] = ax * by - ay * bx;
+}
+let SCRATCH = new Float64Array(9);
+function updateBall(dt) {
+  B.speed += (B.target - B.speed) * Math.min(1, dt * 0.5);
+  B.s += B.speed * (1 + 0.12 * Math.sin(G.t * 0.21)) * dt;
+  const p = pathAt(B.path, B.s);
+  const vx = p[0] - B.x, vz = p[1] - B.z, dist = Math.hypot(vx, vz);
+  if (!B.jump && dist > 1e-6 && dist < 20) {
+    const M2 = mul3(rotAxis(vz / dist, 0, -vx / dist, dist / B.R), B.M, SCRATCH);   // rolls without slipping
+    SCRATCH = B.M; B.M = M2;
+    if (++B.frames % 90 === 0) ortho(B.M);
+  }
+  B.jump = false;
+  B.x = p[0]; B.z = p[1];
+  const tl = Math.hypot(p[2], p[3]) || 1;
+  B.hx = p[2] / tl; B.hz = p[3] / tl;
+  if (B.grow > 0) { const g = Math.min(B.grow, dt * 0.16); B.R += g; B.grow -= g; }
+  stampTrail(B.x, B.z, B.hx, B.R);
+}
+function stampTrail(x, z, hx, R) {
+  const rc = Math.sqrt(2 * R * 1.25);               // where the loaf presses into waist-high wheat
+  const hl = Math.hypot(hx, B.hz) || 1, hca = hx / hl, hsa = B.hz / hl;
+  const i0 = Math.max(0, Math.floor((x - rc - XG0) / CELL)), i1 = Math.min(NXG - 1, Math.ceil((x + rc - XG0) / CELL));
+  const j0 = Math.max(0, Math.floor((z - rc - ZG0) / CELL)), j1 = Math.min(NZG - 1, Math.ceil((z + rc - ZG0) / CELL));
+  for (let j = j0; j <= j1; j++) {
+    const cz = ZG0 + (j + 0.5) * CELL;
+    for (let i = i0; i <= i1; i++) {
+      const cx = XG0 + (i + 0.5) * CELL;
+      const d = Math.hypot(cx - x, cz - z);
+      if (d >= rc + 1) continue;
+      const val = smooth(rc, rc * 0.62, d + (hash2(i, j, 71) - 0.5) * 1.2);
+      const k = j * NXG + i;
+      if (val > TRAIL[k]) { TRAIL[k] = val; TCA[k] = hca; TSA[k] = hsa; }
+    }
+  }
+}
+// heavy loops live in small leaf functions that only take numbers and typed arrays,
+// so the optimiser always has warm feedback for them
+function fadeArray(A, by) {
+  for (let k = 0, n = A.length; k < n; k++) { const v = A[k]; if (v > 0) A[k] = v > by ? v - by : 0; }
+}
+function decayMaps(dt) {
+  FX[2] += dt;
+  if (FX[2] < 0.15) return;
+  const a = FX[2];
+  FX[2] = 0;
+  fadeArray(TRAIL, a / 120);
+  if (FX[0] > 0) { fadeArray(DUST, a / 26); FX[0] = Math.max(0, FX[0] - a / 26); }
+}
+function dustSplat(x, z, rad, amt) {
+  const i0 = Math.max(0, Math.floor((x - rad - XG0) / CELL)), i1 = Math.min(NXG - 1, Math.ceil((x + rad - XG0) / CELL));
+  const j0 = Math.max(0, Math.floor((z - rad - ZG0) / CELL)), j1 = Math.min(NZG - 1, Math.ceil((z + rad - ZG0) / CELL));
+  let any = false;
+  for (let j = j0; j <= j1; j++) {
+    const cz = ZG0 + (j + 0.5) * CELL;
+    for (let i = i0; i <= i1; i++) {
+      const cx = XG0 + (i + 0.5) * CELL;
+      const d = Math.hypot(cx - x, cz - z) + (vnoise(i * 0.35, j * 0.35, 29) - 0.5) * rad * 0.8;
+      if (d >= rad) continue;
+      const val = amt * smooth(rad, rad * 0.35, d);
+      const k = j * NXG + i;
+      if (val > DUST[k]) { DUST[k] = val; any = true; }
+    }
+  }
+  if (any) FX[0] = Math.max(FX[0], amt);
+}
+// flour lands on the loaf: every texel of its skin within reach of the burst takes a coat
+function deposit(px, py, pz, rs, amt) {
+  const R = B.R, cx = B.x, cy = R, cz = B.z;
+  if (Math.hypot(px - cx, py - cy, pz - cz) > R + rs) return false;
+  const any = coatLoop(B.M, R, cx, cy, cz, px, py, pz, rs, amt);
+  if (any) FX[1] = Math.max(FX[1], amt);
+  return any;
+}
+function coatLoop(M, R, cx, cy, cz, px, py, pz, rs, amt) {
+  let any = false;
+  for (let k = 0; k < TW * TH; k++) {
+    const bx = TBX[k], by = TBY[k], bz = TBZ[k];
+    const sx = cx + R * (M[0] * bx + M[1] * by + M[2] * bz) - px;
+    const sy = cy + R * (M[3] * bx + M[4] * by + M[5] * bz) - py;
+    const sz = cz + R * (M[6] * bx + M[7] * by + M[8] * bz) - pz;
+    const d = Math.sqrt(sx * sx + sy * sy + sz * sz) + (NTEX[k] - 0.5) * rs * 0.7;
+    if (d >= rs) continue;
+    const val = amt * smooth(rs, rs * 0.5, d);
+    if (val > COV[k]) { COV[k] = val; any = true; }
+  }
+  return any;
+}
+// and the dough drinks it
+function decayCov(dt) {
+  if (FX[1] <= 0) return;
+  if (G.hold > 0) { G.hold -= dt; return; }
+  const r = dt * 0.085;
+  fadeArray(COV, r);
+  FX[1] = Math.max(0, FX[1] - r);
+}
+function ballDist() { return Math.hypot(B.x, CAMH - B.R, B.z); }
+function ballScreen() {
+  const z = Math.max(1, B.z);
+  return [CX + (B.x * FOC) / z - 0.5, HY + ((CAMH - B.R) * FOC) / z - 0.5, (B.R * FOC) / z];
+}
+
+// ---------------------------------------------------------------- crows ride it
+const CROWS = [];
+function initCrows() {
+  CROWS.length = 0;
+  const rng = mulberry32(5);
+  const TH_ = [0.1, 0.34, 0.46, 0.24, 0.4], PH_ = [0.4, 3.0, 0.15, 3.5, 2.5];
+  for (let k = 0; k < 5; k++) CROWS.push({ th: TH_[k], ph: PH_[k], st: 0, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, t: 0, away: 3, fr: rng() * 3, peck: rng() * 4 });
+  updateCrows(0);
+}
+function crowPerch(c) {
+  const R = B.R;
+  return [B.x + R * Math.sin(c.th) * Math.cos(c.ph), R + R * Math.cos(c.th), B.z + R * Math.sin(c.th) * Math.sin(c.ph)];
+}
+function updateCrows(dt) {
+  for (const c of CROWS) {
+    c.fr += dt;
+    if (c.st === 0) { const p = crowPerch(c); c.x = p[0]; c.y = p[1]; c.z = p[2]; }
+    else if (c.st === 1) {
+      c.t += dt; c.x += c.vx * dt; c.y += c.vy * dt; c.z += c.vz * dt; c.vy -= 1.2 * dt;
+      if (c.t > c.away) c.st = 2;
+    } else {
+      const p = crowPerch(c), k = 1 - Math.exp(-dt * 1.5);
+      c.x += (p[0] - c.x) * k; c.y += (p[1] - c.y) * k; c.z += (p[2] - c.z) * k;
+      if (Math.hypot(p[0] - c.x, p[1] - c.y, p[2] - c.z) < 0.6) c.st = 0;
+    }
+  }
+}
+function scatterCrows() {
+  let n = 0;
+  for (const c of CROWS) {
+    if (c.st !== 0) continue;
+    const a = Math.random() * 6.283;
+    c.st = 1; c.t = 0; c.away = 3 + Math.random() * 2.5; n++;
+    c.vx = Math.cos(a) * 7; c.vz = Math.sin(a) * 5; c.vy = 7 + Math.random() * 4;
+  }
+  if (n) SFX.caw(0.05);
+}
+
+// ---------------------------------------------------------------- flour: sacks, bursts, powder
+const BURSTS = [], PARTS = [];
+let SACK = null;
+function makeBurst(P, o) {
+  const big = !!o.big, n = big ? 13 : 10, size = big ? 8 : 5.5;
+  const puffs = [];
+  for (let k = 0; k < n; k++) {
+    const dx = Math.random() * 2 - 1, dy = Math.random() * 1.1 - 0.2, dz = Math.random() * 2 - 1.4;
+    const l = Math.hypot(dx, dy, dz) || 1, reach = size * (0.25 + 0.75 * Math.random());
+    puffs.push({ ox: (dx / l) * reach, oy: (dy / l) * reach * 0.75, oz: (dz / l) * reach, r: size * (0.32 + 0.3 * Math.random()) });
+  }
+  const b = { P: P.slice(), cur: P.slice(), attach: o.attach || null, t: 0, life: big ? 3.2 : 2.6, puffs, rs: o.rs || 0, amt: o.amt || 0, hit: false };
+  BURSTS.push(b);
+  for (let k = 0; k < (big ? 110 : 70); k++) {
+    const a = Math.random() * Math.PI * 2, u = Math.random() * 1.6 - 0.5, sp = 3 + Math.random() * (big ? 12 : 9);
+    const s = Math.sqrt(Math.max(0, 1 - u * u));
+    PARTS.push({ fx: P[0], fy: P[1], fz: P[2], fvx: Math.cos(a) * s * sp, fvy: u * sp + 2, fvz: Math.sin(a) * s * sp - 1.5, fage: 0.01, fmax: 1.2 + Math.random() * 1.8, fc: Math.random() < 0.5 ? 15 : 14 });
+  }
+  if (P[1] < 7) dustSplat(P[0], P[2], big ? 6 : 5, 0.9);
+  return b;
+}
+function updateBursts(dt) {
+  for (let k = BURSTS.length - 1; k >= 0; k--) {
+    const b = BURSTS[k];
+    b.t += dt;
+    if (b.attach) { b.cur[0] = B.x + b.attach[0]; b.cur[1] = B.R + b.attach[1]; b.cur[2] = B.z + b.attach[2]; }
+    if (b.amt > 0 && b.t < 0.6) {
+      const g = easeOut(Math.min(1, b.t / 0.5));
+      if (deposit(b.cur[0], b.cur[1], b.cur[2], b.rs * (0.3 + 0.7 * g), b.amt)) b.hit = true;
+    }
+    if (b.t > b.life) BURSTS.splice(k, 1);
+  }
+  const R2 = B.R * B.R;
+  for (let k = PARTS.length - 1; k >= 0; k--) {
+    const p = PARTS[k];
+    p.fage += dt;
+    const drag = Math.exp(-dt * 2.2);
+    p.fvx *= drag; p.fvz *= drag; p.fvy = p.fvy * drag - 3.2 * dt;
+    p.fx += (p.fvx + 1.2) * dt; p.fy += p.fvy * dt; p.fz += p.fvz * dt;
+    const dx = p.fx - B.x, dy = p.fy - B.R, dz = p.fz - B.z;
+    if (dx * dx + dy * dy + dz * dz < R2) { PARTS.splice(k, 1); continue; }   // stuck to the crust
+    if (p.fy <= 0.3) { dustSplat(p.fx, p.fz, 1.6, 0.8); PARTS.splice(k, 1); continue; }
+    if (p.fage > p.fmax) PARTS.splice(k, 1);
+  }
+}
+const HAND = [0.35, CAMH - 1.0, 1.0];
+function throwAt(px, py) {
+  if (G.flour <= 0 || SACK) return false;
+  const dx = (px + 0.5 - CX) / FOC, dy = (HY - (py + 0.5)) / FOC;
+  let kind, T, off = null;
+  const Rt = B.R * 1.12, ocx = -B.x, ocy = CAMH - B.R, ocz = -B.z;
+  const a = dx * dx + dy * dy + 1, b = ocx * dx + ocy * dy + ocz, c = ocx * ocx + ocy * ocy + ocz * ocz - Rt * Rt;
+  const disc = b * b - a * c;
+  if (disc >= 0 && B.z > 12) {
+    const tt = (-b - Math.sqrt(disc)) / a;
+    const ox = dx * tt - B.x, oy = CAMH + dy * tt - B.R, oz = tt - B.z, ol = Math.hypot(ox, oy, oz) || 1;
+    off = [(ox / ol) * B.R, (oy / ol) * B.R, (oz / ol) * B.R];
+    kind = 'loaf';
+    T = [B.x + off[0], B.R + off[1], B.z + off[2]];
+  } else if (dy < -0.002 && CAMH / -dy < 450) {
+    const tt = CAMH / -dy;
+    kind = 'ground'; T = [dx * tt, 0.8, tt];
+  } else {
+    const tt = dy < -0.002 ? Math.min(450, CAMH / -dy) : 160;
+    kind = 'air'; T = [dx * tt, Math.max(1, CAMH + dy * tt), tt];
+  }
+  const dist = Math.hypot(T[0] - HAND[0], T[1] - HAND[1], T[2] - HAND[2]);
+  SACK = { kind, off, T, t: 0, dur: 0.45 + dist / 300, lift: 4 + dist * 0.06, pos: HAND.slice(), spin: 0 };
+  G.flour--; G.thrown++; G.lastThrow = G.pt;
+  UI.count(G.flour);
+  UI.prompt('');
+  SFX.sling();
+  return true;
+}
+function sackTarget() {
+  if (SACK.kind === 'loaf') return [B.x + SACK.off[0], B.R + SACK.off[1], B.z + SACK.off[2]];
+  return SACK.T;
+}
+function updateSack(dt) {
+  if (!SACK) return;
+  SACK.t += dt; SACK.spin += dt;
+  const T = sackTarget(), u = Math.min(1, SACK.t / SACK.dur);
+  const mx = (HAND[0] + T[0]) / 2, my = (HAND[1] + T[1]) / 2 + SACK.lift, mz = (HAND[2] + T[2]) / 2;
+  const q = 1 - u;
+  SACK.pos = [q * q * HAND[0] + 2 * q * u * mx + u * u * T[0], q * q * HAND[1] + 2 * q * u * my + u * u * T[1], q * q * HAND[2] + 2 * q * u * mz + u * u * T[2]];
+  if (u >= 1) { const s = SACK; SACK = null; landSack(s, T); }
+}
+function landSack(s, T) {
+  SFX.burst();
+  const top = [B.x, 2 * B.R, B.z];
+  if (s.kind === 'loaf') {
+    makeBurst(T, { attach: s.off.slice(), rs: B.R * 1.35, amt: 1 });
+    scatterCrows();
+    registerHit();
+    return;
+  }
+  const dc = Math.hypot(T[0] - B.x, T[1] - B.R, T[2] - B.z) - B.R;
+  if (dc < 7) { makeBurst(T, { rs: 8.5, amt: 0.95 }); scatterCrows(); registerHit(); return; }
+  makeBurst(T, {});
+  if (Math.hypot(T[0] - top[0], T[1] - top[1], T[2] - top[2]) < 30) scatterCrows();
+  missNote();
+}
+function checkPole() {
+  const d = Math.hypot(B.x - POLE.x, B.z - POLE.z);
+  const reach = Math.sqrt(Math.max(0, B.R * B.R - (B.R - POLE.h) * (B.R - POLE.h)));
+  if (d < reach + 0.5) {
+    POLE.intact = false;
+    makeBurst([POLE.x - 1.2, POLE.h, POLE.z], { big: true, rs: B.R * 2.4, amt: 1 });
+    G.hold = 1.6;
+    scatterCrows();
+    SFX.poleBurst();
+    storyPole();
+  }
+}
+
+// ---------------------------------------------------------------- rendering
+// shadow parameters: [0] on, [1..3] loaf centre, [4] radius, [5..6] ellipse centre, [7..8] sun heading, [9..10] ellipse scales
+const SHA = new Float64Array(11);
+let BM = null;
+function shadowAt(X, Z) {
+  // ray from the ground toward the sun: does it pass through a floured part of the loaf?
+  const ex = X - SHA[5], ez = Z - SHA[6], ea = (ex * SHA[7] + ez * SHA[8]) * SHA[9], eb = (ex * SHA[8] - ez * SHA[7]) * SHA[10];
+  if (ea * ea + eb * eb > 1.05) return false;             // outside the shadow's ground ellipse
+  const cx = SHA[1], cy = SHA[2], cz = SHA[3], R = SHA[4];
+  const dx = cx - X, dy = cy, dz = cz - Z;
+  const tca = dx * SUNDIR[0] + dy * SUNDIR[1] + dz * SUNDIR[2];
+  if (tca <= 0) return false;
+  const d2 = dx * dx + dy * dy + dz * dz - tca * tca, R2 = R * R;
+  if (d2 >= R2) return false;
+  const th = tca - Math.sqrt(R2 - d2);
+  const nx = (X + SUNDIR[0] * th - cx) / R, ny = (SUNDIR[1] * th - cy) / R, nz = (Z + SUNDIR[2] * th - cz) / R;
+  const M = BM;
+  const bx = M[0] * nx + M[3] * ny + M[6] * nz, by = M[1] * nx + M[4] * ny + M[7] * nz, bz = M[2] * nx + M[5] * ny + M[8] * nz;
+  const lon = Math.atan2(bz, bx), lat = Math.asin(by < -1 ? -1 : by > 1 ? 1 : by);
+  const i = ((Math.floor(((lon + Math.PI) / (Math.PI * 2)) * TW) % TW) + TW) % TW;
+  const j = clamp(Math.floor(((lat + Math.PI / 2) / Math.PI) * TH), 0, TH - 1);
+  const k = j * TW + i;
+  return COV[k] + (NTEX[k] - 0.5) * 0.55 > 0.45;
+}
+function renderGround(t) {
+  const dustOn = FX[0] > 0.01, wphase = t * 1.25;
+  const shOn = FX[1] > 0.3 && B.z > 8, shNear = B.z + B.R;
+  BM = B.M;
+  SHA[0] = shOn ? 1 : 0; SHA[1] = B.x; SHA[2] = B.R; SHA[3] = B.z; SHA[4] = B.R;
+  if (shOn) {
+    // the loaf's shadow on the ground is an ellipse around where its axis toward the sun meets the ground
+    const s = SHA[2] / SUNDIR[1], lh = Math.hypot(SUNDIR[0], SUNDIR[2]);
+    SHA[5] = SHA[1] - SUNDIR[0] * s; SHA[6] = SHA[3] - SUNDIR[2] * s;
+    SHA[7] = SUNDIR[0] / lh; SHA[8] = SUNDIR[2] / lh;
+    SHA[9] = SUNDIR[1] / SHA[4]; SHA[10] = 1 / SHA[4];
+  }
+  for (let y = HY; y < H; y++) {
+    const rowk = (y - HY) * W, row = y * W;
+    for (let x = 0; x < W; x++) {
+      const k = rowk + x, i = row + x, ty = GT[k];
+      if (ty === 3) { IDX[i] = lakePix(x, y, t); continue; }
+      let v = GB[k];
+      const X = GX[k], Z = GZ[k];
+      if (ty === 1) {
+        const w = fsin(GPH[k] - wphase);                        // wind walking over the wheat
+        if (w > 0.45) v += (w - 0.45) * 2.3;
+      }
+      const c = GC[k];
+      if (c >= 0) {
+        const fx = GFX[k], fz = GFZ[k];
+        const a = TRAIL[c], b = TRAIL[c + 1], cc = TRAIL[c + NXG], d = TRAIL[c + NXG + 1];
+        if (a + b + cc + d > 0.05) {
+          const tr = a + (b - a) * fx + (cc - a) * fz + (a - b - cc + d) * fx * fz;
+          if (ty === 1) {
+            if (tr > 0.5) {
+              let st = 0;
+              const nf = GNEAR[k];
+              if (nf > 0) {
+                const ca = TCA[c], sa = TSA[c];
+                st = fsin((Z * ca - X * sa) * 3.3 + (X * ca + Z * sa) * 0.09 + 500) * 0.5 * nf;   // stalks laid along the roll
+              }
+              v -= 1.55 - st;                         // flattened wheat, laid down along the roll
+            } else if (tr > 0.3) v += 1.25;          // the standing edge catches the light
+          } else if (ty === 2 && tr > 0.5) v -= 0.3;
+        }
+        if (dustOn) {
+          const da = DUST[c], db = DUST[c + 1], dc = DUST[c + NXG], dd = DUST[c + NXG + 1];
+          if (da + db + dc + dd > 0.02) {
+            const du = da + (db - da) * fx + (dc - da) * fz + (da - db - dc + dd) * fx * fz;
+            if (du + (GN2[k] - 0.5) * 0.7 > 0.42) { IDX[i] = fr(0.3 + du * 1.3, x, y); continue; }
+          }
+        }
+      }
+      if (shOn && Z < shNear && shadowAt(X, Z)) v = Math.min(v, GB[k]) - 1.1;
+      IDX[i] = ci(dith(v, x, y));
+    }
+  }
+}
+function lakePix(x, y, t) {
+  const rip = Math.round(Math.sin(y * 1.7 + t * 1.3) * 0.8);
+  const sy = 2 * HY - 1 - y, sx = clamp(x + rip, 0, W - 1);
+  let v = SKY[sy * W + sx];
+  if (v < 12) v = Math.max(0, v - 1);
+  if (Math.abs(x - SUNX) <= 2 + (y - HY) * 1.5 && hash2(x, y, (t * 6) | 0) > 0.5) v = 11;
+  return v;
+}
+function drawMill(t) {
+  const a0 = t * 0.35;
+  for (let k = 0; k < 4; k++) {
+    const a = a0 + (k * Math.PI) / 2, ca = Math.cos(a), sa = Math.sin(a);
+    for (let r = 1; r <= 8; r++) {
+      const x = Math.round(HUBX + ca * r), y = Math.round(HUBY + sa * r);
+      if (x >= 0 && x < W && y >= 0 && y < HY) IDX[y * W + x] = 3;
+      if (r >= 3) {
+        const x2 = Math.round(HUBX + ca * r - sa * 1.2), y2 = Math.round(HUBY + sa * r + ca * 1.2);
+        if (x2 >= 0 && x2 < W && y2 >= 0 && y2 < HY) IDX[y2 * W + x2] = 3;
+      }
+    }
+  }
+}
+function drawBall(t) {
+  if (FX[1] < 0.2) return;
+  const R = B.R, cx = B.x, cy = R, cz = B.z, M = B.M;
+  if (cz < 8) return;
+  const scx = CX + (cx * FOC) / cz, scy = HY + ((CAMH - cy) * FOC) / cz, sr = (R * FOC) / cz;
+  const x0 = Math.max(0, Math.floor(scx - sr * 1.15 - 2)), x1 = Math.min(W - 1, Math.ceil(scx + sr * 1.15 + 2));
+  const y0 = Math.max(0, Math.floor(scy - sr * 1.15 - 2)), y1 = Math.min(H - 1, Math.ceil(scy + sr * 1.15 + 2));
+  let ux = SUNX - scx, uy = SUNY - scy;
+  const ul = Math.hypot(ux, uy) || 1; ux /= ul; uy /= ul;
+  const ocx = -cx, ocy = CAMH - cy, ocz = -cz;
+  const cc = ocx * ocx + ocy * ocy + ocz * ocz - R * R;
+  const TWO_PI = Math.PI * 2, HALF_PI = Math.PI / 2;
+  for (let y = y0; y <= y1; y++) {
+    const dy = (HY - (y + 0.5)) / FOC;
+    for (let x = x0; x <= x1; x++) {
+      const dx = (x + 0.5 - CX) / FOC;
+      const a = dx * dx + dy * dy + 1, b = ocx * dx + ocy * dy + ocz;
+      const disc = b * b - a * cc;
+      if (disc < 0) continue;
+      const tt = (-b - Math.sqrt(disc)) / a;                  // equals depth: the ray steps 1 in z
+      const nx = (dx * tt - cx) / R, ny = (CAMH + dy * tt - cy) / R, nz = (tt - cz) / R;
+      const bx = M[0] * nx + M[3] * ny + M[6] * nz;
+      const by = M[1] * nx + M[4] * ny + M[7] * nz;
+      const bz = M[2] * nx + M[5] * ny + M[8] * nz;
+      const lon = Math.atan2(bz, bx), lat = Math.asin(by < -1 ? -1 : by > 1 ? 1 : by);
+      const u = ((lon + Math.PI) / TWO_PI) * TW - 0.5;
+      let v = ((lat + HALF_PI) / Math.PI) * TH - 0.5;
+      if (v < 0) v = 0; else if (v > TH - 1.001) v = TH - 1.001;
+      let i0 = Math.floor(u);
+      const fu = u - i0;
+      i0 = (i0 + TW) % TW;
+      const i1 = (i0 + 1) % TW, j0 = Math.floor(v), fv = v - j0;
+      const r0 = j0 * TW, r1 = r0 + TW;
+      const c00 = COV[r0 + i0], c10 = COV[r0 + i1], c01 = COV[r1 + i0], c11 = COV[r1 + i1];
+      const cov0 = c00 + (c10 - c00) * fu + (c01 - c00) * fv + (c00 - c10 - c01 + c11) * fu * fv;
+      if (cov0 < 0.1) continue;
+      const n00 = NTEX[r0 + i0], n10 = NTEX[r0 + i1], n01 = NTEX[r1 + i0], n11 = NTEX[r1 + i1];
+      const nz0 = n00 + (n10 - n00) * fu + (n01 - n00) * fv + (n00 - n10 - n01 + n11) * fu * fv - 0.5;
+      const cov = cov0 + nz0 * 0.55;
+      if (cov < 0.42) continue;
+      if (cov < 0.54 && (cov - 0.42) / 0.12 < BAYER[((y & 3) << 2) | (x & 3)]) continue;   // powdery edge
+      const nv = -(nx * dx + ny * dy + nz) / Math.sqrt(a);
+      const ndl = nx * SUNDIR[0] + ny * SUNDIR[1] + nz * SUNDIR[2];
+      let f = 0.75 + 1.35 * ny + nz0 * 0.9;                      // skylight from behind us; powder lies unevenly
+      const rim = Math.pow(1 - clamp(nv, 0, 1), 1.6);
+      f += rim * (0.3 + 3.8 * Math.max(0, nx * ux - ny * uy));  // backlit powder glows on the sun side
+      if (ndl > 0) f += ndl * 4.0;
+      if (cov < 0.6) f -= 0.8;                                   // thin, damp, being drunk
+      if (bx * SCORE.c[0] + by * SCORE.c[1] + bz * SCORE.c[2] > SCORE.cap) {
+        const o = bx * SCORE.n[0] + by * SCORE.n[1] + bz * SCORE.n[2];
+        for (let q = 0; q < 3; q++) if (Math.abs(o - SCORE.offs[q]) < SCORE.w) { f -= 1.3; break; }
+      }
+      let idx = fr(f, x, y);
+      for (let q = 0; q < LUMPS.length; q++) {
+        const L = LUMPS[q], dd = bx * L[0] + by * L[1] + bz * L[2];
+        if (dd > L[3]) { idx = dd > L[4] && ((t * 0.31 + L[5]) % 1) > 0.05 ? 16 : 1; break; }
+      }
+      const i = y * W + x;
+      IDX[i] = idx; ZB[i] = tt;
+    }
+  }
+}
+function stampZ(s, x0, y0, z) {
+  for (let j = 0; j < s.h; j++) {
+    const y = y0 + j;
+    if (y < 0 || y >= H) continue;
+    for (let i = 0; i < s.w; i++) {
+      const v = s.data[j * s.w + i];
+      if (v === 255) continue;
+      const x = x0 + i;
+      if (x < 0 || x >= W) continue;
+      const k = y * W + x;
+      if (ZB[k] <= z) continue;
+      IDX[k] = v;
+    }
+  }
+}
+function stampAt(s, x0, y0) {
+  for (let j = 0; j < s.h; j++) {
+    const y = y0 + j;
+    if (y < 0 || y >= H) continue;
+    for (let i = 0; i < s.w; i++) {
+      const v = s.data[j * s.w + i];
+      if (v === 255) continue;
+      const x = x0 + i;
+      if (x >= 0 && x < W) IDX[y * W + x] = v;
+    }
+  }
+}
+function setPix(x, y, v) { x = Math.round(x); y = Math.round(y); if (x >= 0 && x < W && y >= 0 && y < H) IDX[y * W + x] = v; }
+function plotZ(x, y, v, z) {
+  x = Math.round(x); y = Math.round(y);
+  if (x < 0 || x >= W || y < 0 || y >= H) return;
+  const k = y * W + x;
+  if (ZB[k] > z) IDX[k] = v;
+}
+function drawPole() {
+  const z = POLE.z, sx = Math.round(CX + (POLE.x * FOC) / z - 0.5), sy = Math.round(HY + (CAMH * FOC) / z - 0.5);
+  const s = POLE.intact ? POLE_A : POLE_B;
+  stampZ(s, sx - (s.w - 1), sy - s.h + 1, z);
+}
+function drawBursts() {
+  for (const b of BURSTS) {
+    const t = b.t;
+    const alpha = t < 0.08 ? t / 0.08 : 1 - smooth(b.life * 0.2, b.life, t);
+    if (alpha <= 0.02) continue;
+    const g = easeOut(Math.min(1, t / 0.45));
+    const P = b.cur, pp = [];
+    let bx0 = W, bx1 = -1, by0 = H, by1 = -1, zn = 1e9;
+    for (const p of b.puffs) {
+      const wx = P[0] + p.ox * g * (1 + 0.25 * t) + 0.9 * t, wy = P[1] + p.oy * g - 0.3 * t * t, wz = P[2] + p.oz * g;
+      if (wz < 3) continue;
+      const r = p.r * (0.45 + 0.55 * g) * (1 + 0.18 * t);
+      const sx = CX + (wx * FOC) / wz - 0.5, sy = HY + ((CAMH - wy) * FOC) / wz - 0.5, sr = (r * FOC) / wz;
+      pp.push(sx, sy, sr);
+      bx0 = Math.min(bx0, sx - sr); bx1 = Math.max(bx1, sx + sr); by0 = Math.min(by0, sy - sr); by1 = Math.max(by1, sy + sr);
+      zn = Math.min(zn, wz - r);
+    }
+    if (!pp.length) continue;
+    const X0 = Math.max(0, Math.floor(bx0) - 1), X1 = Math.min(W - 1, Math.ceil(bx1) + 1);
+    const Y0 = Math.max(0, Math.floor(by0) - 1), Y1 = Math.min(H - 1, Math.ceil(by1) + 1);
+    const dens = (x, y) => {
+      let d = 0;
+      for (let q = 0; q < pp.length; q += 3) {
+        const ddx = x - pp[q], ddy = (y - pp[q + 1]) * 1.1, rr = pp[q + 2] * pp[q + 2];
+        const qq = (ddx * ddx + ddy * ddy) / rr;
+        if (qq < 1) { const kk = 1 - qq; d += kk * kk; }
+      }
+      return d * alpha;
+    };
+    const seed = (b.P[0] * 7 + b.P[2] * 13) | 0;
+    for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+      let d = dens(x, y);
+      if (d <= 0.12) continue;
+      d += (vnoise(x * 0.32 - t * 3, y * 0.32 + t * 1.5, seed) - 0.5) * 0.5 * alpha;
+      if (d <= 0.32) continue;
+      if (d < 0.52 && (d - 0.32) / 0.2 < BAYER[((y & 3) << 2) | (x & 3)]) continue;   // powder thins out in a dither
+      const i = y * W + x;
+      if (ZB[i] < zn) continue;
+      let lx = SUNX - x, ly = SUNY - y;
+      const ll = Math.hypot(lx, ly) || 1; lx /= ll; ly /= ll;
+      const shade = d - dens(x + lx * 2.5, y + ly * 2.5);
+      let f = 1.0 + 0.8 * Math.exp(-(ll * ll) / 5000);
+      if (shade > 0.02) f += 1.2; else if (shade < -0.03) f -= 0.6;
+      if (d > 1.0) f += 0.4; else if (d < 0.5) f -= 0.8;
+      IDX[i] = fr(f, x, y);
+    }
+  }
+}
+function drawParts() {
+  for (const p of PARTS) {
+    if (p.fz < 4) continue;
+    plotZ(CX + (p.fx * FOC) / p.fz - 0.5, HY + ((CAMH - p.fy) * FOC) / p.fz - 0.5, p.fc, p.fz);
+  }
+}
+function drawCrows() {
+  const faceR = B.hx < 0;
+  for (const c of CROWS) {
+    if (c.z < 6) continue;
+    const sx = CX + (c.x * FOC) / c.z - 0.5, sy = HY + ((CAMH - c.y) * FOC) / c.z - 0.5;
+    if (c.st === 0) {
+      const pk = Math.sin(c.fr * 1.3 + c.peck) > 0.85;
+      let s;
+      if (c.z < 125) s = faceR ? (pk ? CROW_BR : CROW_AR) : (pk ? CROW_B : CROW_A);
+      else if (c.z < 240) s = faceR ? CROW_SR : CROW_S;
+      else s = faceR ? CROW_TR : CROW_T;
+      stampAt(s, Math.round(sx - s.w / 2), Math.round(sy - s.h + 1));
+    } else if (c.z < 160) {
+      stampZ(CROW_F[((c.fr * 7) | 0) & 1], Math.round(sx - 2), Math.round(sy - 1), c.z);
+    } else plotZ(sx, sy, 0, c.z);
+  }
+}
+function drawSack(nearPass) {
+  if (!SACK) return;
+  const p = SACK.pos;
+  if (!p || p[2] < 0.8) return;
+  if ((p[2] < 14) !== nearPass) return;
+  const sx = CX + (p[0] * FOC) / p[2] - 0.5, sy = HY + ((CAMH - p[1]) * FOC) / p[2] - 0.5;
+  if (p[2] < 12) stampAt(SACK_B[((SACK.spin * 9) | 0) & 1], Math.round(sx - 3), Math.round(sy - 3));
+  else if (p[2] < 45) stampZ(SACK_N, Math.round(sx - 1), Math.round(sy - 2), p[2]);
+  else if (p[2] < 120) stampZ(SACK_S, Math.round(sx), Math.round(sy), p[2]);
+  else plotZ(sx, sy, 15, p[2]);
+}
+function eyeOpen(t, ph) { return (t * 0.23 + ph) % 1 > 0.035; }
+function drawForeground(t, stoneTalk, pebTalk) {
+  for (let i = FG_Y0 * W, n = W * H; i < n; i++) { const v = FG[i]; if (v !== 255) IDX[i] = v; }
+  const shake = stoneTalk > 0 && ((t * 22) | 0) & 1 ? 1 : 0;
+  stampAt(STONE, STONEX + shake, STONEY);
+  const open = stoneTalk > 0 || eyeOpen(t, 0.3);
+  for (const e of STONE.eyes) setPix(STONEX + shake + e[0], STONEY + e[1], open ? 16 : 0);
+  for (let k = 0; k < PEBS.length; k++) {
+    const p = PEBS[k];
+    const hop = pebTalk > 0 && ((t * 9 + k * 1.7) | 0) & 1 ? -1 : 0;
+    stampAt(p.spr, p.pbx, p.pby + hop);
+    const op = eyeOpen(t, p.phase);
+    for (const e of p.spr.eyes) setPix(p.pbx + e[0], p.pby + hop + e[1], op ? 16 : 1);
+  }
+}
+function render(t) {
+  const dim = G.dim, stoneTalk = G.stoneTalk, pebTalk = G.pebTalk;
+  buildPalette(dim);
+  IDX.set(SKY, 0);
+  drawMill(t);
+  renderGround(t);
+  ZB.fill(1e9);
+  drawBall(t);
+  drawPole();
+  drawBursts();
+  drawParts();
+  drawCrows();
+  drawSack(false);
+  drawForeground(t, stoneTalk, pebTalk);
+  drawSack(true);
+  for (let i = 0, n = W * H; i < n; i++) OUT32[i] = PAL[IDX[i]];
+}
+
+// ---------------------------------------------------------------- words
+const VERSES = [
+  'I rolled from the bin and I rolled from the sill,',
+  'I rolled from the miller, I rolled from the mill,',
+  'I rolled from the knights and the stones on the hill,',
+  'and I\u2019ll roll from you. I am rolling still.',
+];
+const FED_VERSE = 'I rolled from your flour, and I\u2019m hungry still.';
+const STONE_LINES = ['NOT OURS.', 'NOT. OURS.', 'SOFT ONE. NOT OURS.', 'GO. NOT OURS.'];
+const PEBBLE_LINES = ['not ours not ours not ours', 'not ours!', 'not ours, not ours'];
+const ENDINGS = {
+  blind: { title: 'Not ours', text: 'Nine sacks on the wheat and not one on the loaf. Tomorrow a mason gets paid for another stone.' },
+  seen: { title: 'Seen', text: 'You saw it roll, and so did the road. Nobody blames the stones tonight. It\u2019s a little bigger for it.' },
+  fed: { title: 'Fed', text: 'You saw it every time, and every time it drank the flour. It left singing a new verse. The verse is about you.' },
+};
+
+// ---------------------------------------------------------------- story
+const S = {};
+function resetStory() {
+  Object.assign(S, { intro: 0, poleT: -1, prompted: false, songT: 10, verse: 0, newVerse: false, outT: -1, leaveT: -1, hintT: -1, missed: false, q: [] });
+}
+function later(delay, fn) { S.q.push({ at: G.pt + delay, fn }); S.q.sort((a, b) => a.at - b.at); }
+function showCaption(text, dur, cls) { G.capUntil = G.t + (dur || 2.6); UI.caption(text, dur || 2.6, cls || ''); }
+function capLater(delay, text, dur, cls) { later(delay, () => showCaption(text, dur, cls)); }
+function stoneSpeak(line) {
+  const L = line || STONE_LINES[G.stoneLine++ % STONE_LINES.length];
+  showCaption(L, 2.6, 'stone');
+  G.stoneTalk = 1.5;
+  SFX.stone(L.split(/\s+/).length);
+}
+function pebbleSpeak() {
+  const L = PEBBLE_LINES[G.pebLine++ % PEBBLE_LINES.length];
+  showCaption(L, 2.2, 'pebble');
+  G.pebTalk = 1.3;
+  SFX.pebbles();
+}
+function storyPole() {
+  S.poleT = G.pt;
+  showCaption('The flour bell burst.', 2.6);
+  capLater(2.9, 'There it is.', 2.4);
+}
+function registerHit() {
+  G.hits++;
+  B.grow += 0.8;
+  G.hold = 1.3;
+  S.newVerse = true;
+  S.songT = Math.min(S.songT, 10);
+  if (G.hits === 1) {
+    later(0.7, () => stoneSpeak('NOT OURS.'));
+    capLater(3.6, 'It drinks the flour.', 3);
+    capLater(8.4, 'It\u2019s bigger now.', 3);
+  } else if (G.hits === 3) capLater(7.6, 'Every sack makes it bigger.', 3.2);
+}
+function missNote() {
+  if (S.missed) return;
+  S.missed = true;
+  capLater(0.9, 'Flour on the wheat. Nothing under it.', 3);
+}
+function startLeaving() {
+  G.phase = 'leaving';
+  S.leaveT = G.pt;
+  const pts = [[B.x, B.z], [B.x + B.hx * 25, B.z + B.hz * 25], [-40, 360], [90, 700], [330, 1500], [504, 2160]];
+  B.path = buildPath(pts, false, 30);
+  B.s = 0;
+  B.target = 17;
+  showCaption('It takes the road.', 3.4);
+}
+function runStory(dt) {
+  while (S.q.length && S.q[0].at <= G.pt) S.q.shift().fn();
+  if (S.intro === 0 && G.pt > 2.2) { S.intro = 1; showCaption('Warm bread on the air. Nothing on the road.', 4.2); }
+  if (S.intro === 1 && G.pt > 9.5 && B.z < 400) { S.intro = 2; showCaption('The crows are standing on nothing.', 4); }
+  if (S.poleT >= 0 && !S.prompted && G.pt - S.poleT > 5.6) {
+    S.prompted = true;
+    if (G.thrown === 0) UI.prompt('Tap it to sling flour');
+  }
+  if (G.phase === 'play' && G.flour > 0 && !SACK && S.prompted && G.pt - Math.max(G.lastThrow, S.poleT) > 24 && G.pt - S.hintT > 30) {
+    S.hintT = G.pt;
+    UI.prompt('Aim where the crows stand');
+    later(5, () => { if (G.phase === 'play') UI.prompt(''); });
+  }
+  S.songT -= dt;
+  if (S.songT <= 0) {
+    if (ballDist() < 190 && G.t > G.capUntil + 0.6) {
+      const line = S.newVerse ? FED_VERSE : VERSES[S.verse++ % VERSES.length];
+      S.newVerse = false;
+      showCaption('\u201C' + line + '\u201D', 4.6, 'song');
+      S.songT = 13 + Math.random() * 6;
+    } else S.songT = 2;
+  }
+  if (G.phase === 'play' && G.flour === 0 && !SACK && S.outT < 0) { S.outT = G.pt; capLater(2.4, 'That was the last sack.', 3.2); }
+  if (G.phase === 'play' && S.outT >= 0 && G.pt - S.outT > 10) startLeaving();
+  if (G.phase === 'leaving' && (B.z > 560 || G.pt - S.leaveT > 24)) endGame();
+}
+
+// ---------------------------------------------------------------- endings
+const EKEY = 'kolobok-endings';
+let sessionEndings = [];
+function loadEndings() {
+  try { const v = JSON.parse(localStorage.getItem(EKEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+}
+function saveEnding(id) {
+  const list = loadEndings();
+  for (const e of sessionEndings) if (list.indexOf(e) < 0) list.push(e);
+  if (list.indexOf(id) < 0) list.push(id);
+  sessionEndings = list.slice();
+  try { localStorage.setItem(EKEY, JSON.stringify(list)); } catch (e) { /* private mode: keep it for this visit */ }
+  return list.length;
+}
+function endGame() {
+  if (G.phase === 'end') return;
+  G.phase = 'end';
+  const id = G.hits === 0 ? 'blind' : G.hits <= 4 ? 'seen' : 'fed';
+  const n = saveEnding(id);
+  UI.prompt('');
+  UI.ending(ENDINGS[id], n);
+}
+
+// ---------------------------------------------------------------- flow
+function begin() {
+  G.phase = 'play'; G.pt = 0; G.flour = FLOUR_MAX; G.hits = 0; G.thrown = 0; G.lastThrow = 0; G.hold = 0;
+  resetStory();
+  UI.title(false);
+  UI.count(G.flour);
+  B.path = LOOP; B.s = S_POLE - 150; B.jump = true; B.target = 8.5;
+}
+function restart() {
+  UI.endingHide();
+  COV.fill(0); FX[1] = 0;
+  BURSTS.length = 0; PARTS.length = 0; SACK = null;
+  B.R = R0; B.grow = 0;
+  POLE.intact = true;
+  initCrows();
+  begin();
+}
+function hitStone(px, py) { return px >= STONEX - 2 && px < STONEX + STONE.w + 2 && py >= STONEY - 2 && py < STONEY + STONE.h; }
+function hitPebbles(px, py) {
+  for (const p of PEBS) if (px >= p.pbx - 3 && px < p.pbx + p.spr.w + 3 && py >= p.pby - 5 && py < p.pby + p.spr.h + 3) return true;
+  return false;
+}
+function tap(px, py) {
+  if (G.phase === 'title') { begin(); return; }
+  if (G.phase === 'end') return;
+  if (hitStone(px, py)) { stoneSpeak(); return; }
+  if (hitPebbles(px, py)) { pebbleSpeak(); return; }
+  if (G.phase !== 'play') return;
+  if (G.flour <= 0) { if (!SACK) showCaption('No flour left in the village.', 2.4); return; }
+  throwAt(px, py);
+}
+function aimAtLoaf() {
+  const s = ballScreen();
+  tap(s[0], s[1]);
+}
+function update(dt) {
+  G.t += dt;
+  if (G.phase === 'play' || G.phase === 'leaving') G.pt += dt;
+  updateBall(dt);
+  if (G.phase === 'play' && POLE.intact) checkPole();
+  updateCrows(dt);
+  updateSack(dt);
+  updateBursts(dt);
+  decayCov(dt);
+  decayMaps(dt);
+  if (G.stoneTalk > 0) G.stoneTalk -= dt;
+  if (G.pebTalk > 0) G.pebTalk -= dt;
+  if (G.phase === 'play' || G.phase === 'leaving') runStory(dt);
+  const prox = G.phase === 'end' ? 0 : clamp((170 - ballDist()) / 110, 0, 1);
+  SFX.setRumble(prox);
+  SFX.song(dt, G.phase === 'title' ? prox * 0.5 : prox);
+  G.cawT -= dt;
+  if (G.cawT <= 0) { G.cawT = 7 + Math.random() * 8; if (prox > 0.25) SFX.caw(0); }
+}
+function init() {
+  buildPalette(0);
+  ROAD = buildPath(ROAD_PTS, false, 40);
+  LOOP = buildPath(LOOP_PTS, true, 60);
+  S_POLE = nearestS(LOOP, POLE.x, POLE.z);
+  STONE = genStone();
+  genSky();
+  genTex();
+  genLumps();
+  B.path = LOOP; B.s = 0; B.jump = true;
+  resetStory();
+  // let it roll for a while first, so the valley already carries its track
+  for (let k = 0; k < 1200; k++) { G.t += 1 / 15; updateBall(1 / 15); decayMaps(1 / 15); }
+  initCrows();
+}
+function setH(h) { H = h; alloc(); genGround(); genForeground(); }
+
+// ---------------------------------------------------------------- sound (synthesised, no files)
+const MELODY = [440, 392, 349.2, 392, 440, 440, 0, 293.7, 349.2, 392, 440, 392, 349.2, 329.6, 293.7, 0];
+const SFX = {
+  ctx: null, out: null, buf: null, muted: false, rum: null, bus: null, noteT: 0, noteI: 0,
+  init() {
+    if (this.ctx || !IS_BROWSER) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const c = new AC();
+      this.ctx = c;
+      this.out = c.createGain(); this.out.gain.value = this.muted ? 0 : 0.6; this.out.connect(c.destination);
+      const len = c.sampleRate * 2, b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      this.buf = b;
+      // wind over the wheat
+      const ws = c.createBufferSource(); ws.buffer = b; ws.loop = true;
+      const wf = c.createBiquadFilter(); wf.type = 'lowpass'; wf.frequency.value = 520;
+      const wg = c.createGain(); wg.gain.value = 0.035;
+      const lfo = c.createOscillator(); lfo.frequency.value = 0.09;
+      const lg = c.createGain(); lg.gain.value = 0.022;
+      lfo.connect(lg); lg.connect(wg.gain); ws.connect(wf); wf.connect(wg); wg.connect(this.out); ws.start(); lfo.start();
+      // the loaf's weight on the ground
+      const rs = c.createBufferSource(); rs.buffer = b; rs.loop = true;
+      const rf = c.createBiquadFilter(); rf.type = 'lowpass'; rf.frequency.value = 95;
+      const rg = c.createGain(); rg.gain.value = 0.0001;
+      rs.connect(rf); rf.connect(rg); rg.connect(this.out); rs.start();
+      this.rum = rg;
+      // its song, muffled, as if through bread
+      const bf = c.createBiquadFilter(); bf.type = 'lowpass'; bf.frequency.value = 460;
+      bf.connect(this.out);
+      this.bus = bf;
+    } catch (e) { this.ctx = null; }
+  },
+  resume() { if (this.ctx && this.ctx.state !== 'running' && this.ctx.state !== 'closed') { try { this.ctx.resume(); } catch (e) { /* not yet allowed */ } } },
+  setMuted(m) { this.muted = m; if (this.ctx) this.out.gain.setTargetAtTime(m ? 0 : 0.6, this.ctx.currentTime, 0.05); },
+  tone(f, dur, type, vol, f2, delay, bus) {
+    const c = this.ctx; if (!c) return;
+    const t = c.currentTime + (delay || 0);
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + Math.min(0.03, dur * 0.3));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(bus || this.out);
+    o.start(t); o.stop(t + dur + 0.05);
+  },
+  noise(dur, vol, type, f, f2, q, delay) {
+    const c = this.ctx; if (!c) return;
+    const t = c.currentTime + (delay || 0);
+    const s = c.createBufferSource(); s.buffer = this.buf;
+    const fl = c.createBiquadFilter(); fl.type = type || 'lowpass';
+    fl.frequency.setValueAtTime(f, t);
+    if (f2) fl.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    fl.Q.value = q || 0.8;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + Math.min(0.03, dur * 0.3));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(fl); fl.connect(g); g.connect(this.out);
+    s.start(t, Math.random()); s.stop(t + dur + 0.05);
+  },
+  setRumble(level) { if (this.ctx && this.rum) this.rum.gain.setTargetAtTime(0.0001 + level * level * 0.32, this.ctx.currentTime, 0.4); },
+  song(dt, prox) {
+    if (!this.ctx) return;
+    this.noteT -= dt;
+    if (this.noteT > 0) return;
+    this.noteT = 0.46;
+    const f = MELODY[this.noteI++ % MELODY.length];
+    if (prox < 0.12 || !f) return;
+    const vol = 0.09 * prox;
+    this.tone(f / 2, 0.55, 'triangle', vol, null, 0, this.bus);
+    this.tone(f / 4, 0.55, 'sine', vol * 0.8, null, 0, this.bus);
+  },
+  sling() { this.noise(0.32, 0.09, 'bandpass', 500, 2400, 1.3); },
+  burst() { this.noise(0.9, 0.3, 'lowpass', 2400, 160, 0.8); this.tone(85, 0.4, 'sine', 0.22, 42); },
+  poleBurst() { this.tone(260, 0.2, 'sawtooth', 0.06, 80); this.noise(1.3, 0.34, 'lowpass', 2600, 140, 0.8, 0.05); this.tone(70, 0.6, 'sine', 0.26, 38, 0.05); },
+  caw(delay) { const d = delay || 0; this.tone(640, 0.13, 'sawtooth', 0.03, 470, d); this.tone(610, 0.15, 'sawtooth', 0.026, 430, d + 0.21); },
+  stone(words) { for (let k = 0; k < words; k++) { this.noise(0.3, 0.3, 'bandpass', 190, 150, 6, k * 0.4); this.tone(72, 0.3, 'sine', 0.14, 60, k * 0.4); } },
+  pebbles() { for (let k = 0; k < 9; k++) this.tone(1900 + Math.random() * 900, 0.022, 'square', 0.028, null, k * 0.07 + Math.random() * 0.03); },
+};
+
+// ---------------------------------------------------------------- UI (DOM in the browser, a stub elsewhere)
+let UI = null;
+function stubUI() {
+  const log = [];
+  const f = name => (...a) => log.push([name, ...a]);
+  return { log, caption: f('caption'), prompt: f('prompt'), count: f('count'), title: f('title'), ending: f('ending'), endingHide: f('endingHide'), fade: f('fade') };
+}
+function makeUI() {
+  const $ = id => document.getElementById(id);
+  const el = {
+    stage: $('stage'), caption: $('caption'), prompt: $('prompt'), count: $('count'), title: $('title'), found: $('found'),
+    ending: $('ending'), endTitle: $('endTitle'), endText: $('endText'), endFound: $('endFound'), again: $('again'), fade: $('fade'), mute: $('mute'),
+  };
+  let capTimer = null;
+  return {
+    el,
+    caption(t, dur, cls) {
+      el.caption.textContent = t;
+      el.caption.className = 'shade on' + (cls ? ' ' + cls : '');
+      clearTimeout(capTimer);
+      capTimer = setTimeout(() => el.caption.classList.remove('on'), dur * 1000);
+    },
+    prompt(t) { el.prompt.textContent = t || ''; el.prompt.classList.toggle('on', !!t); },
+    count(n) { el.count.textContent = n === null ? '' : n === 0 ? 'No flour left' : n === 1 ? '1 sack of flour' : n + ' sacks of flour'; },
+    title(on, found) {
+      el.title.classList.toggle('on', !!on);
+      el.found.textContent = found ? 'Endings found: ' + found + ' of 3' : '';
+    },
+    ending(e, n) {
+      el.endTitle.textContent = e.title; el.endText.textContent = e.text;
+      el.endFound.textContent = 'Endings found: ' + n + ' of 3';
+      el.ending.classList.add('on');
+      el.count.textContent = '';
+      setTimeout(() => { try { el.again.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }, 60);
+    },
+    endingHide() { el.ending.classList.remove('on'); },
+    fade(v, dur) { el.fade.style.transitionDuration = (dur || 0.6) + 's'; el.fade.style.opacity = v; },
+  };
+}
+function boot() {
+  UI = makeUI();
+  init();
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const stage = document.getElementById('stage'), wrap = document.getElementById('wrap');
+  let IMG = null;
+  function resize() {
+    const aw = Math.max(1, wrap.clientWidth), ah = Math.max(1, wrap.clientHeight);
+    const nh = clamp(Math.round((W * ah) / aw), H_MIN, H_MAX);
+    if (nh !== H || !IMG) {
+      setH(nh);
+      canvas.width = W; canvas.height = H;
+      IMG = ctx.createImageData(W, H);
+      OUT32 = new Uint32Array(IMG.data.buffer);
+    }
+    const sc = Math.min(aw / W, ah / H);
+    const sw = Math.floor(W * sc), sh = Math.floor(H * sc);
+    stage.style.width = sw + 'px'; stage.style.height = sh + 'px';
+    document.documentElement.style.setProperty('--u', sw / 100 + 'px');
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  const found = loadEndings().length;
+  UI.title(true, found);
+  UI.fade(0, 1.6);
+  stage.addEventListener('pointerdown', e => {
+    if (e.target.closest && e.target.closest('button')) return;
+    e.preventDefault();
+    SFX.init(); SFX.resume();
+    const r = canvas.getBoundingClientRect();
+    tap(((e.clientX - r.left) / r.width) * W, ((e.clientY - r.top) / r.height) * H);
+  });
+  const unlock = () => { SFX.init(); SFX.resume(); };
+  ['pointerup', 'touchend', 'click', 'keydown'].forEach(t => window.addEventListener(t, unlock, { passive: true }));
+  window.addEventListener('contextmenu', e => e.preventDefault());
+  window.addEventListener('keydown', e => {
+    if (e.repeat) return;
+    if (e.code === 'Space' || e.code === 'Enter') {
+      if (document.activeElement && document.activeElement.tagName === 'BUTTON') return;
+      e.preventDefault();
+      if (G.phase === 'title') begin(); else aimAtLoaf();
+    }
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!SFX.ctx) return;
+    if (document.hidden) SFX.ctx.suspend(); else SFX.ctx.resume();
+  });
+  UI.el.mute.addEventListener('click', e => {
+    e.stopPropagation();
+    SFX.init();
+    SFX.setMuted(!SFX.muted);
+    UI.el.mute.textContent = SFX.muted ? 'Sound off' : 'Sound on';
+    UI.el.mute.setAttribute('aria-pressed', SFX.muted ? 'true' : 'false');
+    UI.el.mute.blur();
+  });
+  UI.el.again.addEventListener('click', e => { e.stopPropagation(); UI.el.again.blur(); restart(); });
+  let last = 0, cost = 0, odd = false;
+  function frame(ts) {
+    const now = ts / 1000;
+    let dt = last ? now - last : 1 / 60;
+    last = now;
+    dt = clamp(dt, 0, 0.1);
+    update(dt);
+    // on a slow phone, draw every other frame rather than stutter
+    odd = !odd;
+    if (cost < 12 || odd) {
+      const a = performance.now();
+      render(G.t);
+      ctx.putImageData(IMG, 0, 0);
+      cost = cost * 0.9 + (performance.now() - a) * 0.1;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+if (IS_BROWSER) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+} else if (typeof module !== 'undefined') {
+  UI = stubUI();
+  module.exports = {
+    init, setH, update, render, tap, begin, restart, throwAt, ballScreen, ballDist, aimAtLoaf,
+    G, B, S, POLE, CROWS, COV, W, HY, SUNX, SUNY,
+    get H() { return H; }, get covMax() { return FX[1]; }, get UI() { return UI; }, get SACK() { return SACK; },
+    setOut(buf) { OUT32 = buf; },
+    coatAll() { COV.fill(1); FX[1] = 1; },
+  };
+}
+})();
+
+</script>
+</body>
+</html>

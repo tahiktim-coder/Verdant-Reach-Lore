@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a110e">
+<title>Hero of the Reach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); --page-bg: #0a110e; --ink: #fbeec2; --brass: #dcbf73; --dim: #b7c7b1; --mint: #86e0b4; --px: 1.2px; --font: 'Pixelify Sans', 'VT323', 'Courier New', ui-monospace, monospace; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg: #070c0a; } }
+:root[data-theme="dark"] { --page-bg: #070c0a; }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; }
+body { height: 100%; background: var(--page-bg); color: var(--ink); overflow: hidden; font-family: var(--font); -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+#wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#stage { position: relative; overflow: hidden; width: 320px; height: 568px; }
+#c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: crisp-edges; image-rendering: pixelated; }
+.o { position: absolute; margin: 0; line-height: 1.15; }
+.shade { text-shadow: 0 0 calc(var(--px) * 1.4) #0a110e, 0 calc(var(--px) * 0.6) 0 #0a110e; }
+#title { display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--px) * 7); }
+#title b { font-size: calc(var(--px) * 13); font-weight: 600; color: var(--ink); }
+#title span { font-size: calc(var(--px) * 8.5); color: var(--brass); }
+button.o { background: none; border: none; padding: 0; cursor: pointer; }
+button.o:focus-visible { outline: calc(var(--px) * 1.2) solid var(--mint); outline-offset: calc(var(--px) * -2); }
+#cov { font-size: calc(var(--px) * 7.4); color: var(--dim); }
+#cov b { display: block; color: var(--mint); font-weight: 600; font-size: calc(var(--px) * 8.2); margin-bottom: calc(var(--px) * 2); }
+.stat { display: flex; flex-direction: column; justify-content: center; }
+.stat .k { font-size: calc(var(--px) * 7.6); color: var(--dim); }
+.stat .v { font-size: calc(var(--px) * 15); font-weight: 600; color: var(--ink); }
+.skill { text-align: center; font-size: calc(var(--px) * 8); color: var(--brass); }
+#lore { padding: calc(var(--px) * 4); overflow: hidden; }
+#loreName { margin: 0 0 calc(var(--px) * 5); font-size: calc(var(--px) * 11); font-weight: 600; color: var(--ink); }
+#loreText { margin: 0; font-size: calc(var(--px) * 9); line-height: 1.35; color: var(--dim); }
+#hint { margin: calc(var(--px) * 10) 0 0; font-size: calc(var(--px) * 7.5); color: #6f8a74; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <canvas id="c" width="320" height="568"></canvas>
+    <div id="title" class="o shade"><b>Sir Aldren</b><span>Verdant Knight, Third Oath</span></div>
+    <button id="portrait" class="o" type="button" aria-label="Sir Aldren. Tap to hear him."></button>
+    <button class="o slot" type="button" aria-label="Verdant Blade"></button>
+    <button class="o slot" type="button" aria-label="Leaf Kite"></button>
+    <button class="o slot" type="button" aria-label="Rally Scroll"></button>
+    <button class="o slot" type="button" aria-label="Signet of the Order"></button>
+    <button class="o slot" type="button" aria-label="Flour Sack"></button>
+    <button class="o slot" type="button" aria-label="Covenant Seal"></button>
+    <p id="cov" class="o shade"><b>Covenant: bound</b>The Hunter last came 20 years ago.</p>
+    <p class="o stat shade"><span class="k">Might</span><span class="v">9</span></p>
+    <p class="o stat shade"><span class="k">Guard</span><span class="v">11</span></p>
+    <p class="o stat shade"><span class="k">Will</span><span class="v">7</span></p>
+    <p class="o stat shade"><span class="k">Lore</span><span class="v">4</span></p>
+    <p class="o skill shade">Oathcraft</p>
+    <p class="o skill shade">Stand Fast</p>
+    <p class="o skill shade">Rider</p>
+    <div id="lore" class="o"><p id="loreName" class="shade">Sir Aldren</p><p id="loreText" class="shade">Knight of the Verdant Order, bound by the covenant. Tap his gear to inspect it.</p><p id="hint">Tap an item or the portrait.</p></div>
+  </div>
+</div>
+<script>
+/* Hero of the Reach: a character sheet in the pixel technique, at higher resolution.
+   The bust is a small 3D signed-distance model shaded once into material ramps (steel, gold, green, stone),
+   at two candle strengths; each frame dithers between them for a real flicker. Icons are 2D distance shapes
+   with bevel light. Text is HTML over the canvas. */
+(function () {
+'use strict';
+const IS_BROWSER = typeof window !== 'undefined' && typeof document !== 'undefined';
+const W = 320, H_MIN = 568, H_MAX = 700;
+let H = H_MIN;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+function hash2(x, y, s) { let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul((s | 0) + 1, 982451653); h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+function vnoise(x, y, s) { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); const a = hash2(xi, yi, s), b = hash2(xi + 1, yi, s), c = hash2(xi, yi + 1, s), d = hash2(xi + 1, yi + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16);
+const bay = (x, y) => BAYER[((y & 3) << 2) | (x & 3)];
+function dith(f, x, y) { const fl = Math.floor(f); let fr = f - fl; fr = fr < 0.28 ? 0 : fr > 0.72 ? 1 : (fr - 0.28) / 0.44; return fl + (fr > bay(x, y) ? 1 : 0); }
+
+// ---------------------------------------------------------------- material ramps
+const MAT = {
+  stone: ['#0d0a0c', '#171114', '#21181b', '#2d2024', '#3b2a2c', '#4d3736', '#634641', '#7d5a4e', '#9a735f'],
+  sky: ['#0a0f22', '#111836', '#1a234c', '#26315f', '#384474', '#525d8a', '#7a7fa0'],
+  steel: ['#0c0e13', '#161a22', '#222936', '#323b4c', '#465266', '#606d82', '#8190a4', '#abb8c6', '#dde5ec'],
+  gold: ['#241508', '#452a0e', '#6e4518', '#9b6a28', '#c9993f', '#eecb74', '#fff0bc'],
+  green: ['#07120c', '#0d2015', '#14311f', '#1c4429', '#275a35', '#357243', '#4a8c52'],
+  flame: ['#5c1d0c', '#a8441a', '#e07d2a', '#f8b848', '#fde68e', '#fffbe0'],
+  parch: ['#3c2c1c', '#6b5238', '#9c7f58', '#c9ae80', '#eadbb4'],
+  ui: ['#0a110e', '#111c17', '#182720', '#22352b', '#2e4637', '#3f5a44', '#4b3518', '#7a5a26', '#b08a3e', '#dcbf73', '#fbeec2'],
+  mint: ['#2f7a58', '#86e0b4', '#d8fff0'],
+};
+const OFF = {}, PAL = new Uint32Array(256);
+(function () {
+  let o = 0;
+  for (const k in MAT) { OFF[k] = o; MAT[k].forEach((h, i) => { const r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16); PAL[o + i] = (0xff000000 | (b << 16) | (g << 8) | r) >>> 0; }); o += MAT[k].length; }
+})();
+const NM = k => MAT[k].length;
+const m = (k, v, x, y) => OFF[k] + clamp(dith(v * (NM(k) - 1), x, y), 0, NM(k) - 1);   // v in 0..1
+
+// ---------------------------------------------------------------- the bust: a small distance-field model
+const YAW = 0.42, CY = Math.cos(YAW), SY_ = Math.sin(YAW);
+const len3 = (x, y, z) => Math.sqrt(x * x + y * y + z * z);
+function sdBox(x, y, z, bx, by, bz, r) { const qx = Math.abs(x) - bx, qy = Math.abs(y) - by, qz = Math.abs(z) - bz; return len3(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, Math.max(qy, qz)), 0) - (r || 0); }
+function sdCyl(x, y, z, r, h) { const dx = Math.hypot(x, z) - r, dy = Math.abs(y) - h; return Math.min(Math.max(dx, dy), 0) + Math.hypot(Math.max(dx, 0), Math.max(dy, 0)); }
+function smin(a, b, k) { const h = clamp(0.5 + (0.5 * (b - a)) / k, 0, 1); return b + (a - b) * h - k * h * (1 - h); }
+let MATID = 0;
+function scene(x, y, z) {
+  const X = x * CY - z * SY_, Z = x * SY_ + z * CY, Y = y;
+  // great helm: cylinder and dome, a visor slit, breaths, a centre ridge
+  let helm = smin(sdCyl(X, Y - 1.74, Z, 0.5, 0.46), len3(X, Y - 2.14, Z * 1.04) - 0.5, 0.12);
+  helm = Math.max(helm, -sdBox(X, Y - 1.9, Z - 0.5, 0.36, 0.04, 0.16));
+  helm = Math.min(helm, sdBox(X, Y - 1.62, Z - 0.5, 0.028, 0.34, 0.03));
+  let plume = 1e9;
+  for (let i = 0; i < 8; i++) plume = smin(plume, len3(X, Y - (2.72 - 0.04 * i * i), Z + 0.02 + 0.24 * i) - (0.23 - 0.016 * i), 0.12);
+  const gorget = sdCyl(X, Y - 1.2, Z, 0.46, 0.14);
+  const chest = (len3(X / 0.98, (Y - 0.4) / 0.72, Z / 0.5) - 1) * 0.48, waist = sdBox(X, Y + 0.78, Z, 0.64 + Math.max(0, -Y - 0.2) * 0.12, 0.62, 0.36, 0.2);
+  const torso = smin(chest, waist, 0.3);
+  let paul = 1e9, lame = 1e9;
+  for (const s of [-1, 1]) {
+    paul = Math.min(paul, len3(X - s * 1.0, (Y - 0.98) / 0.72, Z / 0.95) * 0.72 - 0.42);
+    lame = Math.min(lame, len3(X - s * 1.1, (Y - 0.62) / 0.6, Z / 0.9) * 0.6 - 0.26);
+  }
+  const cape = sdBox(X, Y + 0.3, Z + 0.55, 1.35 + Math.max(0, -Y) * 0.25, 1.4, 0.12, 0.1);
+  let d = helm; MATID = 1;
+  if (plume < d) { d = plume; MATID = 3; }
+  if (gorget < d) { d = gorget; MATID = 6; }
+  if (torso < d) { d = torso; MATID = 2; }
+  if (lame < d) { d = lame; MATID = 7; }
+  if (paul < d) { d = paul; MATID = 4; }
+  if (cape < d) { d = cape; MATID = 5; }
+  return d;
+}
+let BUST = null;                        // per pixel: material, normal, model position
+function buildBust(pw, ph, S, cxp, cyp) {
+  const n = pw * ph, mat = new Uint8Array(n), nx = new Float32Array(n), ny = new Float32Array(n), nz = new Float32Array(n), px = new Float32Array(n), py = new Float32Array(n), pz = new Float32Array(n);
+  for (let j = 0; j < ph; j++) for (let i = 0; i < pw; i++) {
+    const x = (i + 0.5 - cxp) / S, y = (cyp - (j + 0.5)) / S;
+    if (y < -1.9 || Math.abs(x) > 2.2 || y > 3.4) continue;
+    let t = 0, z = 3, hit = false;
+    for (let k = 0; k < 70; k++) { const dd = scene(x, y, z - t); if (dd < 0.003) { hit = true; break; } t += dd; if (t > 6) break; }
+    if (!hit) continue;
+    const zz = z - t, e = 0.008, id = MATID;
+    const gx = scene(x + e, y, zz) - scene(x - e, y, zz), gy = scene(x, y + e, zz) - scene(x, y - e, zz), gz = scene(x, y, zz + e) - scene(x, y, zz - e);
+    const gl = Math.hypot(gx, gy, gz) || 1, k = j * pw + i;
+    mat[k] = id; nx[k] = gx / gl; ny[k] = gy / gl; nz[k] = gz / gl; px[k] = x; py[k] = y; pz[k] = zz;
+  }
+  BUST = { pw, ph, mat, nx, ny, nz, px, py, pz };
+}
+const LK = (() => { const v = [-0.72, 0.28, 0.63], l = Math.hypot(...v); return v.map(a => a / l); })();
+const LR = (() => { const v = [0.78, 0.35, -0.5], l = Math.hypot(...v); return v.map(a => a / l); })();
+const HK = (() => { const v = [LK[0], LK[1], LK[2] + 1], l = Math.hypot(...v); return v.map(a => a / l); })();
+function shadeBust(out, I, ox, oy, stride) {
+  const B = BUST;
+  for (let j = 0; j < B.ph; j++) for (let i = 0; i < B.pw; i++) {
+    const k = j * B.pw + i, id = B.mat[k];
+    if (!id) continue;
+    const nx = B.nx[k], ny = B.ny[k], nz = B.nz[k];
+    const X = B.px[k] * CY - B.pz[k] * SY_, Y = B.py[k], Z = B.px[k] * SY_ + B.pz[k] * CY;
+    const dk = Math.max(0, nx * LK[0] + ny * LK[1] + nz * LK[2]), dr = Math.max(0, nx * LR[0] + ny * LR[1] + nz * LR[2]);
+    const sp = Math.pow(Math.max(0, nx * HK[0] + ny * HK[1] + nz * HK[2]), 30);
+    let v = 0.14 + 0.72 * I * dk + 0.42 * dr * dr, mk = 'steel';
+    if (id === 6 || id === 7) { v += 0.55 * sp * I; if (id === 6 && Y > 1.3) mk = 'gold'; if (id === 7 && Y < 0.42) mk = 'gold'; }
+    else if (id === 1 || id === 2 || id === 4) {
+      v += 0.55 * sp * I;
+      const brow = id === 1 && Math.abs(Y - 2.02) < 0.04, rim = id === 4 && Y < 0.84, gorg = false;
+      if (brow || rim || gorg) mk = 'gold';
+      if (id === 2 && Y < -0.2 && ((Y + 3) * 4.2) % 1 < 0.13) v -= 0.28;                  // fauld plates
+      if (id === 2 && Y > -0.1 && Math.abs(X) < 0.035 && Z > 0.2) v += 0.25;             // the keel
+      if (id === 1 && Z > 0.3 && X > 0.08 && X < 0.34 && Y > 1.5 && Y < 1.64 && ((X * 30) | 0) % 2 === 0 && ((Y * 30) | 0) % 2 === 0) v -= 0.45;   // breaths
+      if (id === 4 && Y > 0.9 && Y < 1.02 && Math.abs(((X * 10) % 1)) < 0.12) { mk = 'gold'; v = 0.6 + 0.3 * sp; }   // rivets
+      if (id === 2 && Math.abs(X) < 0.4 && Z > 0.15 && Y < 0.62) {                      // the Order's green tabard
+        mk = 'green'; v = 0.1 + 0.8 * I * dk + 0.35 * dr;
+        const lx = Math.abs(X), ly = Y + 0.1;                                            // a gold leaf on it
+        if (lx < 0.2 * (1 - (ly / 0.34) ** 2) && Math.abs(ly) < 0.34) { mk = 'gold'; v = 0.35 + 0.6 * I * dk + 0.4 * sp; if (lx < 0.018) v -= 0.25; }
+        if (Math.abs(lx - 0.38) < 0.022) { mk = 'gold'; v = 0.3 + 0.5 * I * dk; }
+      }
+    } else if (id === 3) { mk = 'green'; v = 0.12 + 0.85 * I * dk + 0.45 * dr + (Math.sin(B.pz[k] * 22 + B.py[k] * 9) > 0.6 ? -0.12 : 0); }
+    else if (id === 5) { mk = 'green'; v = 0.05 + 0.35 * I * dk + 0.3 * dr; }
+    const x = ox + i, y = oy + j;
+    out[y * stride + x] = m(mk, clamp(v, 0, 1), x, y);
+  }
+  // a dark outline makes it read at any size
+  for (let j = 0; j < B.ph; j++) for (let i = 0; i < B.pw; i++) {
+    const k = j * B.pw + i;
+    if (B.mat[k]) continue;
+    const nb = (i > 0 && B.mat[k - 1]) || (i < B.pw - 1 && B.mat[k + 1]) || (j > 0 && B.mat[k - B.pw]) || (j < B.ph - 1 && B.mat[k + B.pw]);
+    if (nb) out[(oy + j) * stride + ox + i] = OFF.steel;
+  }
+}
+
+// ---------------------------------------------------------------- the room behind him: stone wall, arched window, candle
+const PX0 = 11, PY0 = 39, PW = 186, PH = 218;
+const CAND = { x: 22, y: 150 }, WIN = { x0: 116, x1: 176, y0: 22, y1: 132 };
+let ROOM_A = null, ROOM_B = null;
+function inArch(x, y) { const cx = (WIN.x0 + WIN.x1) / 2, r = (WIN.x1 - WIN.x0) / 2; if (x < WIN.x0 || x > WIN.x1 || y > WIN.y1) return false; return y >= WIN.y0 + r || Math.hypot(x - cx, y - (WIN.y0 + r)) <= r; }
+function paintRoom(buf, I) {
+  for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {
+    const i = y * PW + x;
+    if (inArch(x, y)) {                                                              // the Reach at dusk through the window
+      const t = (y - WIN.y0) / (WIN.y1 - WIN.y0);
+      let v = 0.15 + 0.7 * t * t;
+      const hill = WIN.y1 - 26 + Math.sin(x * 0.11) * 4 + Math.sin(x * 0.037 + 1) * 6;
+      if (y > hill) v = 0.12;
+      if (y > WIN.y1 - 12 && x > 138 && x < 150 && (y > WIN.y1 - 8 || (x % 4 === 0))) v = 0.05;   // a far castle
+      buf[i] = m('sky', v, x, y);
+      if (y < hill - 20 && hash2(x, y, 5) > 0.992) buf[i] = OFF.sky + 6;
+      continue;
+    }
+    // masonry: rows of blocks, mortar, wear, lit by the candle in steps
+    const row = Math.floor(y / 11), off = (row & 1) * 9, bx = Math.floor((x + off) / 18);
+    const mortar = y % 11 === 0 || (x + off) % 18 === 0;
+    const dc = Math.hypot((x - CAND.x) * 0.9, (y - CAND.y) * 1.1);
+    let v = 0.1 + 0.62 * I * Math.exp(-dc / 70) + (hash2(bx, row, 3) - 0.5) * 0.08 + (vnoise(x * 0.3, y * 0.3, 9) - 0.5) * 0.06;
+    const dw = Math.min(Math.abs(x - WIN.x0), Math.abs(x - WIN.x1));
+    if (y < WIN.y1 + 14 && dw < 10 && !inArch(x, y)) v += 0.08 * (1 - dw / 10);          // cool spill off the window reveal
+    if (mortar) v -= 0.07;
+    buf[i] = m('stone', clamp(v, 0, 1), x, y);
+    if (inArch(x - 3, y) && !inArch(x, y) && x > WIN.x1 - 2) buf[i] = OFF.stone + 1;    // the reveal's shadow side
+  }
+  for (let x = WIN.x0 - 4; x <= WIN.x1 + 4; x++) for (let y = WIN.y1; y < WIN.y1 + 5; y++) buf[y * PW + x] = m('stone', y === WIN.y1 ? 0.55 : 0.28, x, y);   // sill
+  for (let x = CAND.x - 14; x < CAND.x + 16; x++) for (let y = CAND.y + 20; y < CAND.y + 25; y++) buf[y * PW + x] = m('stone', y === CAND.y + 20 ? 0.7 * I + 0.1 : 0.2, x, y);   // ledge
+  for (let y = CAND.y; y < CAND.y + 20; y++) for (let x = CAND.x - 3; x <= CAND.x + 3; x++) buf[y * PW + x] = m('parch', clamp(0.35 + (x < CAND.x ? 0.45 : 0.1) * I + (y < CAND.y + 2 ? 0.2 : 0), 0, 1), x, y);   // the candle
+}
+
+// ---------------------------------------------------------------- icons: 2D distance shapes with bevel light
+function drawIcon(buf, stride, x0, y0, size, fn) {
+  const px = [];
+  for (let j = 0; j < size; j++) for (let i = 0; i < size; i++) {
+    const u = ((i + 0.5) / size) * 2 - 1, v = ((j + 0.5) / size) * 2 - 1, r = fn(u, v);
+    if (!r) continue;
+    const [d, mk] = r, e = 1.5 / size;
+    const gx = (fn(u + e, v) || [0.2])[0] - (fn(u - e, v) || [0.2])[0], gy = (fn(u, v + e) || [0.2])[0] - (fn(u, v - e) || [0.2])[0];
+    if (d > 0) continue;
+    const depth = clamp(-d * size * 0.35, 0, 1), gl = Math.hypot(gx, gy) || 1;
+    const lit = depth < 1 ? (-gx - gy) / gl * 0.5 : 0.25;                                  // bevel lit from the top left
+    const v2 = clamp(0.45 + lit * 0.45 + (1 - depth) * 0.05 + (r[2] || 0), 0, 1);
+    const x = x0 + i, y = y0 + j;
+    buf[y * stride + x] = m(mk, v2, x, y);
+    px.push([i, j]);
+  }
+  const set = new Set(px.map(([i, j]) => j * size + i));
+  for (const [i, j] of px) for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const ii = i + di, jj = j + dj; if (!set.has(jj * size + ii) && ii >= 0 && jj >= 0 && ii < size && jj < size) buf[(y0 + jj) * stride + x0 + ii] = OFF.ui; }
+}
+const sBox = (u, v, cx, cy, bx, by, a) => { const c = Math.cos(a), s = Math.sin(a), x = (u - cx) * c + (v - cy) * s, y = -(u - cx) * s + (v - cy) * c; const qx = Math.abs(x) - bx, qy = Math.abs(y) - by; return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0); };
+const ICONS = {
+  blade: (u, v) => {
+    const a = -Math.PI / 4, c = Math.cos(a), s = Math.sin(a), x = u * c + v * s, y = -u * s + v * c;
+    const blade = Math.abs(x) - 0.1 * (1 - smooth(-0.9, 0.55, -y) * 0) * (y < -0.75 ? (y + 0.95) / 0.2 : 1);
+    const bl = Math.max(blade, Math.max(-0.95 - y, y - 0.3));
+    const guard = sBox(x, y, 0, 0.36, 0.38, 0.06, 0), grip = sBox(x, y, 0, 0.58, 0.055, 0.18, 0), pom = Math.hypot(x, y - 0.82) - 0.1;
+    const dd = Math.min(bl, guard, grip, pom);
+    if (dd > 0.05) return null;
+    return [dd, dd === bl ? 'steel' : dd === grip ? 'parch' : 'gold', dd === bl && Math.abs(x) < 0.02 ? 0.25 : 0];
+  },
+  shield: (u, v) => {
+    const top = Math.max(Math.hypot(u, v + 0.05) - 0.78, v - 0.05), tri = Math.max(Math.abs(u) * 1.05 + v * 0.62 - 0.72, -v - 0.1);
+    const sh = Math.min(top, tri);
+    if (sh > 0.05) return null;
+    const leaf = Math.abs(u) - 0.3 * (1 - ((v - 0.05) / 0.5) ** 2);
+    const inner = sh < -0.12;
+    return [sh, !inner ? 'gold' : leaf < 0 && Math.abs(v - 0.05) < 0.5 ? 'gold' : 'green', inner && leaf < 0 ? 0.1 : 0];
+  },
+  scroll: (u, v) => {
+    const body = sBox(u, v, 0, 0, 0.5, 0.62, 0), r1 = Math.hypot(u, v + 0.66) - 0.16, r2 = Math.hypot(u, v - 0.66) - 0.16;
+    const rolls = Math.min(sBox(u, v, 0, -0.66, 0.62, 0.13, 0), sBox(u, v, 0, 0.66, 0.62, 0.13, 0));
+    const rib = sBox(u, v, 0, 0.05, 0.62, 0.07, 0);
+    const dd = Math.min(body, rolls, rib, r1, r2);
+    if (dd > 0.05) return null;
+    return [dd, rib <= dd + 0.001 ? 'green' : 'parch', body <= dd + 0.001 && Math.abs(v) < 0.4 && ((((v + 1) * 10) | 0) % 2 === 0) && Math.abs(u) < 0.35 ? -0.18 : 0];
+  },
+  ring: (u, v) => {
+    const band = Math.abs(Math.hypot(u, v + 0.15) - 0.5) - 0.12, gem = Math.hypot(u, v + 0.62) - 0.2;
+    const dd = Math.min(band, gem);
+    if (dd > 0.05) return null;
+    return [dd, gem < band ? 'mint' : 'gold', 0];
+  },
+  sack: (u, v) => {
+    const body = Math.hypot(u / 0.9, (v - 0.15) / 0.8) - 0.85, neck = sBox(u, v, 0, -0.62, 0.22, 0.12, 0), tuft = Math.hypot(u, v + 0.84) - 0.18;
+    const dd = Math.min(body, neck, tuft);
+    if (dd > 0.05) return null;
+    return [dd, neck <= dd + 0.001 ? 'green' : 'parch', body <= dd + 0.001 && v > 0.1 && Math.abs(u) < 0.3 && Math.abs(v - 0.3) < 0.2 ? 0.2 : 0];
+  },
+  seal: (u, v) => {
+    const r = Math.hypot(u, v), blob = r - 0.78 - Math.sin(Math.atan2(v, u) * 9) * 0.05, stamp = Math.abs(u) - 0.24 * (1 - (v / 0.45) ** 2);
+    if (blob > 0.05) return null;
+    return [blob, 'flame', r < 0.55 && stamp < 0 && Math.abs(v) < 0.45 ? -0.35 : r < 0.6 ? 0.08 : 0];
+  },
+};
+const SLOTS = [
+  { key: 'blade', name: 'Verdant Blade', text: 'Plain steel, kept sharp. The Order forbids cursed blades, and everyone knows why.' },
+  { key: 'shield', name: 'Leaf Kite', text: 'Every castle paints its own. This is the Order\u2019s leaf.' },
+  { key: 'scroll', name: 'Rally Scroll (copy)', text: 'A copy of the scroll from the legend. No one has ever read it aloud.' },
+  { key: 'ring', name: 'Signet of the Order', text: 'Worn on the oath hand. The stone is cold even in summer.' },
+  { key: 'sack', name: 'Flour Sack', text: 'For the roads at harvest. Throw it hard, and don\u2019t stay to watch.' },
+  { key: 'seal', name: 'Covenant Seal', text: 'The wax of the covenant. It has never cooled.' },
+];
+const STATS = [['blade', 'Might', 9], ['shield', 'Guard', 11], ['seal', 'Will', 7], ['scroll', 'Lore', 4]];
+
+// ---------------------------------------------------------------- chrome and layout
+let CHROME = null, IDX = null, OUT32 = null;
+const LAY = {};
+function box(buf, x0, y0, x1, y1, fill) {
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    const e = x === x0 || y === y0 ? 9 : x === x1 || y === y1 ? 6 : x === x0 + 1 || y === y0 + 1 ? 8 : x === x1 - 1 || y === y1 - 1 ? 7 : fill;
+    if (e === 255) continue;
+    buf[y * W + x] = OFF.ui + e;
+  }
+}
+function genChrome() {
+  CHROME = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) CHROME[y * W + x] = OFF.ui + 1 + (vnoise(x * 0.04, y * 0.01, 5) > 0.56 ? 1 : 0);
+  LAY.title = [6, 4, 313, 31]; box(CHROME, ...LAY.title, 0);
+  box(CHROME, PX0 - 3, PY0 - 3, PX0 + PW + 2, PY0 + PH + 2, 255);
+  LAY.slots = [];
+  for (let k = 0; k < 6; k++) {
+    const x = 207 + (k % 2) * 55, y = 36 + ((k / 2) | 0) * 57;
+    box(CHROME, x, y, x + 50, y + 52, 3);
+    drawIcon(CHROME, W, x + 7, y + 7, 38, ICONS[SLOTS[k].key]);
+    LAY.slots.push([x, y, 51, 53]);
+  }
+  LAY.cov = [207, 209, 312, 259]; box(CHROME, ...LAY.cov, 0);
+  drawIcon(CHROME, W, 212, 216, 18, ICONS.seal);
+  LAY.stats = [];
+  for (let k = 0; k < 4; k++) { const x = 6 + k * 77, y = 266; box(CHROME, x, y, x + 73, y + 46, 0); drawIcon(CHROME, W, x + 6, y + 6, 20, ICONS[STATS[k][0]]); LAY.stats.push([x, y]); }
+  LAY.skills = [];
+  for (let k = 0; k < 3; k++) {
+    const cx = 56 + k * 104, cy = 346;
+    for (let y = -17; y <= 17; y++) for (let x = -17; x <= 17; x++) { const r = Math.hypot(x, y); if (r <= 17.5) CHROME[(cy + y) * W + cx + x] = OFF.ui + (r > 16.2 ? 9 : r > 15 ? 7 : 3); }
+    const sym = [(u, v) => { const q = sBox(u, v, 0.05, 0, 0.1, 0.8, 0.5), t = sBox(u, v, -0.35, 0.55, 0.15, 0.12, 0.5); const dd = Math.min(q, t); return dd > 0.05 ? null : [dd, 'parch', 0]; },
+      (u, v) => { const tw = sBox(u, v, 0, 0.1, 0.36, 0.62, 0), cr = Math.min(sBox(u, v, -0.26, -0.6, 0.1, 0.12, 0), sBox(u, v, 0.26, -0.6, 0.1, 0.12, 0), sBox(u, v, 0, -0.6, 0.08, 0.12, 0)); const dd = Math.min(tw, cr); return dd > 0.05 ? null : [dd, 'steel', 0.1]; },
+      (u, v) => { const hs = Math.max(Math.abs(Math.hypot(u, v + 0.05) - 0.5) - 0.13, v - 0.45); return hs > 0.05 ? null : [hs, 'steel', 0.15]; }][k];
+    drawIcon(CHROME, W, cx - 12, cy - 12, 24, sym);
+    LAY.skills.push([cx, cy]);
+  }
+  LAY.lore = [6, 390, 313, H - 8]; box(CHROME, ...LAY.lore, 0);
+}
+
+// ---------------------------------------------------------------- frame
+const G = { t: 0, sel: -1, glint: 0 };
+let EYES = [];
+function init() {
+  buildBust(PW, PH, 36, 90, 150);
+  EYES = [[-0.17, 1.9, 0.49], [0.13, 1.9, 0.49]].map(([mx, my, mz]) => { const x = mx * CY + mz * SY_, y = my; return [Math.round(90 + x * 36), Math.round(150 - y * 36)]; });
+  ROOM_A = new Uint8Array(PW * PH); ROOM_B = new Uint8Array(PW * PH);
+  paintRoom(ROOM_A, 1.0); paintRoom(ROOM_B, 0.78);
+  shadeBust(ROOM_A, 1.0, 0, 0, PW); shadeBust(ROOM_B, 0.78, 0, 0, PW);
+}
+function setH(h) { H = h; IDX = new Uint8Array(W * H); genChrome(); }
+function update(dt) { G.t += dt; if (G.glint > 0) G.glint -= dt; }
+function render(t) {
+  IDX.set(CHROME);
+  const fl = 0.55 + 0.25 * Math.sin(t * 9.3) + 0.2 * Math.sin(t * 13.7 + 1) + 0.15 * Math.sin(t * 3.1);
+  for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {                 // candle flicker: dither between two lightings
+    const k = y * PW + x;
+    IDX[(PY0 + y) * W + PX0 + x] = fl > bay(x, y) ? ROOM_A[k] : ROOM_B[k];
+  }
+  for (let j = 0; j < 12; j++) {                                             // the flame
+    const w = (1 - j / 12) * 2.6 * (1 + Math.sin(t * 17 + j) * 0.12), sway = Math.sin(t * 5 + j * 0.4) * (j / 12) * 1.5;
+    for (let x = -Math.ceil(w); x <= Math.ceil(w); x++) {
+      if (Math.abs(x) > w) continue;
+      const v = 1 - j / 14 - Math.abs(x) / 5, px = Math.round(PX0 + CAND.x + x + sway), py = PY0 + CAND.y - 1 - j;
+      IDX[py * W + px] = m('flame', clamp(v, 0, 1), px, py);
+    }
+  }
+  for (let k = 0; k < 8; k++) {                                              // dust in the window light
+    const a = (t * 0.05 + k * 0.137) % 1, x = PX0 + WIN.x0 - 10 + ((k * 23) % 40) + Math.sin(t + k) * 3, y = PY0 + WIN.y1 + 10 + a * 70;
+    if (Math.sin(t * 2 + k) > 0) IDX[Math.round(y) * W + Math.round(x)] = OFF.stone + 8;
+  }
+  const blink = ((t * 0.3) % 1) < 0.03;                                      // eyes in the visor slit
+  if (!blink) for (const [ex, ey] of EYES) { IDX[(PY0 + ey) * W + PX0 + ex] = OFF.mint + 1; IDX[(PY0 + ey) * W + PX0 + ex + 1] = OFF.mint + 2; }
+  if (G.sel >= 0) { const [x, y, w, h] = LAY.slots[G.sel]; for (let i = 0; i < w; i++) { IDX[y * W + x + i] = OFF.mint + 1; IDX[(y + h - 1) * W + x + i] = OFF.mint + 1; } for (let j = 0; j < h; j++) { IDX[(y + j) * W + x] = OFF.mint + 1; IDX[(y + j) * W + x + w - 1] = OFF.mint + 1; } }
+  for (let i = 0, n = W * H; i < n; i++) OUT32[i] = PAL[IDX[i]];
+}
+
+// ---------------------------------------------------------------- DOM
+let UI = { show() {} };
+function boot() {
+  const $ = id => document.getElementById(id);
+  init();
+  const canvas = $('c'), ctx = canvas.getContext('2d', { alpha: false }), stage = $('stage'), wrap = $('wrap');
+  let IMG = null, sc = 1;
+  const at = (el, x, y, w, h) => { el.style.left = x * sc + 'px'; el.style.top = y * sc + 'px'; if (w) el.style.width = w * sc + 'px'; if (h) el.style.height = h * sc + 'px'; };
+  function layoutDOM() {
+    document.documentElement.style.setProperty('--px', sc + 'px');
+    at($('title'), 6, 4, 308, 28);
+    at($('portrait'), PX0, PY0, PW, PH);
+    document.querySelectorAll('.slot').forEach((el, k) => { const [x, y, w, h] = LAY.slots[k]; at(el, x, y, w, h); });
+    at($('cov'), 234, 212, 76, 44);
+    document.querySelectorAll('.stat').forEach((el, k) => { const [x, y] = LAY.stats[k]; at(el, x + 30, y + 6, 40, 36); });
+    document.querySelectorAll('.skill').forEach((el, k) => { const [cx, cy] = LAY.skills[k]; at(el, cx - 50, cy + 20, 100, 14); });
+    at($('lore'), 12, 396, 296, H - 410);
+  }
+  function resize() {
+    const aw = Math.max(1, wrap.clientWidth), ah = Math.max(1, wrap.clientHeight), nh = clamp(Math.round((W * ah) / aw), H_MIN, H_MAX);
+    if (nh !== H || !IMG) { setH(nh); canvas.width = W; canvas.height = H; IMG = ctx.createImageData(W, H); OUT32 = new Uint32Array(IMG.data.buffer); }
+    sc = Math.min(aw / W, ah / H);
+    stage.style.width = Math.floor(W * sc) + 'px'; stage.style.height = Math.floor(H * sc) + 'px';
+    layoutDOM();
+  }
+  window.addEventListener('resize', resize); resize();
+  const showSlot = k => { G.sel = k; $('loreName').textContent = SLOTS[k].name; $('loreText').textContent = SLOTS[k].text; };
+  document.querySelectorAll('.slot').forEach((el, k) => el.addEventListener('click', () => showSlot(k)));
+  $('portrait').addEventListener('click', () => { G.sel = -1; $('loreName').textContent = 'Sir Aldren'; $('loreText').textContent = '\u201CThe Hunter came twenty years ago. It will come again. Until then, the road.\u201D'; });
+  let last = 0;
+  function frame(ts) { const now = ts / 1000; let dt = last ? now - last : 1 / 60; last = now; update(clamp(dt, 0, 0.1)); render(G.t); ctx.putImageData(IMG, 0, 0); requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
+}
+if (IS_BROWSER) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot(); }
+else if (typeof module !== 'undefined') module.exports = { init, setH, update, render, G, W, get H() { return H; }, setOut(b) { OUT32 = b; } };
+})();
+
+</script>
+</body>
+</html>

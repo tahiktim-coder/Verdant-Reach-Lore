@@ -1,0 +1,70 @@
+WORLD DATA sanity table. All placements provisional. Sea level 0.2. The number is the marker number in world_debug.png.
+#   key                   type             rank   u      v      height  region                (note)
+0   castle_order          castle           major  0.360  0.620  0.403   6 reach_interior      variant 0  
+1   castle_1              castle           minor  0.222  0.432  0.425   6 reach_interior      variant 1  (downs north of the Reach river)
+2   castle_2              castle           minor  0.086  0.505  0.353   6 reach_interior      variant 2  (sea cliff on the Western Sea)
+3   castle_3              castle           minor  0.400  0.386  0.456   6 reach_interior      variant 3  (a knoll below the foothills of the high arc)
+4   castle_4              castle           minor  0.310  0.822  0.457   8 green_valleys       variant 4  (green valleys: on a crag over the alpine river, below the Cavern of Giants)
+5   castle_5              castle           minor  0.094  0.674  0.297   6 reach_interior      variant 5  (headland south of the Reach river mouth)
+6   castle_6              castle           minor  0.528  0.600  0.295   7 wheat_country       variant 6  (lone hill over the wheat, watching the border river)
+7   castle_7              castle           minor  0.186  0.872  0.392   8 green_valleys       variant 7  (green valleys: where the alpine valleys meet)
+8   castle_8              castle           minor  0.400  0.904  0.276   8 green_valleys       variant 8  (south coast, between the alps and the swamp)
+9   crystal_grove_w       crystal_grove    minor  0.300  0.150  0.293   4 northern_lands      
+10  crystal_grove_e       crystal_grove    minor  0.620  0.140  0.250   4 northern_lands      
+11  storm_valley_w        storm_valley     minor  0.480  0.170  0.211   4 northern_lands      
+12  storm_valley_e        storm_valley     minor  0.780  0.160  0.210   4 northern_lands      
+13  starbloom_fields      flower_field     minor  0.300  0.360  0.273   6 reach_interior      (name coined for the map, not in the lore (the bible has "Colossal Starblooms"))
+14  forest_of_eyes        dark_forest      major  0.140  0.560  0.302   6 reach_interior      
+15  colossal_spires       spires           major  0.340  0.520  0.304   6 reach_interior      
+16  stone_hands           stone_hands      major  0.460  0.420  0.318   6 reach_interior      
+17  windmill_n            windmill         minor  0.470  0.560  0.250   7 wheat_country       
+18  windmill_s            windmill         minor  0.500  0.680  0.241   7 wheat_country       
+19  standing_stone_1      standing_stone   minor  0.440  0.505  0.254   7 wheat_country       
+20  standing_stone_2      standing_stone   minor  0.523  0.648  0.242   7 wheat_country       
+21  standing_stone_3      standing_stone   minor  0.452  0.725  0.241   7 wheat_country       
+22  wheat_country         area             major  0.480  0.620  0.245   7 wheat_country       
+23  green_valleys         area             major  0.215  0.820  0.359   8 green_valleys       
+24  cavern_of_giants      cavern           minor  0.300  0.800  0.407   8 green_valleys       
+25  toad_swamp            swamp            minor  0.440  0.860  0.225   9 toad_swamp          (name not locked (06-places, 12-archive))
+26  eastern_city          city             major  0.740  0.500  0.243   10 eastern_kingdom    (every window lit; unnamed in the lore)
+27  fire_dragon_peaks     volcano          major  0.720  0.800  0.527   11 mage_kingdoms      (faint ember glow; name coined for the map, not in the lore)
+28  buried_machine        lone_mountain    major  0.860  0.740  0.744   11 mage_kingdoms      (name coined for the map, not in the lore (the bible has "the machine under the southern mountain"))
+29  silent_battlefield    battlefield      major  0.905  0.338  0.228   12 silent_battlefield 
+30  clockwork_tower_1     clockwork_tower  minor  0.872  0.312  0.235   12 silent_battlefield variant 0  
+31  clockwork_tower_2     clockwork_tower  minor  0.920  0.338  0.227   12 silent_battlefield variant 1  
+32  clockwork_tower_3     clockwork_tower  minor  0.893  0.374  0.229   12 silent_battlefield variant 2  
+33  wreckage_1            wreckage         minor  0.900  0.322  0.228   12 silent_battlefield 
+34  wreckage_2            wreckage         minor  0.938  0.306  0.225   12 silent_battlefield 
+35  wreckage_3            wreckage         minor  0.884  0.352  0.229   12 silent_battlefield 
+36  artifact_isles        isles            major  0.930  0.960  0.184   13 artifact_isles     WATER (pirates; name coined for the map, not in the lore (the kingdom has no official name yet))
+37  still_water           lake             major  0.144  0.354  0.262   6 reach_interior      WATER (location open in the bible; inside the Reach here is the layout spec's choice; the Kolobok proposal wants it within walking distance of the wheat country)
+38  alpine_lake_west      lake             minor  0.166  0.796  0.276   8 green_valleys       WATER 
+39  alpine_lake_valley    lake             minor  0.284  0.846  0.296   8 green_valleys       WATER 
+40  alpine_tarn           lake             minor  0.219  0.789  0.428   8 green_valleys       WATER 
+41  mountain_path         pass             minor  0.305  0.254  0.335   5 northern_ranges     
+42  east_gap              pass             minor  0.660  0.250  0.300   5 northern_ranges     (unnamed in the lore)
+
+LAKES
+still_water           level 0.262  cells 663
+alpine_lake_west      level 0.276  cells 191
+alpine_lake_valley    level 0.296  cells 166
+alpine_tarn           level 0.428  cells 75
+  still_water: location open in the bible; inside the Reach here is the layout spec's choice; the Kolobok proposal wants it within walking distance of the wheat country
+
+RIVERS (named)
+still_water_outflow   from 0.124,0.4189 h 0.262  to 0.0986,0.4424 h 0.187  (water)
+reach_river           from 0.3486,0.2959 h 0.316  to 0.1006,0.6279 h 0.190  (water)
+border_river          from 0.585,0.2549 h 0.377  to 0.5654,0.8447 h 0.190  (water)
+east_river            from 0.7451,0.2686 h 0.420  to 0.8486,0.5498 h 0.189  (water)
+alpine_river          from 0.2861,0.7842 h 0.480  to 0.2822,0.9268 h 0.190  (water)
+
+ROADS
+mountain_path         path  
+lamp_road             lamp  
+wheat_road            dirt  
+reach_road            dirt  (studio proposal, not in the lore)
+north_road            dirt  (studio proposal, not in the lore)
+
+LOWEST WAYS THROUGH THE NORTHERN RANGES (the highest point that must be crossed; then the next way with that one closed)
+North -> Reach    0.335 at (0.306, 0.253)   next: 0.433 at (0.626, 0.253)    (the mountain path marker is at 0.305, 0.254, height 0.335)
+North -> East     0.299 at (0.659, 0.245)   next: 0.330 at (0.688, 0.224)    (the low gap marker is at 0.660, 0.250, height 0.300)

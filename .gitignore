@@ -1,0 +1,16 @@
+# OS / editor
+Thumbs.db
+.DS_Store
+*.swp
+
+# Node
+node_modules/
+npm-debug.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Headless-render scratch inside the map candidates (keep final.png and sheet.png)
+studio/pieces/world-map/candidates/*/shots/
+*.stackdump

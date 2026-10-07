@@ -1,0 +1,572 @@
+/* Reach Field Tips: illustrated tip cards for the Verdant Reach, drawn entirely by code.
+   4:5 at 320x400 (x3 = 960x1200, a post-sized frame). Cumulus clouds are stacks of sphere-shaded puffs drawn back to
+   front, each lobe's normal blended with its cloud's, lit warm from the sun and cool from the sky. */
+(function () {
+'use strict';
+const IS_BROWSER = typeof window !== 'undefined' && typeof document !== 'undefined';
+const W = 320, H = 400;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+function mulberry32(a) { return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hash2(x, y, s) { let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul((s | 0) + 1, 982451653); h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+function vnoise(x, y, s) { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); const a = hash2(xi, yi, s), b = hash2(xi + 1, yi, s), c = hash2(xi, yi + 1, s), d = hash2(xi + 1, yi + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16);
+const bay = (x, y) => BAYER[((y & 3) << 2) | (x & 3)];
+function dith(f, x, y) { const fl = Math.floor(f); let fr = f - fl; fr = fr < 0.28 ? 0 : fr > 0.72 ? 1 : (fr - 0.28) / 0.44; return fl + (fr > bay(x, y) ? 1 : 0); }
+
+// ---------------------------------------------------------------- material ramps
+const MAT = {
+  sky: ['#16294a', '#1d3560', '#254377', '#2f548c', '#3c66a0', '#4f7bb0', '#6a92bf', '#8aa9c9', '#b2c3cf', '#e2d6bc'],
+  cloud: ['#46526c', '#5c6882', '#788197', '#989ca7', '#bab3a6', '#d8c7a4', '#ecd9b2', '#f7eacf', '#fff8e8'],
+  hills: ['#2f4862', '#3f5a75', '#567189', '#7590a3'],
+  wheat: ['#2a2512', '#433b18', '#5c5120', '#776827', '#927f2f', '#ad9638', '#c6ac47', '#dcc262', '#efd98a'],
+  grass: ['#0c150f', '#142318', '#1f3320', '#2c4628'],
+  road: ['#33281d', '#4b3c2b', '#64523a', '#7e6a4c', '#9a8462', '#b9a47e'],
+  wood: ['#1a100a', '#2a1a0f', '#3b2515', '#4f321c', '#644024', '#7a4f2d'],
+  iron: ['#16181c', '#33373f', '#5c626c', '#9aa1aa'],
+  crow: ['#0a0a10', '#1b1f2e', '#3a4b6c'],
+  cape: ['#330d0d', '#561813', '#7a241b', '#a03724', '#c75536'],
+  steel: ['#23262d', '#434852', '#6f7682', '#a9b1bd'],
+  flour: ['#c9c0b4', '#f1ebe0'],
+  meadow: ['#14200f', '#1f3014', '#2c4219', '#3b5520', '#4d6927', '#627d2f', '#7b923b', '#98a84c', '#b8bf66'],
+  stone: ['#1b1a1f', '#2a282e', '#3b383d', '#4e4a4d', '#64605f', '#7c7773', '#97918a', '#b4ada2'],
+  mint: ['#2f7a58', '#9ff5c5'],
+  skyR: ['#1a0a12', '#2b0f18', '#40141c', '#5a1a20', '#771f22', '#962a24', '#b23d2a', '#cc5a33', '#e2803f', '#f2ac58'],
+  cloudR: ['#2a1018', '#45161c', '#661e21', '#8a2a25', '#ad3f2b', '#cc5d34', '#e5843f', '#f5ac56', '#ffd583'],
+  ink: ['#0a0506', '#1c0b0d'],
+  skyN: ['#060a16', '#0a1022', '#0f1830', '#15213f', '#1c2b4f', '#25385f', '#31476f', '#41597f', '#566e90', '#7086a2'],
+  cloudN: ['#141c2e', '#1e283d', '#2b364d', '#3b4760', '#506078', '#6b7a92', '#8c9aae', '#b3bfcd', '#dfe6ee'],
+  meadowN: ['#05080a', '#0a1012', '#0f181a', '#162224', '#1f2d2e', '#2a3a38', '#38493f'],
+  lamp: ['#7a3d12', '#d98a2b', '#ffd27a', '#fff4d4'],
+  flourR: ['#6f6384', '#9a8fae', '#c9c0d2', '#f1ebea'],
+  skyV: ['#07060c', '#0e0c17', '#161324', '#1f1a31', '#2a2240', '#362b4f', '#45355e', '#58436e', '#6f567f', '#8b6f92'],
+  cloudV: ['#120f1d', '#1d182c', '#2a223c', '#3a2f4e', '#4d3e62', '#634f77', '#7e658e', '#9f82a6', '#c6a9c3'],
+  bolt: ['#2e8f5f', '#6fe39c', '#c8ffd9', '#f2fff4'],
+};
+const OFF = {}, PAL = new Uint32Array(256);
+(function () { let o = 0; for (const k in MAT) { OFF[k] = o; MAT[k].forEach((h, i) => { PAL[o + i] = (0xff000000 | (parseInt(h.slice(5, 7), 16) << 16) | (parseInt(h.slice(3, 5), 16) << 8) | parseInt(h.slice(1, 3), 16)) >>> 0; }); o += MAT[k].length; } })();
+const m = (k, v, x, y) => OFF[k] + clamp(dith(v * (MAT[k].length - 1), x, y), 0, MAT[k].length - 1);
+
+// ---------------------------------------------------------------- composition
+const HZ = 262, SUN = { x: 30, y: 196 };
+const LX = -0.62, LY = -0.5, LZ = 0.6;                     // light from the low sun, upper left
+let BASE = null, CLOUDS = null, CDEPTH = null, IDX = null, OUT32 = null;
+
+// cumulus: stacks of puffs, a flat shadowed base, lobes climbing to a mounded top
+function genCumulus(cx, baseY, width, height, seed) {
+  const rng = mulberry32(seed), puffs = [];
+  const tiers = 6;
+  for (let k = 0; k < tiers; k++) {
+    const u = k / (tiers - 1), tw = width * (1 - u * 0.62) * (0.85 + rng() * 0.2), ty = baseY - u * height * 0.82;
+    const n = Math.max(3, Math.round(tw / 9));
+    for (let i = 0; i < n; i++) {
+      const px = cx - tw / 2 + (i + 0.5) * (tw / n) + (rng() - 0.5) * 12 + u * (rng() - 0.3) * 12;
+      const big = rng() < 0.45, r = (big ? 12 + rng() * 9 : 5 + rng() * 6) * (1 - u * 0.2) * (width / 140);
+      puffs.push({ x: px, y: ty - r * 0.3 + (rng() - 0.5) * 9, r, z: k * 10 + (big ? 0 : 5) + rng() * 4, base: baseY, cx, cy: baseY - height * 0.45, cw: width * 0.55, ch: height * 0.6 });
+    }
+  }
+  return puffs;
+}
+let CRAMP = 'cloud';
+function renderClouds(defs, ramp) {
+  const WC = W + 80;
+  CRAMP = ramp || 'cloud';
+  CLOUDS = new Uint8Array(WC * HZ).fill(255); CDEPTH = new Float32Array(WC * HZ).fill(-1);
+  const puffs = [].concat(...(defs || [[250, 236, 170, 168, 11], [60, 250, 150, 74, 12], [150, 252, 110, 46, 13], [370, 244, 110, 70, 14]]).map(d => genCumulus(...d)));
+  puffs.sort((a, b) => a.z - b.z);
+  for (const p of puffs) {
+    const x0 = Math.floor(p.x - p.r * 1.15), x1 = Math.ceil(p.x + p.r * 1.15), y0 = Math.floor(p.y - p.r * 1.15), y1 = Math.min(HZ - 1, Math.ceil(p.y + p.r * 1.15));
+    for (let y = Math.max(0, y0); y <= y1; y++) for (let x = Math.max(0, x0); x <= x1 && x < WC; x++) {
+      const dx = (x - p.x) / p.r, dy = (y - p.y) / p.r, ang = Math.atan2(dy, dx);
+      const edge = 1 + (vnoise(Math.cos(ang) * 3 + p.x * 0.1, Math.sin(ang) * 3 + p.y * 0.1, 5) - 0.5) * 0.34;
+      const q = (dx * dx + dy * dy) / (edge * edge);
+      if (q > 1 || y > p.base + 2) continue;
+      if (q > 0.86 && (q - 0.86) / 0.14 > bay(x, y) && CLOUDS[y * (W + 80) + x] === 255) continue;   // soft, dithered rim
+      let nx = dx, ny = dy, nz = Math.sqrt(Math.max(0, 1 - q));
+      // blend toward the whole cloud's normal so lobes read as one mass
+      const gx = (x - p.cx) / p.cw, gy = (y - p.cy) / p.ch, gz = Math.sqrt(Math.max(0.05, 1 - gx * gx - gy * gy));
+      const gl = Math.hypot(gx, gy, gz); nx = nx * 0.38 + (gx / gl) * 0.62; ny = ny * 0.38 + (gy / gl) * 0.62; nz = nz * 0.38 + (gz / gl) * 0.62;
+      const nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
+      const lam = Math.max(0, nx * LX + ny * LY + nz * LZ);
+      let v = 0.18 + 0.82 * lam + Math.max(0, -ny) * 0.12;
+      v -= smoothBase(y, p.base) * 0.42;                   // flat, shadowed underside
+      const i = y * WC + x;
+      if (CLOUDS[i] !== 255 && q > 0.8 && p.r > 10 && nx * LX + ny * LY < 0) v -= 0.1;   // a soft crease where a big front lobe overlaps
+      CLOUDS[i] = m(CRAMP, clamp(v, 0, 1), x, y);
+      CDEPTH[i] = p.z;
+    }
+  }
+}
+const smoothBase = (y, base) => clamp((y - (base - 16)) / 16, 0, 1);
+
+function buildBase() {
+  for (let y = 0; y < HZ; y++) for (let x = 0; x < W; x++) {        // sky: deep blue down to a warm haze, glow around the sun
+    const t = y / HZ, d2 = (x - SUN.x) ** 2 + ((y - SUN.y) * 1.4) ** 2;
+    let v = 0.06 + 0.62 * Math.pow(t, 1.5) + 0.32 * Math.exp(-d2 / 2600) + 0.1 * Math.exp(-((HZ - y) ** 2) / 300);
+    BASE[y * W + x] = m('sky', clamp(v, 0, 1), x, y);
+  }
+  const hill = x => HZ - 10 + Math.sin(x * 0.03) * 4 + Math.sin(x * 0.011 + 2) * 6 + (vnoise(x * 0.08, 1, 3) - 0.5) * 5;
+  for (let x = 0; x < W; x++) for (let y = Math.ceil(hill(x)); y < HZ + 2; y++) BASE[y * W + x] = m('hills', clamp(0.75 - (y - hill(x)) * 0.05 + (x < 120 ? 0.2 : 0), 0, 1), x, y);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) {       // the wheat field, brighter toward the sun, strokes nearer
+    const dy = y - HZ;
+    let v = 0.55 + 0.35 * Math.exp(-dy / 22) + 0.2 * Math.exp(-((x - SUN.x) ** 2) / 9000) * Math.exp(-dy / 30) - dy * 0.0035;
+    v += (vnoise(x * 0.9, y * 0.18, 41) - 0.5) * clamp(dy / 60, 0, 1) * 0.35;
+    const e = ((x - 96) / 70) ** 2 + ((y - 300) / 12) ** 2;           // the round track pressed into the wheat
+    if (e < 1) v -= 0.3; else if (e < 1.3) v += 0.14;
+    BASE[y * W + x] = m('wheat', clamp(v, 0, 1), x, y);
+  }
+  const roadC = y => 168 + (H - y) * 0.05 + Math.sin((y - HZ) * 0.05) * 10, roadW = y => 2 + (y - HZ) * 0.2;
+  for (let y = HZ + 1; y < H; y++) { const c = roadC(y), w = roadW(y); for (let x = Math.floor(c - w); x <= c + w; x++) { if (x < 0 || x >= W) continue; const edge = Math.abs(x - c) > w - 1.2; let v = 0.55 - (y - HZ) * 0.001 + (x < c ? 0.12 : -0.05) + (hash2(x >> 1, y >> 1, 6) > 0.8 ? 0.12 : 0) - (edge ? 0.2 : 0); if (Math.abs(Math.abs(x - c) - w * 0.45) < 0.8 && y > 300) v -= 0.2; BASE[y * W + x] = m('road', clamp(v, 0, 1), x, y); } }
+  const rng = mulberry32(8);                                      // dark grass framing the corners
+  for (let k = 0; k < 140; k++) { const left = rng() < 0.5, x0 = left ? rng() * 90 : W - rng() * 90, hgt = 6 + rng() * 26 * (left ? 1 - x0 / 90 : 1 - (W - x0) / 90), lean = (rng() - 0.5) * 0.8; for (let j = 0; j < hgt; j++) { const x = Math.round(x0 + lean * j), y = H - 1 - j; if (x >= 0 && x < W) BASE[y * W + x] = OFF.grass + (j > hgt - 2 ? 3 : j > hgt * 0.6 ? 2 : 1); } }
+  // the flour bell by the road
+  for (let j = 0; j < 30; j++) BASE[(318 - j) * W + 214] = OFF.wood + 1;
+  for (let i = 0; i < 12; i++) BASE[289 * W + 203 + i] = OFF.wood + 2;
+  for (let j = 0; j < 7; j++) for (let i = 0; i < 5; i++) BASE[(292 + j) * W + 202 + i] = OFF.flour + ((i < 2 || j < 2) ? 1 : 0);
+  // the wooden sign
+  const sx0 = 44, sx1 = 276, sy0 = 16, sy1 = 92;
+  for (let y = sy0; y <= sy1; y++) for (let x = sx0; x <= sx1; x++) {
+    const border = x < sx0 + 3 || x > sx1 - 3 || y < sy0 + 3 || y > sy1 - 3;
+    const plank = Math.floor((y - sy0) / 19), seam = (y - sy0) % 19 === 0 && !border;
+    const grain = Math.sin(x * 0.08 + Math.sin(y * 0.5 + plank * 3) * 2 + plank * 7) * 0.5 + (vnoise(x * 0.05, y * 0.6, plank) - 0.5);
+    let v = 0.42 + grain * 0.16 + (y - sy0 < 6 ? 0.06 : 0);
+    if (border) v = x === sx0 || y === sy0 ? 0.6 : 0.12;
+    if (seam) v = 0.05;
+    BASE[y * W + x] = m('wood', clamp(v, 0, 1), x, y);
+  }
+  for (const [cx, cy] of [[sx0, sy0], [sx1 - 9, sy0], [sx0, sy1 - 9], [sx1 - 9, sy1 - 9]]) for (let j = 0; j < 10; j++) for (let i = 0; i < 10; i++) BASE[(cy + j) * W + cx + i] = OFF.iron + (i === 0 || j === 0 ? 3 : i === 9 || j === 9 ? 0 : (i - 4) ** 2 + (j - 4) ** 2 < 3 ? 3 : 1);
+  renderClouds();
+}
+
+// ---------------------------------------------------------------- sprites
+function sprite(rows, map) { const h = rows.length, w = rows[0].length, d = new Uint8Array(w * h).fill(255); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = map[rows[y][x]]; if (v !== undefined) d[y * w + x] = v; } return { w, h, d }; }
+const CROW = sprite(['......###......', '.....#####.....', '..###e####.....', '.....######....', '....#gg#####...', '....#ggg#####..', '.....##########', '......######.##', '.......####....', '.......#..#....', '......##.##....'], { '#': OFF.crow, 'e': OFF.cloud + 8, 'g': OFF.crow + 2 });
+const CROW_FLY = [sprite(['#.........#', '##.......##', '.###...###.', '..#######..', '...#####...', '....###....'], { '#': OFF.crow }), sprite(['...........', '...........', '##.#####.##', '.#########.', '...#####...', '....###....'], { '#': OFF.crow })];
+const TRAV = sprite([
+  '.....hhh......', '....hhhhh.....', '....hhhhh.....', '.....hhh......', '...ssCccss....', '..sSCcccdss...', '..sCccccdds...', '..sCccccddS...',
+  '..sCcccccds...', '...Cccccccd...', '...Cccccccd...', '...Cccccccdd..', '..CcccccccddS.', '..Cccccccccd..', '..Cccccccccd..', '.CccccccccccD.',
+  '.Ccccccccccdd.', '.ccccccccccdd.', '...ss...ss....', '...ss...ss....', '...ss...ss....', '...SS...ss....', '..kkk...kkk...'],
+  { h: OFF.steel, s: OFF.steel + 1, S: OFF.steel + 3, C: OFF.cape + 4, c: OFF.cape + 2, d: OFF.cape + 1, D: OFF.cape, k: OFF.steel });
+function stamp(s, x0, y0, flip) { for (let j = 0; j < s.h; j++) { const y = y0 + j; if (y < 0 || y >= H) continue; for (let i = 0; i < s.w; i++) { const v = s.d[j * s.w + (flip ? s.w - 1 - i : i)]; if (v === 255) continue; const x = x0 + i; if (x >= 0 && x < W) IDX[y * W + x] = v; } } }
+
+// ---------------------------------------------------------------- frame
+
+// ---------------------------------------------------------------- shared pieces for the other cards
+const DARK = new Uint8Array(256);
+(function () { const starts = Object.values(OFF).sort((a, b) => a - b); for (let i = 0; i < 256; i++) { let st = 0; for (const o of starts) if (o <= i) st = o; DARK[i] = i > st ? i - 1 : i; } })();
+function paintSky(ramp, sun, top, span, glow) {
+  for (let y = 0; y < HZ; y++) for (let x = 0; x < W; x++) {
+    const t = y / HZ, d2 = (x - sun.x) ** 2 + ((y - sun.y) * 1.4) ** 2;
+    BASE[y * W + x] = m(ramp, clamp(top + span * Math.pow(t, 1.5) + glow * Math.exp(-d2 / 2600) + 0.1 * Math.exp(-((HZ - y) ** 2) / 300), 0, 1), x, y);
+  }
+}
+function paintSign() {
+  const sx0 = 44, sx1 = 276, sy0 = 16, sy1 = 92;
+  for (let y = sy0; y <= sy1; y++) for (let x = sx0; x <= sx1; x++) {
+    const border = x < sx0 + 3 || x > sx1 - 3 || y < sy0 + 3 || y > sy1 - 3, plank = Math.floor((y - sy0) / 19), seam = (y - sy0) % 19 === 0 && !border;
+    const grain = Math.sin(x * 0.08 + Math.sin(y * 0.5 + plank * 3) * 2 + plank * 7) * 0.5 + (vnoise(x * 0.05, y * 0.6, plank) - 0.5);
+    let v = 0.42 + grain * 0.16 + (y - sy0 < 6 ? 0.06 : 0);
+    if (border) v = x === sx0 || y === sy0 ? 0.6 : 0.12;
+    if (seam) v = 0.05;
+    BASE[y * W + x] = m('wood', clamp(v, 0, 1), x, y);
+  }
+  for (const [cx, cy] of [[sx0, sy0], [sx1 - 9, sy0], [sx0, sy1 - 9], [sx1 - 9, sy1 - 9]]) for (let j = 0; j < 10; j++) for (let i = 0; i < 10; i++) BASE[(cy + j) * W + cx + i] = OFF.iron + (i === 0 || j === 0 ? 3 : i === 9 || j === 9 ? 0 : (i - 4) ** 2 + (j - 4) ** 2 < 3 ? 3 : 1);
+}
+function framingGrass(seed) {
+  const rng = mulberry32(seed);
+  for (let k = 0; k < 140; k++) { const left = rng() < 0.5, x0 = left ? rng() * 90 : W - rng() * 90, hgt = 6 + rng() * 26 * (left ? 1 - x0 / 90 : 1 - (W - x0) / 90), lean = (rng() - 0.5) * 0.8; for (let j = 0; j < hgt; j++) { const x = Math.round(x0 + lean * j), y = H - 1 - j; if (x >= 0 && x < W) BASE[y * W + x] = OFF.grass + (j > hgt - 2 ? 3 : j > hgt * 0.6 ? 2 : 1); } }
+}
+
+// ---------------------------------------------------------------- card 2: the stone that knows two words
+const FONT = { N: ['1..1', '11.1', '1.11', '1..1', '1..1'], O: ['.11.', '1..1', '1..1', '1..1', '.11.'], T: ['111', '.1.', '.1.', '.1.', '.1.'], U: ['1..1', '1..1', '1..1', '1..1', '.11.'], R: ['111.', '1..1', '111.', '1.1.', '1..1'], S: ['.111', '1...', '.11.', '...1', '111.'] };
+let STONE = null;
+function genStone() {
+  const w = 52, h = 86, poly = [[19, 0], [28, 0], [35, 4], [40, 11], [43, 22], [45, 35], [47, 50], [49, 64], [51, 78], [52, 86], [0, 86], [1, 74], [3, 60], [5, 46], [6, 31], [9, 17], [13, 6]];
+  const inside = (px, py) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) c = !c; } return c; };
+  const In = (x, y) => x >= 0 && y >= 0 && x < w && y < h && inside(x + 0.5, y + 0.5);
+  const d = new Uint8Array(w * h).fill(255);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!In(x, y)) continue;
+    let v = 0.3 + (vnoise(x * 0.15, y * 0.1, 31) - 0.5) * 0.3 + (x < 18 ? 0.12 : 0) - y * 0.0012;
+    if (!In(x - 1, y) || !In(x, y - 1)) v = 0.95; else if (!In(x - 2, y) || !In(x, y - 2)) v = 0.7;   // the low sun rims its left
+    if (!In(x + 1, y)) v = 0.05;
+    if (vnoise(x * 0.3, y * 0.3, 77) > 0.74 && y > 30) d[y * w + x] = OFF.meadow + 4 + (hash2(x, y, 2) > 0.5 ? 1 : 0);   // moss
+    else d[y * w + x] = m('stone', clamp(v, 0, 1), x, y);
+  }
+  for (const ex of [15, 29]) for (let j = 0; j < 4; j++) for (let i = 0; i < 6; i++) if (!((j === 0 || j === 3) && (i === 0 || i === 5))) d[(19 + j) * w + ex + i] = OFF.stone;
+  const carve = (txt, x0, y0) => { let cx = x0; for (const ch of txt) { const g = FONT[ch]; for (let r = 0; r < 5; r++) for (let c = 0; c < g[r].length; c++) if (g[r][c] === '1') for (let k = 0; k < 2; k++) d[(y0 + r * 2 + k) * w + cx + c * 2] = OFF.stone + 5, d[(y0 + r * 2 + k) * w + cx + c * 2 + 1] = OFF.stone + 5; cx += g[0].length * 2 + 2; } };
+  carve('NOT', 12, 36); carve('OURS', 6, 50);
+  return { w, h, d, eyes: [[17, 20], [18, 20], [31, 20], [32, 20]] };
+}
+function buildStones() {
+  paintSky('sky', SUN, 0.08, 0.6, 0.32);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) {
+    const dy = y - HZ;
+    let v = 0.5 + 0.38 * Math.exp(-dy / 20) + 0.18 * Math.exp(-((x - SUN.x) ** 2) / 9000) * Math.exp(-dy / 26) - dy * 0.003 + (vnoise(x * 0.8, y * 0.2, 42) - 0.5) * clamp(dy / 50, 0, 1) * 0.4;
+    BASE[y * W + x] = m('meadow', clamp(v, 0, 1), x, y);
+  }
+  const hill = x => HZ - 8 + Math.sin(x * 0.025 + 1) * 5 + (vnoise(x * 0.07, 2, 4) - 0.5) * 6;
+  for (let x = 0; x < W; x++) for (let y = Math.ceil(hill(x)); y < HZ + 1; y++) BASE[y * W + x] = m('hills', 0.7 - (y - hill(x)) * 0.05, x, y);
+  if (!STONE) STONE = genStone();
+  framingGrass(9);
+  paintSign();
+  renderClouds([[230, 240, 190, 150, 21], [40, 252, 140, 64, 22], [330, 246, 120, 80, 23]], 'cloud');
+}
+const PEBS = [[176, 372, 11, 7], [190, 376, 8, 6], [161, 379, 9, 6], [203, 378, 6, 5]];
+function animStones(t) {
+  const shake = G.hop > 0 && ((t * 22) | 0) & 1 ? 1 : 0, sx = 186 + shake, sy = 380 - STONE.h + 8;
+  stamp(STONE, sx, sy);
+  const open = G.hop > 0 || (t * 0.21) % 1 > 0.04;
+  for (const [ex, ey] of STONE.eyes) IDX[(sy + ey) * W + sx + ex] = open ? OFF.mint + 1 : OFF.stone;
+  PEBS.forEach(([px, py, w, h], k) => {
+    const hop = G.hop > 0 && ((G.hop * 9 + k) | 0) & 1 ? -1 : 0;
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const q = ((i - (w - 1) / 2) / (w / 2)) ** 2 + ((j - (h - 1) / 2) / (h / 2)) ** 2; if (q <= 1) IDX[(py + j + hop - h) * W + px + i] = j === 0 || q > 0.75 && i > w / 2 ? OFF.stone + 6 : OFF.stone + 2; }
+    if ((t * 0.27 + k * 0.3) % 1 > 0.05) { IDX[(py - h + 2 + hop) * W + px + 2] = OFF.mint + 1; IDX[(py - h + 2 + hop) * W + px + w - 3] = OFF.mint + 1; }
+  });
+  stamp(TRAV, 112, 352);                                           // the traveller, keeping a polite distance
+}
+
+// ---------------------------------------------------------------- card 3: Still Water under the red sun
+const RSUN = { x: 206, y: 226, r: 15 };
+const BOAT = sprite(['......h.........', '.....hhh........', '.....ssr........', '....ssss........', '.###########....', '..#########.....', '...#######......'], { h: OFF.ink, s: OFF.ink + 1, r: OFF.ink, '#': OFF.ink });
+function buildLake() {
+  paintSky('skyR', RSUN, 0.05, 0.62, 0.42);
+  for (let y = RSUN.y - RSUN.r; y <= RSUN.y + RSUN.r; y++) for (let x = RSUN.x - RSUN.r; x <= RSUN.x + RSUN.r; x++) { const d = Math.hypot(x - RSUN.x, y - RSUN.y); if (d <= RSUN.r && y < HZ) BASE[y * W + x] = OFF.cloudR + (d > RSUN.r - 1.5 ? 7 : 8); }
+  const shore = x => HZ - 6 + Math.sin(x * 0.04) * 3 + (vnoise(x * 0.1, 3, 5) - 0.5) * 6 + (x > 250 ? -(x - 250) * 0.15 : 0);
+  for (let x = 0; x < W; x++) for (let y = Math.ceil(shore(x)); y < HZ; y++) BASE[y * W + x] = OFF.ink + (y - shore(x) < 1 ? 1 : 0);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) BASE[y * W + x] = OFF.skyR + 2;
+  paintSign();
+  renderClouds([[90, 200, 160, 90, 31], [270, 196, 120, 60, 32], [180, 214, 90, 30, 33]], 'cloudR');
+}
+function animLake(t) {
+  for (let y = HZ; y < H; y++) {                                  // the lake mirrors everything above it, darker with depth
+    const sy = 2 * HZ - 1 - y, dy = y - HZ, rip = Math.round(Math.sin(y * 1.3 + t * 1.2) * (0.8 + dy * 0.05) + Math.sin(y * 0.37 - t * 0.8) * dy * 0.03);
+    const fade = clamp((dy - 30) / 70, 0, 1);                       // the reflection sinks into dark water
+    for (let x = 0; x < W; x++) { let v = sy >= 100 ? DARK[IDX[sy * W + clamp(x + rip, 0, W - 1)]] : OFF.skyR + 2; if (dy > 24) v = DARK[v]; if (fade > bay(x, y) * 0.9 + 0.05) v = OFF.skyR + (dy > 90 ? 1 : 2); IDX[y * W + x] = v; }
+  }
+  for (let y = HZ + 1; y < H; y++) {                              // the sun's path: sparse dashes
+    const w = 6 + (y - HZ) * 0.22, row = (t * 3 + y * 0.37) | 0;
+    for (let k = 0; k < 3; k++) { if (hash2(k, y, row) > 0.42) continue; const x = Math.round(RSUN.x + (hash2(k, y, row + 7) - 0.5) * 2 * w), len = 1 + Math.round(hash2(k, y, row + 3) * 4); for (let i = 0; i < len; i++) if (x + i >= 0 && x + i < W) IDX[y * W + x + i] = OFF.cloudR + 7 + (k & 1); }
+  }
+  const bx = 70, by = HZ + 52;                                    // a boat, a fisher, a line, and rings where the line meets the water
+  stamp(BOAT, bx, by - BOAT.h);
+  for (let k = 0; k <= 30; k++) { const u = k / 30; IDX[Math.round(by - 9 - u * 14 + u * u * 6) * W + Math.round(bx + 7 + u * 30)] = OFF.ink; }
+  for (let k = 0; k <= 26; k++) { const u = k / 26; IDX[Math.round(by - 9 + u * 30) * W + Math.round(bx + 37 + Math.sin(u * 3) * 2)] = OFF.ink + 1; }
+  for (let r = 0; r < 2; r++) { const age = (t * 0.45 + r * 0.5) % 1, rr = 3 + age * 22 + (G.hop > 0 ? 6 : 0); for (let a = 0; a < 6.283; a += 0.04) { const x = Math.round(bx + 39 + Math.cos(a) * rr), y = Math.round(by + 21 + Math.sin(a) * rr * 0.22); if (age < 0.85 && x >= 0 && x < W && y < H) IDX[y * W + x] = OFF.cloudR + (age < 0.4 ? 6 : 5); } }
+  for (let x = 0; x < W; x++) if (Math.sin(x * 0.5 + t) > 0.2) IDX[HZ * W + x] = OFF.cloudR + 3;   // the shoreline shimmer
+}
+
+// ---------------------------------------------------------------- card 4: a door standing alone in a field
+const MOON = { x: 58, y: 136, r: 11 };
+const COLL = sprite(['....###.........', '...#####........', '..######........', '..#####.........', '..######........', '.########.......', '##########......', '##########......', '###########.....', '##########.###..', '#########.......', '#########.......', '.########.......', '.########.......', '.#########......', '..########......', '..#########.....', '..#########.....', '..##########....', '...###..####....', '...##....##.....', '...##....###....', '..###.....##....'], { '#': OFF.meadowN });
+function inArch(x, y) { const cx = 214, r = 26, top = 214; return (x > cx - r && x < cx + r && y > top + r && y < 338) || Math.hypot(x - cx, y - (top + r)) < r; }
+function buildArch() {
+  paintSky('skyN', MOON, 0.04, 0.5, 0.42);
+  for (let y = 0; y < HZ; y++) for (let x = 0; x < W; x++) if (hash2(x, y, 4) > 0.993 && y < 200) BASE[y * W + x] = OFF.skyN + 9;
+  for (let y = MOON.y - MOON.r; y <= MOON.y + MOON.r; y++) for (let x = MOON.x - MOON.r; x <= MOON.x + MOON.r; x++) { const d = Math.hypot(x - MOON.x, y - MOON.y); if (d <= MOON.r) BASE[y * W + x] = OFF.cloudN + (d > MOON.r - 1.5 ? 7 : (vnoise(x * 0.4, y * 0.4, 6) > 0.62 ? 7 : 8)); }
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) { const dy = y - HZ; BASE[y * W + x] = m('meadowN', clamp(0.55 + 0.35 * Math.exp(-dy / 16) - dy * 0.002 + (vnoise(x * 0.8, y * 0.2, 43) - 0.5) * clamp(dy / 50, 0, 1) * 0.35, 0, 1), x, y); }
+  const hill = x => HZ - 7 + Math.sin(x * 0.03) * 4 + (vnoise(x * 0.07, 9, 4) - 0.5) * 6;
+  for (let x = 0; x < W; x++) for (let y = Math.ceil(hill(x)); y < HZ + 1; y++) BASE[y * W + x] = OFF.skyN + 3;
+  // the arch: worn blocks, moonlit on the left; through it, a golden afternoon from somewhere else
+  for (let y = 204; y < 344; y++) for (let x = 176; x < 252; x++) {
+    const outer = Math.hypot(x - 214, y - 240) < 38 || (y >= 240 && x > 176 && x < 252);
+    if (!outer) continue;
+    if (inArch(x, y)) { const t = (y - 214) / 124; BASE[y * W + x] = m('sky', clamp(0.35 + 0.55 * t, 0, 1), x, y); if (y > 300) BASE[y * W + x] = m('wheat', clamp(0.7 - (y - 300) * 0.006, 0, 1), x, y); continue; }
+    const block = ((Math.floor(y / 7) + Math.floor((x + (Math.floor(y / 7) & 1) * 4) / 9)) & 1) ? 0.08 : 0;
+    BASE[y * W + x] = m('stone', clamp(0.22 + block + (x < 200 ? 0.22 : 0) + (vnoise(x * 0.3, y * 0.3, 7) - 0.5) * 0.15, 0, 1), x, y);
+  }
+  framingGrass(17);
+  for (let k = 0; k < BASE.length; k++) { const v = BASE[k]; if (v >= OFF.grass && v < OFF.grass + 4) BASE[k] = OFF.meadowN + (v - OFF.grass); }
+  paintSign();
+  renderClouds([[230, 170, 170, 90, 41], [40, 196, 140, 60, 42], [300, 226, 120, 50, 43]], 'cloudN');
+  // a small cloud inside the doorway, lit by a sun you can't see
+  const inner = genCumulus(206, 262, 34, 22, 44);
+  for (const p of inner) for (let y = Math.floor(p.y - p.r); y <= p.y + p.r; y++) for (let x = Math.floor(p.x - p.r); x <= p.x + p.r; x++) { const q = ((x - p.x) ** 2 + (y - p.y) ** 2) / (p.r * p.r); if (q < 1 && inArch(x, y)) BASE[y * W + x] = OFF.cloud + 6 + ((x - p.x) < 0 ? 1 : 0); }
+}
+function animArch(t) {
+  const lx = 136, ly = 330, fl = 1 + Math.sin(t * 9) * 0.06 + (G.hop > 0 ? 0.3 : 0);
+  for (let y = 300; y < H; y++) for (let x = 90; x < 190; x++) {   // a small lantern pool
+    const d = Math.hypot((x - lx) * 0.9, (y - ly - 18) * 2) / fl, i = y * W + x, v = IDX[i];
+    if (d < 30 - bay(x, y) * 14 && v >= OFF.meadowN && v < OFF.meadowN + 7) IDX[i] = OFF.lamp + (d < 6 ? 2 : d < 14 ? 1 : 0);
+  }
+  stamp(COLL, lx - 14, ly - 10);
+  for (let j = 0; j < 4; j++) for (let i = 0; i < 3; i++) IDX[(ly + j) * W + lx - 1 + i] = OFF.lamp + (j === 0 ? 0 : 3);
+  for (let k = 0; k < 6; k++) { const a = (t * 0.08 + k * 0.17) % 1, x = Math.round(lx + Math.sin(t + k * 2) * 14), y = Math.round(ly + 6 - a * 44); if (a < 0.8) IDX[y * W + x] = OFF.lamp + 2; }
+  for (let k = 0; k < 4; k++) { const a = (t * 0.05 + k * 0.25) % 1; const x = Math.round(196 + k * 9 + Math.sin(t + k) * 3), y = Math.round(330 - a * 70); if (inArch(x, y)) IDX[y * W + x] = OFF.cloud + 8; }   // motes drifting out of the doorway
+}
+
+// ---------------------------------------------------------------- card 5: the flour bell burst
+function buildBell() {
+  paintSky('sky', SUN, 0.08, 0.62, 0.34);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) { const dy = y - HZ; BASE[y * W + x] = m('wheat', clamp(0.55 + 0.35 * Math.exp(-dy / 22) + 0.2 * Math.exp(-((x - SUN.x) ** 2) / 9000) * Math.exp(-dy / 30) - dy * 0.0035 + (vnoise(x * 0.9, y * 0.18, 41) - 0.5) * clamp(dy / 60, 0, 1) * 0.35, 0, 1), x, y); }
+  const hill = x => HZ - 10 + Math.sin(x * 0.03 + 2) * 4 + (vnoise(x * 0.08, 1, 3) - 0.5) * 5;
+  for (let x = 0; x < W; x++) for (let y = Math.ceil(hill(x)); y < HZ + 2; y++) BASE[y * W + x] = m('hills', clamp(0.75 - (y - hill(x)) * 0.05, 0, 1), x, y);
+  const roadC = y => 120 + (y - HZ) * 0.35, roadW = y => 2 + (y - HZ) * 0.2;
+  for (let y = HZ + 1; y < H; y++) { const c = roadC(y), w = roadW(y); for (let x = Math.floor(c - w); x <= c + w; x++) if (x >= 0 && x < W) BASE[y * W + x] = m('road', clamp(0.55 + (x < c ? 0.1 : -0.05) + (hash2(x >> 1, y >> 1, 6) > 0.8 ? 0.1 : 0), 0, 1), x, y); }
+  framingGrass(23);
+  paintSign();
+  renderClouds([[260, 236, 160, 120, 51], [50, 248, 130, 60, 52]], 'cloud');
+}
+function animBell(t) {
+  // the flour clings to something huge: a white hill on the road, patchy where it has already drunk the flour
+  const cx = 186, cy = 240, R = 64, keep = 0.4 - (G.hop > 0 ? 0.12 : 0) + Math.sin(t * 0.5) * 0.03;
+  for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++) {
+    const nx = (x - cx) / R, ny = (y - cy) / R, q = nx * nx + ny * ny;
+    if (q > 1) continue;
+    const hole = vnoise(x * 0.08, y * 0.08, 9) * 0.75 + vnoise(x * 0.22, y * 0.22, 10) * 0.25;
+    if (hole < keep + bay(x, y) * 0.08) continue;
+    const nz = Math.sqrt(1 - q), lam = Math.max(0, -nx * 0.62 - ny * 0.5 + nz * 0.6), rim = Math.pow(1 - nz, 2) * Math.max(0, -nx);
+    IDX[y * W + x] = OFF.flourR + clamp(dith((0.15 + lam * 0.75 + rim * 0.5 - (ny > 0.6 ? 0.2 : 0)) * 3, x, y), 0, 3);
+  }
+  for (let k = 0; k < 4; k++) {                                  // crows on its top, standing on what you can now half see
+    const dx = -18 + k * 12, top = Math.round(cy - Math.sqrt(R * R - dx * dx));
+    const hop = ((t * 0.4 + k * 0.37) % 3) < 0.1 || (G.hop > 0 && ((G.hop * 8 + k) | 0) & 1) ? -2 : 0;
+    stamp(CROW, cx + dx - 7, top - 10 + hop, k % 2 === 1);
+  }
+  for (let k = 0; k < 60; k++) {                                 // powder still hanging in the air
+    const a = (t * 0.07 + k * 0.0167) % 1, x = Math.round(150 + Math.sin(k * 7.3) * 70 * (0.4 + a) + t * 2 % 4), y = Math.round(290 - a * 60 + Math.sin(k) * 10);
+    if (y > 100 && y < H) IDX[y * W + x] = OFF.flourR + 2 + (k & 1);
+  }
+  for (let j = 0; j < 22; j++) IDX[(300 - j) * W + 132] = OFF.wood + 1;  // the bell: a snapped pole and an empty, torn sack
+  for (let i = 0; i < 8; i++) IDX[279 * W + 124 + i] = OFF.wood + 2;
+  for (let j = 0; j < 4; j++) IDX[(281 + j) * W + 125 + (j & 1)] = OFF.flourR + 1;
+  stamp(TRAV, 92, 360, true);                                     // the traveller, already leaving
+}
+
+// ---------------------------------------------------------------- shared for cards 6-10
+function nightGround(ramp) { for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) { const dy = y - HZ; BASE[y * W + x] = m(ramp, clamp(0.55 + 0.35 * Math.exp(-dy / 16) - dy * 0.002 + (vnoise(x * 0.8, y * 0.2, 43) - 0.5) * clamp(dy / 50, 0, 1) * 0.35, 0, 1), x, y); } }
+function grassTo(ramp) { for (let k = 0; k < BASE.length; k++) { const v = BASE[k]; if (v >= OFF.grass && v < OFF.grass + 4) BASE[k] = OFF[ramp] + (v - OFF.grass); } }
+function stars(n, ramp, top) { for (let y = 0; y < top; y++) for (let x = 0; x < W; x++) if (hash2(x, y, n) > 0.993) BASE[y * W + x] = OFF[ramp] + MAT[ramp].length - 1; }
+function disc(cx, cy, r, ramp, a, b) { for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) { const d = Math.hypot(x - cx, y - cy); if (d <= r) BASE[y * W + x] = OFF[ramp] + (d > r - 1.5 ? a : b); } }
+function ridge(y0, amp, seed, val) { const f = x => y0 + Math.sin(x * 0.03 + seed) * amp + (vnoise(x * 0.07, seed, 4) - 0.5) * amp * 1.5; for (let x = 0; x < W; x++) for (let y = Math.ceil(f(x)); y < HZ + 1; y++) BASE[y * W + x] = val; return f; }
+function line2(x0, y0, x1, y1, v) { const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1); for (let k = 0; k <= n; k++) { const x = Math.round(x0 + (x1 - x0) * k / n), y = Math.round(y0 + (y1 - y0) * k / n); if (x >= 0 && x < W && y >= 0 && y < H) IDX[y * W + x] = v; } }
+function bolt(x0, y0, x1, y1, depth, rough, rng) { if (depth === 0) return [[x0, y0], [x1, y1]]; const mx = (x0 + x1) / 2 + (rng() - 0.5) * rough, my = (y0 + y1) / 2 + (rng() - 0.5) * rough * 0.4; return bolt(x0, y0, mx, my, depth - 1, rough * 0.55, rng).concat(bolt(mx, my, x1, y1, depth - 1, rough * 0.55, rng).slice(1)); }
+function drawBolt(pts, core, glow) { for (let k = 0; k < pts.length - 1; k++) { line2(pts[k][0], pts[k][1], pts[k + 1][0], pts[k + 1][1], core); line2(pts[k][0] + 1, pts[k][1], pts[k + 1][0] + 1, pts[k + 1][1], glow); } }
+
+// ---------------------------------------------------------------- card 6: pebbles on the lakeshore at night
+const MOON2 = { x: 252, y: 146 }, SHORE = 334;
+function buildPebbleShore() {
+  paintSky('skyN', MOON2, 0.04, 0.5, 0.42); stars(61, 'skyN', 200); disc(MOON2.x, MOON2.y, 10, 'cloudN', 7, 8);
+  ridge(HZ - 6, 3, 2, OFF.skyN + 1);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) BASE[y * W + x] = y < SHORE ? OFF.skyN + 2 : m('stone', clamp(0.18 + (hash2(x >> 1, y >> 1, 7) > 0.78 ? 0.14 : 0) + (y - SHORE) * 0.002, 0, 1), x, y);
+  framingGrass(29); grassTo('meadowN'); paintSign();
+  renderClouds([[110, 196, 170, 80, 61], [300, 214, 110, 50, 62]], 'cloudN');
+}
+const SHOREPEBS = [[40, 352, 16, 11], [66, 360, 12, 8], [98, 350, 18, 12], [130, 362, 11, 8], [160, 354, 15, 10], [196, 366, 12, 8], [226, 352, 17, 11], [262, 362, 12, 8]];
+function animPebbleShore(t) {
+  for (let y = HZ; y < SHORE; y++) { const sy = 2 * HZ - 1 - y, rip = Math.round(Math.sin(y * 1.4 + t * 1.2) * (0.6 + (y - HZ) * 0.04)); for (let x = 0; x < W; x++) { let v = sy >= 100 ? DARK[IDX[sy * W + clamp(x + rip, 0, W - 1)]] : OFF.skyN + 2; if (y - HZ > 30 && bay(x, y) < (y - HZ - 30) / 50) v = OFF.skyN + 2; IDX[y * W + x] = v; } }
+  for (let y = HZ + 1; y < SHORE; y++) { const w = 3 + (y - HZ) * 0.15, row = (t * 3 + y * 0.37) | 0; for (let k = 0; k < 2; k++) { if (hash2(k, y, row) > 0.45) continue; const x = Math.round(MOON2.x + (hash2(k, y, row + 7) - 0.5) * 2 * w); for (let i = 0; i < 3; i++) if (x + i < W) IDX[y * W + x + i] = OFF.cloudN + 7; } }
+  for (let x = 0; x < W; x++) if (Math.sin(x * 0.4 + t * 2) > 0.3) IDX[(SHORE - 1 + Math.round(Math.sin(t * 1.3 + x * 0.05))) * W + x] = OFF.cloudN + 6;
+  SHOREPEBS.forEach(([px, py, w, h], k) => {
+    const hop = (G.hop > 0 && ((G.hop * 9 + k) | 0) & 1) || ((t * 0.5 + k * 0.7) % 9) < 0.15 ? -1 : 0;
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const q = ((i - (w - 1) / 2) / (w / 2)) ** 2 + ((j - (h - 1) / 2) / (h / 2)) ** 2; if (q <= 1) IDX[(py + j + hop - h) * W + px + i] = j < 2 && q > 0.5 ? OFF.cloudN + 6 : q > 0.75 && i > w / 2 ? OFF.stone + 3 : OFF.stone + 1; }
+    if ((t * 0.27 + k * 0.31) % 1 > 0.05) { const ey = py - h + Math.floor(h * 0.4) + hop, e1 = px + Math.floor(w / 2) - 3; for (const ex of [e1, e1 + 1, e1 + 5, e1 + 6]) IDX[ey * W + ex] = OFF.mint + 1; }
+  });
+}
+
+// ---------------------------------------------------------------- card 7: something blinks in behind a knight
+const HUNT = sprite(['.....##.....', '....####....', '...######...', '...##..##...', '...######...', '..########..', '.##########.', '##.######.##', '#..######..#', '#..######..#', '...######...', '..########..', '..########..', '..########..', '.##########.', '.##########.', '.##########.', '############', '############', '#.##.##.##.#'], { '#': OFF.skyV });
+function buildBlink() {
+  paintSky('skyV', { x: 230, y: 220 }, 0.05, 0.55, 0.32);
+  ridge(HZ - 8, 4, 5, OFF.skyV + 2); nightGround('meadowN'); framingGrass(31); grassTo('meadowN'); paintSign();
+  renderClouds([[120, 200, 220, 110, 71], [300, 220, 120, 70, 72]], 'cloudV');
+}
+function animBlink(t) {
+  const cyc = (t % 6) / 6, blink = G.hop > 0 ? 1 - G.hop / 1.2 : cyc;          // it fades in, holds, flickers out
+  const alpha = blink < 0.4 ? blink / 0.4 : blink < 0.8 ? 1 : (1 - blink) / 0.2;
+  if (cyc > 0.82 && cyc < 0.86) { const rng = mulberry32((t / 6) | 0); drawBolt(bolt(60 + rng() * 200, 120, 60 + rng() * 200, HZ - 6, 5, 40, rng), OFF.bolt + 3, OFF.bolt + 1); }
+  const hx = 174, hy = 300, S2 = 3;
+  for (let j = 0; j < HUNT.h * S2; j++) for (let i = 0; i < HUNT.w * S2; i++) { const v = HUNT.d[((j / S2) | 0) * HUNT.w + ((i / S2) | 0)]; if (v !== 255 && alpha > bay(i + ((t * 10) | 0), j)) IDX[(hy - HUNT.h * S2 + j) * W + hx + i] = v; }
+  if (alpha > 0.5) { IDX[(hy - HUNT.h * S2 + 11) * W + hx + 13] = OFF.bolt + 2; IDX[(hy - HUNT.h * S2 + 11) * W + hx + 21] = OFF.bolt + 2; line2(hx + 33, hy - 30, hx + 52, hy - 70, OFF.bolt + 1); }
+  stamp(TRAV, 128, 338);
+  if (alpha > 0.6) for (let j = 0; j < 3; j++) IDX[(338 + j) * W + 133] = OFF.steel + 3;   // his hair, going grey
+}
+
+// ---------------------------------------------------------------- card 8: two castles that look the same
+const CAST = sprite(['.............#..............', '............###.............', '............###.............', '...#.#......###......#.#....', '...###.....#####.....###....', '...#w#.....##w##.....#w#....', '...###..#.######.#...###....', '..#####.###.####.###.#####..', '..##w##.#w#.#ww#.#w#.##w##..', '..##########################', '.###########gggg###########.', '.###########gggg###########.', '############gggg############'], { '#': OFF.hills, 'w': OFF.lamp + 1, 'g': OFF.ink });
+function buildCastles() {
+  paintSky('sky', SUN, 0.08, 0.62, 0.34);
+  ridge(HZ - 12, 5, 7, OFF.hills + 2);
+  for (const cx of [90, 232]) { for (let y = 236; y < HZ + 2; y++) for (let x = cx - 52; x <= cx + 52; x++) if (x >= 0 && x < W && y > 236 + ((x - cx) / 52) ** 2 * 26) BASE[y * W + x] = m('hills', clamp(0.5 - (y - 236) * 0.01, 0, 1), x, y); for (let j = 0; j < CAST.h; j++) for (let i = 0; i < CAST.w; i++) { const v = CAST.d[j * CAST.w + i]; if (v !== 255) BASE[(226 + j) * W + cx - 14 + i] = v; } }
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) { const dy = y - HZ; BASE[y * W + x] = m('meadow', clamp(0.5 + 0.38 * Math.exp(-dy / 20) + 0.18 * Math.exp(-((x - SUN.x) ** 2) / 9000) * Math.exp(-dy / 26) - dy * 0.003 + (vnoise(x * 0.8, y * 0.2, 42) - 0.5) * clamp(dy / 50, 0, 1) * 0.4, 0, 1), x, y); }
+  framingGrass(37); paintSign();
+  renderClouds([[160, 196, 200, 100, 81], [20, 214, 110, 60, 82]], 'cloud');
+}
+function animCastles(t) {
+  const look = G.hop > 0 ? 1 : (t % 7) < 0.5 ? 1 : 0;          // the right one is not a castle: its gate breathes, a window looks back
+  const gx = 232 - 14 + 12, gy = 226 + 10, open = Math.round((Math.sin(t * 0.9) * 0.5 + 0.5) * 2);
+  for (let j = 0; j < 3; j++) for (let i = -open; i < 4 + open; i++) IDX[(gy + j) * W + gx + i] = OFF.ink;
+  const ex = 232 - 14 + 13, ey = 226 + 5;
+  IDX[ey * W + ex] = look ? OFF.mint + 1 : OFF.lamp + 1; IDX[ey * W + ex + 1] = look ? OFF.mint + 1 : OFF.hills;
+  stamp(TRAV, 150, 330);
+}
+
+// ---------------------------------------------------------------- card 9: the eastern kingdom's welcome feast
+function buildFeast() {
+  paintSky('skyN', { x: 170, y: 250 }, 0.04, 0.42, 0.2);
+  stars(91, 'skyN', 180);
+  const rng = mulberry32(5);
+  for (let x = 0; x < W; x++) {                                   // a city of towers and domes along the horizon, every window lit
+    const h = 14 + Math.round(vnoise(x * 0.09, 1, 9) * 18) + (x % 23 < 3 ? 14 : 0) + (Math.abs(x - 170) < 10 ? 22 - Math.abs(x - 170) : 0);
+    for (let y = HZ - h; y < HZ + 2; y++) BASE[y * W + x] = OFF.skyN + 1;
+  }
+  for (let k = 0; k < 260; k++) { const x = Math.floor(rng() * W), y = HZ - 3 - Math.floor(rng() * 26); if (BASE[y * W + x] === OFF.skyN + 1) BASE[y * W + x] = OFF.lamp + (rng() < 0.3 ? 2 : 1); }
+  nightGround('meadowN');
+  for (let y = HZ + 1; y < H; y++) { const c = 170 + (y - HZ) * 0.1, w = 1.5 + (y - HZ) * 0.18; for (let x = Math.floor(c - w); x <= c + w; x++) BASE[y * W + x] = m('road', 0.2 + (hash2(x >> 1, y >> 1, 3) > 0.8 ? 0.1 : 0), x, y); if (y % 14 === 0) { BASE[y * W + Math.round(c - w - 4)] = OFF.lamp + 2; BASE[y * W + Math.round(c + w + 4)] = OFF.lamp + 2; } }
+  framingGrass(41); grassTo('meadowN'); paintSign();
+  renderClouds([[60, 186, 140, 60, 91], [280, 196, 130, 70, 92]], 'cloudN');
+}
+function animFeast(t) {
+  for (let f = 0; f < 3; f++) {                                   // fireworks over the city, a welcome too warm
+    const ph = (t * 0.35 + f * 0.33) % 1, cx = 90 + f * 70 + Math.sin(f * 4) * 20, cy = 130 + f * 18, col = f === 1 ? OFF.mint : OFF.lamp;
+    if (ph < 0.25) { const y = Math.round(HZ - (HZ - cy) * (ph / 0.25)); IDX[y * W + Math.round(cx)] = col + 1; }
+    else for (let k = 0; k < 18; k++) { const a = k * 0.349, r = (ph - 0.25) * 60, x = Math.round(cx + Math.cos(a) * r), y = Math.round(cy + Math.sin(a) * r + (ph - 0.25) * 20); if (ph < 0.9 && y > 96 && y < HZ && x >= 0 && x < W) IDX[y * W + x] = col + (ph < 0.6 ? 1 : 0); }
+  }
+  stamp(TRAV, 160, 344);
+}
+
+// ---------------------------------------------------------------- card 10: green lightning over a mountain no map shows
+function buildSummit() {
+  paintSky('skyV', { x: 160, y: 118 }, 0.05, 0.52, 0.5);
+  for (let y = 112; y < HZ + 1; y++) { const k = (y - 112) / (HZ - 112), hw = 1.5 + k * 34 + k * k * 70; for (let x = Math.round(160 - hw); x <= 160 + hw; x++) if (x >= 0 && x < W) BASE[y * W + x] = m('skyV', clamp(0.36 + k * 0.1 + (Math.abs(Math.abs(x - 160) - hw) < 1.2 && y < 170 ? 0.3 : 0), 0, 1), x, y); }
+  ridge(HZ - 5, 3, 9, OFF.skyV + 1); nightGround('meadowN'); framingGrass(43); grassTo('meadowN'); paintSign();
+  renderClouds([[50, 214, 150, 70, 101], [290, 206, 130, 80, 102]], 'cloudV');
+}
+function animSummit(t) {
+  const rng = mulberry32(((t * 3) | 0) + (G.hop > 0 ? 99 : 0));
+  for (let r = 0; r < 8; r++) for (let a = 0; a < 6.283; a += 0.05) { const x = Math.round(160 + Math.cos(a) * r * 1.6), y = Math.round(118 + Math.sin(a) * r); if (bay(x, y) < 1 - r / 8) IDX[y * W + x] = OFF.bolt + (r < 3 ? 3 : r < 6 ? 2 : 0); }
+  for (let k = 0; k < (G.hop > 0 ? 4 : 2); k++) if (rng() < 0.6) { const a = -Math.PI / 2 + (rng() - 0.5) * 2.6; drawBolt(bolt(160, 118, 160 + Math.cos(a) * 60, 118 + Math.sin(a) * 40 + 10, 4, 18, rng), OFF.bolt + 3, OFF.bolt + 1); }
+  stamp(TRAV, 150, 350);
+}
+
+// ---------------------------------------------------------------- card 11: the crows go quiet
+function buildFence() {
+  paintSky('sky', SUN, 0.1, 0.6, 0.36);
+  ridge(HZ - 10, 4, 3, OFF.hills + 2);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) { const dy = y - HZ; let v = 0.55 + 0.35 * Math.exp(-dy / 22) - dy * 0.0035 + (vnoise(x * 0.9, y * 0.18, 41) - 0.5) * clamp(dy / 60, 0, 1) * 0.35; const e = Math.abs(x - (230 - (y - HZ) * 0.6)) - (4 + (y - HZ) * 0.22); if (e < 0) v -= 0.3; else if (e < 2) v += 0.15; BASE[y * W + x] = m('wheat', clamp(v, 0, 1), x, y); }
+  for (let k = 0; k < 7; k++) { const px = 14 + k * 30, top = 296 - k * 2; for (let j = top; j < 340 - k * 3; j++) for (let i = 0; i < 3; i++) BASE[j * W + px + i] = OFF.wood + (i === 0 ? 3 : 1); }
+  for (const yy of [304, 318]) for (let x = 14; x < 200; x++) BASE[Math.round(yy - (x - 14) * 0.07) * W + x] = OFF.wood + 2;
+  framingGrass(53); paintSign();
+  renderClouds([[230, 220, 180, 120, 111], [40, 240, 120, 50, 112]], 'cloud');
+}
+function animFence(t) {
+  const quiet = G.hop > 0 || (t % 8) > 5;
+  for (let k = 0; k < 6; k++) { const px = 14 + k * 30, top = 296 - k * 2, hop = !quiet && ((t * 0.5 + k * 0.4) % 2) < 0.15 ? -2 : 0; stamp(CROW, px - 6, top - 10 + hop, quiet); }
+  stamp(TRAV, 120, 352);
+}
+
+// ---------------------------------------------------------------- card 12: stone folk at the mill
+function buildMill() {
+  paintSky('sky', SUN, 0.1, 0.6, 0.36);
+  ridge(HZ - 8, 4, 8, OFF.hills + 2);
+  for (let y = HZ; y < H; y++) for (let x = 0; x < W; x++) { const dy = y - HZ; BASE[y * W + x] = m('meadow', clamp(0.5 + 0.38 * Math.exp(-dy / 20) - dy * 0.003 + (vnoise(x * 0.8, y * 0.2, 42) - 0.5) * clamp(dy / 50, 0, 1) * 0.4, 0, 1), x, y); }
+  if (!STONE) STONE = genStone();
+  framingGrass(59); paintSign();
+  renderClouds([[200, 214, 220, 120, 121], [20, 236, 110, 50, 122]], 'cloud');
+}
+function animMill(t) {
+  const g = Math.round(Math.sin(t * 2.2) * 2) + (G.hop > 0 ? 3 : 0);
+  stamp(STONE, 96 - g, 380 - STONE.h + 6); stamp(STONE, 172 + g, 380 - STONE.h + 6);
+  for (const ox of [96 - g, 172 + g]) for (const [ex, ey] of STONE.eyes) IDX[(380 - STONE.h + 6 + ey) * W + ox + ex] = OFF.mint + 1;
+  for (let k = 0; k < 50; k++) { const a = (t * 0.12 + k * 0.02) % 1, x = Math.round(160 + Math.sin(k * 5.1 + t * 0.7) * 30 * (0.3 + a)), y = Math.round(320 - a * 120); if (y > 100) IDX[y * W + x] = OFF.flourR + 2 + (k & 1); }
+  for (let j = 0; j < 8; j++) for (let i = -6; i <= 6; i++) if (Math.abs(i) < 8 - j) IDX[(372 - j) * W + 160 + i] = OFF.flourR + (j > 4 ? 3 : 2);   // the little heap they've made
+}
+
+// ---------------------------------------------------------------- card 13: a knight on the wall, counting
+function buildWall() {
+  paintSky('skyN', MOON2, 0.04, 0.5, 0.42); stars(131, 'skyN', 210); disc(MOON2.x, MOON2.y, 10, 'cloudN', 7, 8);
+  ridge(HZ - 10, 6, 4, OFF.skyN + 1); nightGround('meadowN');
+  for (let y = 300; y < H; y++) for (let x = 0; x < W; x++) BASE[y * W + x] = m('stone', clamp(0.16 + (((Math.floor(y / 8) + Math.floor((x + (Math.floor(y / 8) & 1) * 6) / 12)) & 1) ? 0.06 : 0) + (y === 300 ? 0.3 : 0), 0, 1), x, y);
+  for (let x = 0; x < W; x += 24) for (let y = 288; y < 300; y++) for (let i = 0; i < 14; i++) if (x + i < W) BASE[y * W + x + i] = m('stone', y === 288 ? 0.4 : 0.2, x + i, y);
+  paintSign();
+  renderClouds([[90, 200, 170, 70, 131], [300, 220, 110, 50, 132]], 'cloudN');
+}
+function animWall(t) {
+  stamp(TRAV, 150, 266);
+  const hx = 70, hy = HZ - 6, a = G.hop > 0 ? 1 : 0.35 + Math.sin(t * 0.7) * 0.15;   // far off on the ridge, something tall stands and waits
+  for (let j = 0; j < HUNT.h; j++) for (let i = 0; i < HUNT.w; i++) { const v = HUNT.d[j * HUNT.w + i]; if (v !== 255 && a > bay(i, j + ((t * 6) | 0))) IDX[(hy - HUNT.h + j) * W + hx + i] = OFF.skyN; }
+  if (a > 0.4) { IDX[(hy - HUNT.h + 3) * W + hx + 4] = OFF.bolt + 2; IDX[(hy - HUNT.h + 3) * W + hx + 7] = OFF.bolt + 2; }
+}
+
+// ---------------------------------------------------------------- the deck
+const CARDS = [
+  { tip: 'If the road smells of warm bread and nothing\u2019s on it, get uphill. It\u2019s slow uphill.', build: () => buildBase(), field: 'wheat', anim: t => animCrows(t) },
+  { tip: 'If a standing stone stares at you, apologise. It knows two words, and it\u2019s tired of saying them.', build: () => buildStones(), field: 'meadow', anim: t => animStones(t) },
+  { tip: 'If the fish offers a wish, say it word for word. When it asks for your last one, cut the line.', build: () => buildLake(), field: null, anim: t => animLake(t) },
+  { tip: 'If you find a door standing alone in a field, look through it. Don\u2019t walk through it. The Library isn\u2019t there anymore.', build: () => buildArch(), field: 'meadowN', anim: t => animArch(t) },
+  { tip: 'If a flour bell bursts and nobody\u2019s near it, don\u2019t stay to see what\u2019s there.', build: () => buildBell(), field: 'wheat', anim: t => animBell(t) },
+  { tip: 'If the pebbles on a lakeshore blink at you, don\u2019t skip them across the water. They remember.', build: () => buildPebbleShore(), field: null, night: true, anim: t => animPebbleShore(t) },
+  { tip: 'If a knight goes grey in the middle of a sentence, step away. Something just blinked in.', build: () => buildBlink(), field: 'meadowN', night: true, anim: t => animBlink(t) },
+  { tip: 'Every castle in the Reach is built different. If two look the same, one of them isn\u2019t a castle.', build: () => buildCastles(), field: 'meadow', anim: t => animCastles(t) },
+  { tip: 'If a kingdom throws you a feast the night you arrive, count the exits before the second course.', build: () => buildFeast(), field: 'meadowN', night: true, anim: t => animFeast(t) },
+  { tip: 'If you see green lightning over a mountain no map shows, don\u2019t read any scroll near it.', build: () => buildSummit(), field: 'meadowN', night: true, anim: t => animSummit(t) },
+  { tip: 'If the crows on a fence all go quiet at once, watch the road, not the sky.', build: () => buildFence(), field: 'wheat', anim: t => animFence(t) },
+  { tip: 'Stone folk will mill your grain for free. Never ask what they do with the flour.', build: () => buildMill(), field: 'meadow', anim: t => animMill(t) },
+  { tip: 'Knights of the Order don\u2019t celebrate birthdays. Ask one why, and he\u2019ll tell you how many years he has left.', build: () => buildWall(), field: null, night: true, anim: t => animWall(t) },
+];
+const CACHE = [];
+function useCard(i) {
+  G.card = i;
+  if (!CACHE[i]) { BASE = new Uint8Array(W * H); CARDS[i].build(); CACHE[i] = { base: BASE, clouds: CLOUDS }; }
+  BASE = CACHE[i].base; CLOUDS = CACHE[i].clouds;
+}
+const G = { t: 0, hop: 0, card: 0 };
+function init() { IDX = new Uint8Array(W * H); useCard(0); }
+function update(dt) { G.t += dt; if (G.hop > 0) G.hop -= dt; }
+function render(t) {
+  IDX.set(BASE);
+  const drift = Math.floor(t * 0.6) % 80, WC = W + 80;            // clouds drift a pixel at a time
+  for (let y = 0; y < HZ; y++) for (let x = 0; x < W; x++) {
+    const v = CLOUDS[y * WC + ((x + drift) % WC)];
+    if (v !== 255) IDX[y * W + x] = v;
+  }
+  const fr = CARDS[G.card].field;
+  if (fr) for (let y = HZ + 6; y < H; y++) for (let x = 0; x < W; x++) {   // wind walking over the field
+    const i = y * W + x, v = IDX[i] - OFF[fr];
+    if (v < 0 || v > 7) continue;
+    if (Math.sin(x * 0.05 + (y - HZ) * 0.16 - t * 1.6 + vnoise(x * 0.02, y * 0.05, 3) * 3) > 0.62) IDX[i] = OFF[fr] + v + 1;
+  }
+  if (G.card !== 2 && !CARDS[G.card].night && G.card !== 3) for (let k = 0; k < 9; k++) {                                   // far birds
+    const x = ((t * (4 + (k % 3)) + k * 47) % (W + 40)) - 20, y = 120 + (k * 23) % 70 + Math.sin(t + k) * 2;
+    IDX[Math.round(y) * W + Math.round(x)] = OFF.cloud + 8; if (((t * 5 + k) | 0) & 1) IDX[Math.round(y - 1) * W + Math.round(x - 1)] = OFF.cloud + 7;
+  }
+  CARDS[G.card].anim(t);
+  for (let i = 0, n = W * H; i < n; i++) OUT32[i] = PAL[IDX[i]];
+}
+function animCrows(t) {
+  // crows standing on nothing, in an arc over the road
+  [[108, 214], [126, 207], [146, 204], [166, 206], [184, 212]].forEach(([x, y], k) => {
+    const hop = (G.hop > 0 && ((G.hop * 8 + k) | 0) & 1) || ((t * 0.4 + k * 0.37) % 3) < 0.1 ? -2 : 0;
+    stamp(CROW, x - 7, y - 10 + hop, k % 2 === 1);
+  });
+  const a = t * 0.6, fx = 146 + Math.cos(a) * 70, fy = 178 + Math.sin(a) * 10;
+  stamp(CROW_FLY[((t * 6) | 0) & 1], Math.round(fx) - 5, Math.round(fy) - 3);
+  // the traveller looking up, cape moving
+  stamp(TRAV, 160, 338);
+  for (let j = 14; j < 18; j++) if (Math.sin(t * 3 + j) > 0.3) IDX[(338 + j) * W + 160 + 13] = OFF.cape + 1;
+}
+
+// ---------------------------------------------------------------- DOM
+function boot() {
+  const $ = id => document.getElementById(id);
+  init();
+  const canvas = $('c'), ctx = canvas.getContext('2d', { alpha: false }), stage = $('stage'), wrap = $('wrap');
+  const IMG = ctx.createImageData(W, H); OUT32 = new Uint32Array(IMG.data.buffer);
+  function resize() {
+    const sc = Math.min(wrap.clientWidth / W, wrap.clientHeight / H);
+    stage.style.width = Math.floor(W * sc) + 'px'; stage.style.height = Math.floor(H * sc) + 'px';
+    document.documentElement.style.setProperty('--px', sc + 'px');
+  }
+  window.addEventListener('resize', resize); resize();
+  const show = i => { useCard(((i % CARDS.length) + CARDS.length) % CARDS.length); $('tip').textContent = CARDS[G.card].tip; $('count').textContent = (G.card + 1) + ' / ' + CARDS.length; };
+  stage.addEventListener('click', e => { if (e.target.closest && e.target.closest('button')) return; G.hop = 1.2; });
+  $('prev').addEventListener('click', () => show(G.card - 1)); $('next').addEventListener('click', () => show(G.card + 1));
+  window.addEventListener('keydown', e => { if (e.code === 'ArrowRight') show(G.card + 1); else if (e.code === 'ArrowLeft') show(G.card - 1); });
+  let sx = null; stage.addEventListener('pointerdown', e => { sx = e.clientX; }); stage.addEventListener('pointerup', e => { if (sx !== null && Math.abs(e.clientX - sx) > 40) show(G.card + (e.clientX < sx ? 1 : -1)); sx = null; });
+  show(0);
+  let last = 0;
+  function frame(ts) { const now = ts / 1000; let dt = last ? now - last : 1 / 60; last = now; update(clamp(dt, 0, 0.1)); render(G.t); ctx.putImageData(IMG, 0, 0); requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
+}
+if (IS_BROWSER) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot(); }
+else if (typeof module !== 'undefined') module.exports = { init, update, render, useCard, G, W, H, setOut(b) { OUT32 = b; } };
+})();
