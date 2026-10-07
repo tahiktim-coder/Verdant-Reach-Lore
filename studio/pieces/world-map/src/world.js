@@ -104,21 +104,21 @@ const DATA = {
   // bulge, the estuary bight of the eastern river, a south-east bay and cape, the hooked gulf, two fjords
   // under the alps, the ria of the Reach river and a western bulge.
   coast: [
-    [0.066, 0.202], [0.092, 0.178], [0.118, 0.160], [0.136, 0.128], [0.168, 0.118], [0.200, 0.090],
-    [0.238, 0.094], [0.262, 0.120], [0.300, 0.108], [0.332, 0.124],
-    [0.346, 0.156], [0.364, 0.184], [0.400, 0.196], [0.432, 0.182], [0.452, 0.148], [0.456, 0.110],   // the north bay
-    [0.472, 0.088], [0.505, 0.082], [0.540, 0.096], [0.572, 0.118], [0.605, 0.106], [0.632, 0.078],
-    [0.672, 0.088], [0.705, 0.112], [0.738, 0.090], [0.770, 0.108], [0.790, 0.128], [0.812, 0.104],
+    [0.062, 0.190], [0.088, 0.160], [0.116, 0.140], [0.138, 0.116], [0.168, 0.108], [0.200, 0.086],
+    [0.238, 0.090], [0.262, 0.112], [0.300, 0.100], [0.332, 0.112],
+    [0.350, 0.130], [0.372, 0.146], [0.402, 0.150], [0.430, 0.140], [0.448, 0.122], [0.458, 0.102],   // the north bay: shallow, so the cold strip runs on past it (was 0.196 deep: the high arc stood in the sea)
+    [0.472, 0.088], [0.505, 0.082], [0.540, 0.094], [0.572, 0.104], [0.605, 0.098], [0.632, 0.078],
+    [0.672, 0.086], [0.705, 0.098], [0.738, 0.088], [0.770, 0.096], [0.790, 0.104], [0.812, 0.094],
     [0.838, 0.096], [0.858, 0.110], [0.878, 0.138], [0.894, 0.170], [0.906, 0.204], [0.918, 0.232],   // north coast, cut north-east corner
     [0.944, 0.254], [0.960, 0.284], [0.968, 0.318], [0.964, 0.362], [0.952, 0.402], [0.942, 0.436],   // the battlefield bulge
-    [0.916, 0.460], [0.884, 0.486], [0.858, 0.518], [0.846, 0.552], [0.860, 0.586], [0.890, 0.614],
-    [0.924, 0.640], [0.954, 0.668],                                                                   // the estuary bight
+    [0.916, 0.460], [0.888, 0.482], [0.864, 0.506], [0.844, 0.528], [0.826, 0.548], [0.836, 0.568], [0.862, 0.592], [0.892, 0.616],
+    [0.924, 0.640], [0.954, 0.668],                                                                   // the estuary bight (polish 2: cut deeper)
     [0.962, 0.708], [0.952, 0.748], [0.934, 0.780], [0.904, 0.800], [0.882, 0.826], [0.886, 0.856],
     [0.912, 0.872], [0.938, 0.880], [0.952, 0.898], [0.940, 0.914], [0.915, 0.920],                   // south-east bay and cape
     [0.885, 0.910], [0.862, 0.926], [0.842, 0.952], [0.815, 0.968], [0.790, 0.958], [0.772, 0.934],
     [0.740, 0.926], [0.708, 0.932], [0.680, 0.950], [0.650, 0.968], [0.620, 0.958],                   // south coast: a cape, a shallow bay
-    [0.606, 0.928], [0.598, 0.902], [0.584, 0.882], [0.560, 0.866], [0.530, 0.856], [0.500, 0.850],
-    [0.476, 0.856], [0.472, 0.874], [0.492, 0.890], [0.514, 0.900], [0.524, 0.918], [0.508, 0.940], [0.482, 0.962],   // the gulf: hooked, its head bent toward the swamp
+    [0.614, 0.930], [0.606, 0.904], [0.594, 0.884], [0.566, 0.866], [0.530, 0.856], [0.500, 0.850],
+    [0.476, 0.856], [0.472, 0.874], [0.488, 0.888], [0.500, 0.902], [0.506, 0.922], [0.496, 0.942], [0.478, 0.962],   // the gulf: hooked, its head bent toward the swamp (polish 2: wider channel)
     [0.444, 0.950], [0.404, 0.934], [0.370, 0.956], [0.328, 0.948], [0.300, 0.966], [0.286, 0.940],
     [0.268, 0.964], [0.232, 0.954], [0.220, 0.936], [0.206, 0.928], [0.192, 0.938], [0.176, 0.962],   // the south fjord at u 0.206
     [0.130, 0.954], [0.092, 0.966], [0.056, 0.958], [0.040, 0.925],                                   // south-west cape
@@ -126,18 +126,38 @@ const DATA = {
     [0.064, 0.786],                                                                                   // the west fjord at v 0.807
     [0.072, 0.762], [0.052, 0.730], [0.058, 0.690], [0.072, 0.666], [0.104, 0.654], [0.134, 0.642],
     [0.122, 0.626], [0.092, 0.618], [0.064, 0.612],                                                   // the ria of the Reach river
-    [0.058, 0.582], [0.056, 0.540], [0.064, 0.505], [0.066, 0.492], [0.084, 0.474], [0.088, 0.458],
-    [0.072, 0.444], [0.054, 0.428], [0.040, 0.400], [0.036, 0.365], [0.048, 0.335], [0.050, 0.292],
+    [0.058, 0.582], [0.056, 0.540], [0.064, 0.505], [0.066, 0.492], [0.068, 0.476], [0.066, 0.462],
+    [0.056, 0.446], [0.046, 0.430], [0.038, 0.400], [0.036, 0.365], [0.048, 0.335], [0.050, 0.292],   // polish 2: the bay pulled back west, so Still Water's outflow runs a short way to the sea
     [0.060, 0.250], [0.054, 0.220]                                                                    // west coast: the bay of Still Water's outflow, a cape
   ],
   coastWarp: 0.06,                              // how far a slow second warp pushes the whole outline about
   islets: [                                     // [u, v, radius, stretch, axis in degrees]: offshore rocks and a few real islands
-    [0.955, 0.150, 0.020, 1.6, 60], [0.930, 0.556, 0.016, 1.5, 100], [0.020, 0.648, 0.015, 1.7, 80], [0.398, 0.126, 0.012, 1.3, 20],
+    // polish 2: the three big islands are built from overlapping pieces, so they are ragged, not ovals
+    [0.948, 0.138, 0.013, 1.5, 30], [0.963, 0.161, 0.010, 1.2, 120], [0.941, 0.163, 0.006], [0.972, 0.142, 0.005],
+    [0.924, 0.547, 0.010, 1.6, 125], [0.937, 0.565, 0.009, 1.2, 60], [0.918, 0.568, 0.005],
+    [0.022, 0.638, 0.010, 1.5, 70], [0.015, 0.659, 0.008, 1.3, 140], [0.031, 0.657, 0.005],
+    [0.400, 0.116, 0.011, 1.3, 20],
     [0.560, 0.066, 0.007], [0.586, 0.058, 0.004], [0.982, 0.468, 0.006], [0.026, 0.890, 0.007], [0.402, 0.980, 0.006],
     [0.215, 0.062, 0.005], [0.572, 0.972, 0.008], [0.972, 0.800, 0.005]
   ],
-  artifactIsles: [                              // [du, dv, radius] offsets from the place 'artifact_isles'
-    [-0.025, 0.006, 0.013], [0.006, -0.013, 0.010], [0.033, -0.036, 0.008], [0.021, 0.019, 0.011], [0.047, -0.002, 0.006]
+  artifactIsles: [                              // [du, dv, radius, stretch, axis] offsets from the place 'artifact_isles'
+    // polish 3: five different isles: one big one with a cove (see inlets), a long one, a round one, two rocks (they were five ovals)
+    [-0.022, 0.006, 0.015, 1.7, 15], [0.012, -0.017, 0.008, 2.6, 150], [0.036, -0.036, 0.0045], [0.028, 0.022, 0.0075, 1.3, 70], [0.052, 0.002, 0.0035]
+  ],
+  // polish 3: narrow inlets cut into the coast and sharp rocky capes (the outline read as round drippy lobes). Points run from
+  // the mouth (out at sea) to the head of an inlet, or from the root (on land) to the tip of a cape; w = half width at the
+  // mouth or root, narrowing to nothing. at = the points are offsets from that place.
+  inlets: [
+    { w: 0.0075, pts: [[0.698, 0.990], [0.700, 0.944], [0.692, 0.904], [0.683, 0.884]] },
+    { w: 0.0070, pts: [[0.995, 0.750], [0.948, 0.758], [0.922, 0.768], [0.902, 0.772]] },
+    { w: 0.0065, pts: [[0.352, 0.995], [0.350, 0.954], [0.340, 0.928], [0.333, 0.914]] },
+    { w: 0.0055, at: 'artifact_isles', pts: [[-0.018, 0.034], [-0.020, 0.018], [-0.023, 0.007]] }   // the pirates' cove
+  ],
+  capes: [
+    // (capes that point south read as drips in the tilted view: only east and west pointing ones)
+    { w: 0.011, pts: [[0.924, 0.893], [0.950, 0.903], [0.974, 0.914]] },
+    { w: 0.009, pts: [[0.952, 0.322], [0.968, 0.318], [0.986, 0.311]] },
+    { w: 0.008, pts: [[0.060, 0.700], [0.042, 0.704], [0.026, 0.712]] }
   ],
 
   // Mountain crest lines. h = height of the tallest summit, w = half width, sag = how far saddles dip (0..1),
@@ -147,20 +167,22 @@ const DATA = {
   // through are the passes below; debug_topdown.js checks it). steep = the steeper side: 'N' 'S' 'E' 'W', or 'L' / 'R' of the direction the
   // points run (for a bent line). kind 'hill' = a line of low hills.
   ranges: [
-    // the Great Northern Ranges: five separate arcs of different length, height and strike, never one wall
-    { key: 'range_west', name: 'western arc', kind: 'belt', h: 0.76, w: 0.044, sag: 0.50, peaks: 8, t0: 0.03, t1: 0.20, col: 0.47, steep: 'S',
+    // the Great Northern Ranges: five separate arcs of different length, height and strike, never one wall.
+    // peaks: few, broad summits per arc (polish round 1 cut 8/9/6/9 to 4/5/4/5: the many summits drew a picket of spikes)
+    { key: 'range_west', name: 'western arc', kind: 'belt', h: 0.76, w: 0.044, sag: 0.50, peaks: 4, t0: 0.03, t1: 0.20, col: 0.47, steep: 'S',
       pts: [[0.040, 0.240], [0.085, 0.224], [0.140, 0.210], [0.200, 0.226], [0.255, 0.262], [0.305, 0.305]] },
-    { key: 'range_high', name: 'high arc', kind: 'belt', h: 0.95, w: 0.052, sag: 0.42, peaks: 9, t0: 0.18, t1: 0.08, col: 0.50, steep: 'N',
+    { key: 'range_high', name: 'high arc', kind: 'belt', h: 0.95, w: 0.052, sag: 0.42, peaks: 5, t0: 0.18, t1: 0.08, col: 0.50, steep: 'N',
       pts: [[0.268, 0.198], [0.315, 0.212], [0.365, 0.245], [0.415, 0.285], [0.455, 0.305], [0.500, 0.300]] },
-    { key: 'range_mid', name: 'middle arc', kind: 'belt', h: 0.80, w: 0.038, sag: 0.50, peaks: 6, t0: 0.03, t1: 0.12, col: 0.47, steep: 'S',
+    { key: 'range_mid', name: 'middle arc', kind: 'belt', h: 0.80, w: 0.038, sag: 0.50, peaks: 4, t0: 0.03, t1: 0.12, col: 0.47, steep: 'S',
       pts: [[0.470, 0.292], [0.515, 0.262], [0.560, 0.232], [0.602, 0.222], [0.636, 0.244]] },
-    { key: 'range_east', name: 'eastern arc', kind: 'belt', h: 0.70, w: 0.040, sag: 0.50, peaks: 9, t0: 0.07, t1: 0.03, col: 0.45, steep: 'S',
+    { key: 'range_east', name: 'eastern arc', kind: 'belt', h: 0.70, w: 0.040, sag: 0.50, peaks: 5, t0: 0.07, t1: 0.03, col: 0.45, steep: 'S',
       pts: [[0.688, 0.226], [0.735, 0.255], [0.785, 0.282], [0.835, 0.270], [0.880, 0.244], [0.925, 0.236], [0.975, 0.250]] },
     { key: 'range_fareast', name: 'far eastern knot', kind: 'belt', h: 0.62, w: 0.026, sag: 0.45, peaks: 3, t0: 0.03, t1: 0.30, col: 0.42,
       pts: [[0.828, 0.262], [0.848, 0.226], [0.878, 0.204]] },
     // the spur at u 0.12: one horseshoe that cradles Still Water, open to the south-west; its top lies on the western arc
-    { key: 'spur_stillwater', name: 'the Still Water cirque', kind: 'spur', h: 0.62, w: 0.028, sag: 0.40, peaks: 9, t0: 0.15, t1: 0.12, steep: 'R',
-      pts: [[0.100, 0.404], [0.108, 0.350], [0.114, 0.290], [0.132, 0.230], [0.170, 0.226], [0.186, 0.268], [0.178, 0.320], [0.170, 0.365], [0.160, 0.410], [0.150, 0.446]] },
+    // polish 3: its eastern arm ends sooner (it ran on to v 0.446 and took the band of the Starbloom Fields)
+    { key: 'spur_stillwater', name: 'the Still Water cirque', kind: 'spur', h: 0.62, w: 0.028, sag: 0.40, peaks: 9, t0: 0.15, t1: 0.18, steep: 'R',
+      pts: [[0.100, 0.400], [0.108, 0.350], [0.114, 0.290], [0.132, 0.230], [0.170, 0.226], [0.186, 0.268], [0.178, 0.318], [0.170, 0.360], [0.162, 0.396], [0.155, 0.422]] },
     // the spur at u 0.56: one bent ridge on the eastern side; the Reach side has detached knolls (see knolls)
     { key: 'spur_border', name: 'border hills', kind: 'spur', h: 0.46, w: 0.030, sag: 0.50, peaks: 6, t0: 0.03, t1: 0.40, steep: 'W',
       pts: [[0.598, 0.226], [0.612, 0.290], [0.598, 0.345], [0.618, 0.410]] },
@@ -169,12 +191,13 @@ const DATA = {
       pts: [[0.090, 0.790], [0.140, 0.752], [0.195, 0.742], [0.245, 0.770], [0.290, 0.752], [0.340, 0.790]] },
     { key: 'alp_north', name: 'north spur of the alps', kind: 'alpine', h: 0.70, w: 0.030, sag: 0.40, peaks: 3, t0: 0.03, t1: 0.35,
       pts: [[0.196, 0.744], [0.190, 0.722], [0.178, 0.700]] },
-    { key: 'alp_west', name: 'western alps', kind: 'alpine', h: 0.80, w: 0.034, sag: 0.40, peaks: 4, t0: 0.20, t1: 0.20,
-      pts: [[0.085, 0.866], [0.128, 0.846], [0.172, 0.852]] },
+    // polish 2: the western alps run from under the divide south-west toward the cape, so the valleys open to the coast (it read as a crater ring)
+    { key: 'alp_west', name: 'western alps', kind: 'alpine', h: 0.78, w: 0.032, sag: 0.40, peaks: 4, t0: 0.20, t1: 0.30,
+      pts: [[0.124, 0.856], [0.104, 0.884], [0.082, 0.914]] },
     { key: 'alp_mid', name: 'middle alps', kind: 'alpine', h: 0.86, w: 0.036, sag: 0.40, peaks: 3, t0: 0.03, t1: 0.25,
       pts: [[0.243, 0.778], [0.236, 0.812], [0.222, 0.840]] },
-    { key: 'alp_east', name: 'eastern alps', kind: 'alpine', h: 0.78, w: 0.034, sag: 0.42, peaks: 6, t0: 0.03, t1: 0.25,
-      pts: [[0.336, 0.800], [0.356, 0.840], [0.368, 0.885], [0.356, 0.925]] },
+    { key: 'alp_east', name: 'eastern alps', kind: 'alpine', h: 0.78, w: 0.034, sag: 0.42, peaks: 5, t0: 0.03, t1: 0.40,
+      pts: [[0.336, 0.800], [0.354, 0.838], [0.362, 0.878]] },
     // low hills that give the lowland its structure: watersheds, downs, foothill knots
     { key: 'hills_reach_n', name: 'northern downs', kind: 'hill', h: 0.38, w: 0.026, sag: 0.45, peaks: 4, t0: 0.25, t1: 0.25,
       pts: [[0.372, 0.420], [0.394, 0.456], [0.384, 0.500]] },
@@ -237,10 +260,10 @@ const DATA = {
   // Lakes: a centre line and a half width (one number, or one per point). level = surface height; without
   // it the lake sits on the valley floor. steep = how fast the shore rises.
   lakes: [
-    { key: 'still_water', name: 'Still Water', rank: 'major', hw: [0.008, 0.012, 0.010, 0.013, 0.007], steep: 0.6, level: 0.262,
+    { key: 'still_water', name: 'Still Water', rank: 'major', hw: [0.012, 0.017, 0.015, 0.016, 0.010], steep: 0.6, level: 0.262,
       pts: [[0.153, 0.298], [0.141, 0.328], [0.144, 0.362], [0.132, 0.392], [0.127, 0.415]],
       note: 'location open in the bible; inside the Reach here is the layout spec\'s choice; the Kolobok proposal wants it within walking distance of the wheat country' },
-    { key: 'alpine_lake_west', name: 'alpine lake', hw: [0.005, 0.009, 0.011, 0.006], steep: 0.5, pts: [[0.146, 0.806], [0.160, 0.796], [0.176, 0.800], [0.186, 0.809]] },
+    { key: 'alpine_lake_west', name: 'alpine lake', hw: [0.007, 0.011, 0.011, 0.007], steep: 0.5, pts: [[0.148, 0.803], [0.161, 0.799], [0.176, 0.801], [0.187, 0.806]] },   // polish 2: straighter and fuller (the crescent read as an arch)
     { key: 'alpine_lake_valley', name: 'alpine lake', hw: [0.005, 0.009, 0.008, 0.005], steep: 0.5, pts: [[0.296, 0.826], [0.286, 0.838], [0.284, 0.852], [0.290, 0.864]] },
     { key: 'alpine_tarn', name: 'alpine tarn', hw: [0.007, 0.008], steep: 0.8, pts: [[0.214, 0.786], [0.224, 0.792]] }
   ],
@@ -264,7 +287,7 @@ const DATA = {
     { key: 'reach_river', name: 'the Reach river', src: 0.318, w: 0.020, meander: 0.011,
       pts: [[0.348, 0.296], [0.331, 0.326], [0.302, 0.366, 0.270], [0.290, 0.408], [0.258, 0.440], [0.236, 0.482], [0.206, 0.512], [0.196, 0.566],
         [0.160, 0.612], [0.118, 0.636], [0.060, 0.640], [0.012, 0.644]] },
-    { key: 'border_river', name: 'the border river', src: 0.42, w: 0.020, meander: 0.012,
+    { key: 'border_river', name: 'the border river', src: 0.42, w: 0.020, meander: 0.021, wave: 0.085,   // polish 3: more meander (it read as a ruled border)
       pts: [[0.585, 0.255], [0.566, 0.300], [0.578, 0.350], [0.556, 0.405], [0.572, 0.455, 0.243], [0.598, 0.505], [0.590, 0.560], [0.558, 0.615],
         [0.572, 0.665], [0.606, 0.720], [0.592, 0.775, 0.226], [0.562, 0.822], [0.548, 0.868], [0.550, 0.915]] },
     { key: 'east_river', name: "the eastern kingdom's river", src: 0.42, w: 0.018, meander: 0.010, calm: 'eastern_city',
@@ -277,7 +300,7 @@ const DATA = {
     { key: 'storm_stream_e', name: 'storm valley stream', src: 0.44, w: 0.018, meander: 0.005, wave: 0.06, minor: true,
       pts: [[0.833, 0.249], [0.808, 0.240], [0.784, 0.216], [0.790, 0.176], [0.776, 0.146], [0.790, 0.118], [0.788, 0.050]] },
     { key: 'lake_west_outflow', name: 'alpine lake outflow', src: 0.315, w: 0.010, meander: 0.002, wave: 0.04, minor: true,
-      pts: [[0.186, 0.809], [0.176, 0.800], [0.160, 0.796], [0.146, 0.806, 0.310], [0.132, 0.812], [0.114, 0.806], [0.092, 0.808], [0.020, 0.806]] },
+      pts: [[0.187, 0.806], [0.176, 0.801], [0.161, 0.799], [0.148, 0.803, 0.310], [0.132, 0.812], [0.114, 0.806], [0.092, 0.808], [0.020, 0.806]] },
     { key: 'tarn_stream', name: 'tarn stream', src: 0.44, w: 0.010, meander: 0.004, wave: 0.05, minor: true,
       pts: [[0.214, 0.786], [0.223, 0.793, 0.435], [0.214, 0.822], [0.216, 0.852], [0.200, 0.884], [0.208, 0.915], [0.206, 0.940], [0.204, 0.995]] },
     { key: 'reach_stream_n', name: 'stream from the high arc', src: 0.40, w: 0.012, meander: 0.006, wave: 0.07, minor: true, into: 'reach_river',
@@ -309,7 +332,9 @@ const DATA = {
   // Flat or special ground. Edges are feathered and warped by noise.
   // The wheat country: an outline (clockwise). It is always cut off at the west bank of "river"; its level
   // follows that river's bed, "above" higher, so the plain is flat and still drains into the river.
-  wheat: { river: 'border_river', above: 0.008, fieldSize: 0.028,
+  // bank = how far the plain keeps off the river (it starts at the first number, full at the second; polish 3: a green strip, so
+  // the river no longer reads as the outline of the wheat)
+  wheat: { river: 'border_river', above: 0.008, fieldSize: 0.028, bank: [0.014, 0.032],
     poly: [[0.424, 0.470], [0.468, 0.452], [0.520, 0.460], [0.566, 0.474], [0.612, 0.520], [0.612, 0.730], [0.596, 0.782], [0.540, 0.796],
       [0.492, 0.780], [0.440, 0.790], [0.412, 0.762], [0.420, 0.716], [0.400, 0.672], [0.412, 0.626], [0.394, 0.580], [0.408, 0.530]] },
   // The Silent Battlefield flats: an outline as offsets [du, dv] from the place 'silent_battlefield'.
@@ -369,7 +394,7 @@ const DATA = {
     { key: 'wheat_country', name: 'the wheat country', u: 0.480, v: 0.620, type: 'area', rank: 'major', r: 0.080 },
     { key: 'green_valleys', name: 'the green valleys', u: 0.215, v: 0.820, type: 'area', rank: 'major', r: 0.140 },
     { key: 'cavern_of_giants', name: 'Cavern of Giants', u: 0.300, v: 0.800, type: 'cavern', rank: 'minor' },
-    { key: 'toad_swamp', name: "the toad's swamp", u: 0.440, v: 0.860, type: 'swamp', rank: 'minor', r: 0.045, note: 'name not locked (06-places, 12-archive)' },
+    { key: 'toad_swamp', name: 'Toad Swamp', u: 0.440, v: 0.860, type: 'swamp', rank: 'minor', r: 0.045, note: 'name not locked (06-places, 12-archive); spec v1 calls it Toad Swamp' },
     { key: 'eastern_city', name: 'city of towers and domes', u: 0.740, v: 0.500, type: 'city', rank: 'major', r: 0.022, clear: 0.024, note: 'every window lit; unnamed in the lore' },
     { key: 'fire_dragon_peaks', name: 'Fire-Dragon Peaks', u: 0.720, v: 0.800, type: 'volcano', rank: 'major', r: 0.060,
       note: 'faint ember glow; name coined for the map, not in the lore' },
@@ -383,7 +408,10 @@ const DATA = {
     { key: 'wreckage_2', name: 'old wreckage', u: 0.938, v: 0.306, type: 'wreckage', rank: 'minor' },
     { key: 'wreckage_3', name: 'old wreckage', u: 0.884, v: 0.352, type: 'wreckage', rank: 'minor' },
     { key: 'artifact_isles', name: 'Artifact Isles', u: 0.930, v: 0.960, type: 'isles', rank: 'major', r: 0.045,
-      note: 'pirates; name coined for the map, not in the lore (the kingdom has no official name yet)' }
+      note: 'pirates; name coined for the map, not in the lore (the kingdom has no official name yet)' },
+    // polish 3: two small towers so the Mage Kingdoms read as lived in (studio proposal, not placed in the lore)
+    { key: 'mage_tower_1', name: 'mage tower', u: 0.668, v: 0.842, type: 'mage_tower', rank: 'minor', variant: 0, note: 'studio proposal' },
+    { key: 'mage_tower_2', name: 'mage tower', u: 0.806, v: 0.878, type: 'mage_tower', rank: 'minor', variant: 1, note: 'studio proposal' }
   ],
 
   // Roads. A point is [u, v] or the key of a place (the road then follows that place if it moves).
@@ -416,7 +444,7 @@ const DATA = {
     { key: 'wheat_country', text: 'the wheat country', rank: 'minor', du: 0, dv: 0, extentU: 0.110, extentV: 0.018, poi: 'wheat_country' },
     { key: 'green_valleys', text: 'the green valleys', rank: 'minor', du: -0.015, dv: 0.110, extentU: 0.120, extentV: 0.018, poi: 'green_valleys' },
     { key: 'cavern_of_giants', text: 'Cavern of Giants', rank: 'minor', du: 0.018, dv: -0.020, extentU: 0.090, extentV: 0.018, poi: 'cavern_of_giants' },
-    { key: 'toad_swamp', text: "the toad's swamp", rank: 'minor', du: -0.010, dv: 0.025, extentU: 0.090, extentV: 0.018, poi: 'toad_swamp' },
+    { key: 'toad_swamp', text: 'Toad Swamp', rank: 'minor', du: -0.010, dv: 0.025, extentU: 0.090, extentV: 0.018, poi: 'toad_swamp' },
     { key: 'mountain_path', text: 'the mountain path', rank: 'minor', du: -0.055, dv: 0.046, extentU: 0.100, extentV: 0.018, poi: 'mountain_path' },
     { key: 'fire_dragon_peaks', text: 'Fire-Dragon Peaks', rank: 'minor', du: 0, dv: 0.062, extentU: 0.100, extentV: 0.018, poi: 'fire_dragon_peaks' },
     { key: 'buried_machine', text: 'Mount of the Buried Machine', rank: 'minor', du: -0.040, dv: 0.050, extentU: 0.150, extentV: 0.018, poi: 'buried_machine' },
@@ -435,7 +463,7 @@ const REGIONS = [
   { id: 6, key: 'reach_interior', name: 'The Verdant Reach', kind: 'land', realm: 'reach' },
   { id: 7, key: 'wheat_country', name: 'the wheat country', kind: 'plain', realm: 'reach' },
   { id: 8, key: 'green_valleys', name: 'the green valleys', kind: 'alpine', realm: 'reach' },
-  { id: 9, key: 'toad_swamp', name: "the toad's swamp", kind: 'swamp', realm: 'reach' },
+  { id: 9, key: 'toad_swamp', name: 'Toad Swamp', kind: 'swamp', realm: 'reach' },
   { id: 10, key: 'eastern_kingdom', name: 'The Eastern Kingdom', kind: 'land', realm: 'east' },
   { id: 11, key: 'mage_kingdoms', name: 'The Mage Kingdoms of the South', kind: 'land', realm: 'south' },
   { id: 12, key: 'silent_battlefield', name: 'The Silent Battlefield', kind: 'waste', realm: 'waste' },
@@ -589,7 +617,7 @@ const LSH = new Float32Array(NN);                                // on the groun
 const LAKES = [], RIVERS = [], RANGES = [], PEAKS = [], ROADS = [], STATS = {}, MEAS = [], RLINES = [];
 const PLACE = {};                                                // every place of the data block, by key
 for (const p of DATA.castles.concat(DATA.pois)) PLACE[p.key] = p;
-const ISLES = DATA.artifactIsles.map(I => [PLACE.artifact_isles.u + I[0], PLACE.artifact_isles.v + I[1], I[2]]);
+const ISLES = DATA.artifactIsles.map(I => [PLACE.artifact_isles.u + I[0], PLACE.artifact_isles.v + I[1], I[2], I[3], I[4]]);
 const BATTLE_POLY = DATA.battlefield.poly.map(p => [PLACE.silent_battlefield.u + p[0], PLACE.silent_battlefield.v + p[1]]);
 
 // Smooth noise is sampled on every second cell and read back with bilinear filtering (four times cheaper).
@@ -673,6 +701,7 @@ function coastCells(grid, qx, qy, bx, by, hx, hy) {
     if (near > 0) {
       const rag = 0.3 + 1.5 * smooth(0.36, 0.64, vnoise(u * 3.7 + 1.1, v * 3.7 + 5.2, S + 9));   // 0.3 = a smooth shore .. 1.8 = a ragged one
       sd += (fbm(u * 14 + 2.2, v * 14 + 8.8, S + 3, 3) - 0.5) * 0.050 * rag * near;
+      sd += (0.36 - ridged(u * 44 + 3.1, v * 44 + 7.7, S + 13)) * 0.011 * near;   // polish 3: sharp little notches and points: a rocky shore, not lobes
     }
     coast[c] = sd;
   }
@@ -684,8 +713,34 @@ function addIslet(iu, iv, ir, stretch, axis) {
   for (let q = 0; q < tot; q++) {
     const i = i0 + q % bw, j = j0 + ((q / bw) | 0), c = j * N + i, u = (i + 0.5) / N, v = (j + 0.5) / N;
     const du = u - iu, dv = v - iv, x = (du * ca + dv * sn) / sa, y = (dv * ca - du * sn) * sa;
-    const d = ir * (0.62 + 0.76 * fbm(u * f, v * f, S + 4, 2)) - Math.sqrt(x * x + y * y);
+    // polish 2: ragged, not oval: the main body plus two lobes set off to the sides, all with a rough edge
+    const rough = ir * (0.55 + 0.9 * fbm(u * f * 1.7, v * f * 1.7, S + 4, 3));
+    const a1 = hash2(iu * 1000 | 0, iv * 1000 | 0, S + 31) * 6.283, a2 = a1 + 2.2 + hash2(iu * 1000 | 0, iv * 1000 | 0, S + 32) * 1.6;
+    const l1 = Math.hypot(x - Math.cos(a1) * ir * 0.75, y - Math.sin(a1) * ir * 0.75), l2 = Math.hypot(x - Math.cos(a2) * ir * 0.6, y - Math.sin(a2) * ir * 0.6);
+    const d = Math.max(rough - Math.sqrt(x * x + y * y), rough * 0.62 - l1, rough * 0.5 - l2);
     if (d > coast[c]) coast[c] = d;
+  }
+}
+// polish 3: an inlet (sign -1) or a cape (sign +1) along a polyline; its half width narrows from w at the first point to 0 at
+// the last, with a little rock noise on the sides so it is not a ruled wedge
+function cutLine(L, sign) {
+  const P = L.at ? L.pts.map(p => [PLACE[L.at].u + p[0], PLACE[L.at].v + p[1]]) : L.pts, n = P.length;
+  const lens = [0];
+  for (let k = 1; k < n; k++) lens.push(lens[k - 1] + Math.hypot(P[k][0] - P[k - 1][0], P[k][1] - P[k - 1][1]));
+  const tot = lens[n - 1], b = bbox(P, L.w + 0.01);
+  setBox(b[0], b[1], b[2], b[3]);
+  const i0 = BOX[0], j0 = BOX[1], bw = BOX[2], cnt = BOX[3];
+  for (let q = 0; q < cnt; q++) {
+    const i = i0 + q % bw, j = j0 + ((q / bw) | 0), c = j * N + i, u = (i + 0.5) / N, v = (j + 0.5) / N;
+    let best = 9, at = 0;
+    for (let k = 0; k < n - 1; k++) {
+      const ax = P[k][0], ay = P[k][1], ex = P[k + 1][0] - ax, ey = P[k + 1][1] - ay, el = ex * ex + ey * ey;
+      const t = clamp(((u - ax) * ex + (v - ay) * ey) / el, 0, 1), d = Math.hypot(u - ax - ex * t, v - ay - ey * t);
+      if (d < best) { best = d; at = (lens[k] + t * Math.sqrt(el)) / tot; }
+    }
+    const wt = L.w * Math.pow(1 - at, sign < 0 ? 0.8 : 0.45) * (0.75 + 0.5 * vnoise(u * 260, v * 260, S + 91));   // a cape stays broad and ends blunt
+    if (sign < 0) { const e = best - wt; if (e < coast[c]) coast[c] = e; }
+    else { const e = wt - best; if (e > coast[c]) coast[c] = e; }
   }
 }
 function openSea() {                           // water the open sea cannot reach becomes low land (no stray inland seas)
@@ -706,7 +761,9 @@ function buildCoast() {
   coastGrid(grid);
   slowWarp(qx, qy, bx, by);
   coastCells(grid, qx, qy, bx, by, fbmField(22, 5.5, 1.5, S + 5, 1, 0.036), fbmField(22, 9.5, 4.5, S + 6, 1, 0.036));
+  for (const L of DATA.capes) cutLine(L, 1);
   for (const I of DATA.islets.concat(ISLES)) addIslet(I[0], I[1], I[2], I[3], I[4]);
+  for (const L of DATA.inlets) cutLine(L, -1);
   for (let k = 0; k < 2 * N; k++) {                                       // the map edge is always sea
     const e = k < N ? 0 : 1, t = k % N;
     coast[e * N + t] = Math.min(coast[e * N + t], -0.004); coast[(N - 1 - e) * N + t] = Math.min(coast[(N - 1 - e) * N + t], -0.004);
@@ -819,7 +876,7 @@ function lowland(rowU, rowBed) {
     let ww = 0, wbt = 0;
     if (i >= wb[0] && i <= wb[1] && j >= wb[2] && j <= wb[3]) {
       ww = smooth(-0.016, 0.016, polySD(WP, wn, u2, v2));
-      if (ww > 0) ww *= smooth(0.004, 0.020, rowU[j] - u);                // the plain stops at the west bank of its river
+      if (ww > 0) ww *= smooth(Wd.bank[0], Wd.bank[1], rowU[j] - u);      // the plain stops short of the west bank of its river
     }
     if (i >= bb[0] && i <= bb[1] && j >= bb[2] && j <= bb[3]) wbt = smooth(-0.014, 0.014, polySD(BP, bn, u2, v2));
     const ws = 1 - smooth(sr * 0.55, sr, Math.sqrt((u2 - su) * (u2 - su) + (v2 - sv) * (v2 - sv)));

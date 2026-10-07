@@ -1,0 +1,602 @@
+{
+ "clashes": [],
+ "labels": {
+  "verdant_reach": {
+   "text": "THE VERDANT REACH",
+   "river": 0.0984,
+   "peak": 0.0,
+   "wrong": 0.0008,
+   "contrast": 6.5116,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "how": "arc",
+   "track": 0.14,
+   "shape": 0.46,
+   "angle": 5.0,
+   "total": 1.079,
+   "audit": {
+    "river_px": 248,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     386,
+     911,
+     1080,
+     1014
+    ]
+   }
+  },
+  "eastern_kingdom": {
+   "text": "THE EASTERN KINGDOM",
+   "river": 0.0698,
+   "peak": 0.0,
+   "wrong": 0.0017,
+   "contrast": 18.6609,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0612,
+   "how": "arc",
+   "track": 0.03,
+   "shape": 1.786,
+   "angle": -8.0,
+   "total": 7.388,
+   "audit": {
+    "river_px": 200,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1053,
+     817,
+     1662,
+     949
+    ]
+   }
+  },
+  "mage_kingdoms": {
+   "text": "THE MAGE KINGDOMS",
+   "river": 0.0356,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 15.4079,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "how": "arc",
+   "track": 0.06,
+   "shape": 0.065,
+   "angle": 10.0,
+   "total": 1.06,
+   "audit": {
+    "river_px": 42,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1173,
+     1453,
+     1631,
+     1563
+    ]
+   }
+  },
+  "northern_lands": {
+   "text": "THE NORTHERN LANDS",
+   "river": 0.0716,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 3.1899,
+   "steep": 0.0031,
+   "near": 0.0,
+   "outside": 0.0473,
+   "how": "arc",
+   "track": 0.08,
+   "shape": 0.434,
+   "angle": 0.0,
+   "total": 3.918,
+   "audit": {
+    "river_px": 160,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     887,
+     512,
+     1494,
+     587
+    ]
+   }
+  },
+  "unknown_sea": {
+   "text": "THE UNKNOWN SEA",
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 32.929,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "how": "arc",
+   "track": 0.3,
+   "shape": 1.665,
+   "angle": -3.0,
+   "total": 1.665,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 1.0,
+    "box": [
+     354,
+     193,
+     1186,
+     284
+    ]
+   }
+  },
+  "western_sea": {
+   "text": "the Western Sea",
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 31.1147,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "how": "arc",
+   "track": 0.2,
+   "shape": 1.269,
+   "angle": -89.0,
+   "total": 1.269,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 1.0,
+    "box": [
+     167,
+     583,
+     230,
+     1047
+    ]
+   }
+  },
+  "eastern_sea": {
+   "text": "the Eastern Sea",
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 30.5982,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "how": "arc",
+   "track": 0.2,
+   "shape": 0.902,
+   "angle": -85.0,
+   "total": 0.902,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 1.0,
+    "box": [
+     1758,
+     883,
+     1847,
+     1329
+    ]
+   }
+  },
+  "castle_order": {
+   "text": "Castle of the Order",
+   "where": "above",
+   "cost": 0.867,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 5.9698,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     607,
+     1096,
+     882,
+     1128
+    ]
+   }
+  },
+  "colossal_spires": {
+   "text": "Colossal Spires",
+   "where": "below-right",
+   "cost": 0.621,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 13.5502,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     763,
+     1031,
+     976,
+     1071
+    ]
+   }
+  },
+  "stone_hands": {
+   "text": "Stone Hands",
+   "where": "below",
+   "cost": 5.834,
+   "river": 0.0146,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 26.6024,
+   "steep": 0.0,
+   "near": 1.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     787,
+     890,
+     972,
+     921
+    ]
+   }
+  },
+  "cavern_of_giants": {
+   "text": "Cavern of Giants",
+   "where": "above",
+   "cost": 1.715,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 41.6188,
+   "steep": 0.1489,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     599,
+     1376,
+     842,
+     1408
+    ]
+   }
+  },
+  "eastern_city": {
+   "text": "the eastern city",
+   "where": "below",
+   "cost": 4.237,
+   "river": 0.0088,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 0.6991,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1292,
+     1012,
+     1475,
+     1049
+    ]
+   }
+  },
+  "starbloom_fields": {
+   "text": "Starbloom Fields",
+   "where": "above-right",
+   "cost": 6.213,
+   "river": 0.0391,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 7.212,
+   "steep": 0.0503,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 24,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     709,
+     747,
+     950,
+     779
+    ]
+   }
+  },
+  "toad_swamp": {
+   "text": "Toad Swamp",
+   "where": "left",
+   "cost": 1.557,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 32.8299,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     686,
+     1490,
+     873,
+     1530
+    ]
+   }
+  },
+  "fire_dragon_peaks": {
+   "text": "Fire-Dragon Peaks",
+   "where": "-88,-72",
+   "cost": 0.127,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 0.0519,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1077,
+     1336,
+     1341,
+     1376
+    ]
+   }
+  },
+  "buried_machine": {
+   "text": "Mount of the Buried Machine",
+   "where": "+2,-78/2 lines",
+   "cost": 0.359,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 10.3371,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1384,
+     1225,
+     1614,
+     1292
+    ]
+   }
+  },
+  "artifact_isles": {
+   "text": "Artifact Isles",
+   "where": "-90,+22",
+   "cost": 0.498,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 24.2064,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 1.0,
+    "box": [
+     1629,
+     1762,
+     1815,
+     1793
+    ]
+   }
+  },
+  "mountain_path": {
+   "text": "the mountain path",
+   "where": "-64,+24",
+   "cost": 0.323,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 11.3432,
+   "steep": 0.0721,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     495,
+     621,
+     762,
+     661
+    ]
+   }
+  },
+  "east_gap": {
+   "text": "the low gap",
+   "where": "+90,-14",
+   "cost": 0.277,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 1.5107,
+   "steep": 0.189,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1223,
+     593,
+     1389,
+     633
+    ]
+   }
+  },
+  "still_water": {
+   "text": "Still Water",
+   "river": 0.0054,
+   "peak": 0.0,
+   "wrong": 0.1131,
+   "contrast": 6.9265,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "dy": -6,
+   "dx": 3,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.918,
+    "box": [
+     450,
+     684,
+     498,
+     856
+    ]
+   }
+  },
+  "border_river": {
+   "text": "the border river",
+   "river": 0.0431,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 2.8964,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.0,
+   "s0": 396,
+   "side": 1,
+   "turn": 2.78,
+   "audit": {
+    "river_px": 22,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     1027,
+     1073,
+     1100,
+     1283
+    ]
+   }
+  },
+  "silent_battlefield": {
+   "text": "Silent Battlefield",
+   "where": "-48,-64",
+   "cost": 5.825,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0467,
+   "contrast": 44.0291,
+   "steep": 0.0339,
+   "near": 0.0,
+   "outside": 0.5093,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.054,
+    "box": [
+     1379,
+     676,
+     1620,
+     707
+    ]
+   }
+  },
+  "forest_of_eyes": {
+   "text": "Forest of Eyes",
+   "where": "-2,-18",
+   "cost": 1.807,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 38.3351,
+   "steep": 0.0,
+   "near": 1.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     402,
+     963,
+     599,
+     1003
+    ]
+   }
+  },
+  "wheat_country": {
+   "text": "the wheat country",
+   "where": "-82,+118",
+   "cost": 3.268,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 19.5694,
+   "steep": 0.0,
+   "near": 0.0,
+   "outside": 0.5406,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     728,
+     1262,
+     1012,
+     1302
+    ]
+   }
+  },
+  "green_valleys": {
+   "text": "the green valleys",
+   "where": "-6,-134",
+   "cost": 0.876,
+   "river": 0.0,
+   "peak": 0.0,
+   "wrong": 0.0,
+   "contrast": 3.7182,
+   "steep": 0.0014,
+   "near": 0.0,
+   "outside": 0.0,
+   "audit": {
+    "river_px": 0,
+    "summit_px": 0,
+    "on_water": 0.0,
+    "box": [
+     438,
+     1311,
+     695,
+     1352
+    ]
+   }
+  }
+ }
+}

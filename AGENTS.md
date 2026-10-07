@@ -17,8 +17,9 @@ Reach Studio game project built inside it. Read this file first, then the files 
 | `studio/.claude/skills/pixel-scenes/` | The house art method (code-rendered pixel art) with finished examples. |
 | `studio/art/` | Art direction, the technique library, the quality rubric, and headless renders of every piece under `frames/`. |
 | `studio/engine/EXTRACTION-MAP.md` | What the pieces share and what to extract into the engine first. |
-| `studio/pieces/world-map/` | The world map in progress: finished world data (`src/world.js`) and three candidate looks. Not finished. |
-| `maps/` | An early map draft that Farhad rejected. Kept only as a record of what not to do. |
+| `studio/pieces/world-atlas/` | The world map: a 2048 px shaded-relief atlas (eroded terrain, painted relief, names layer). Its README says how to rebuild it and move a place. |
+| `studio/pieces/world-map/` | Superseded: the earlier 512-grid world data and three pixel-art map candidates. Kept for the record. |
+| `maps/` | Exports of the atlas (with names, clean, bare relief, a JPEG preview). `_old-draft/` holds the rejected vector draft. |
 
 ## Rules
 
@@ -39,8 +40,8 @@ Reach Studio game project built inside it. Read this file first, then the files 
 7. **Keep the bible consistent.** If you add a file, add it to the contents table in `README.md`. Cross-references use the
    file names and the entry IDs (`R1`, `P1`, `S1`) in `10-contradictions-and-fixes.md`.
 
-## Current state (2026-10-07)
+## Current state (2026-10-08)
 
 - The bible is complete against everything shared so far. 19 studio-vs-bible conflicts (S1 to S19) await Farhad's decision.
 - Engine tuning (Phase 0 of `studio/ROADMAP.md`) is done: technique library, rubric, extraction map, 3D options paper.
-- The world map piece is mid-build: world data is finished and checked; three candidate renderers exist but were not judged or polished.
+- The world map exists as a relief atlas (`maps/verdant-reach-atlas.png`). Every placement on it is provisional pending S1, S3, S7, S8.

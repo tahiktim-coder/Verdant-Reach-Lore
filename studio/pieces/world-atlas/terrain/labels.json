@@ -1,0 +1,143 @@
+{
+ "note": "Region label anchors: (u, v) = centre of the text, extentU x extentV = the box it may use.",
+ "labels": [
+  {
+   "key": "verdant_reach",
+   "text": "THE VERDANT REACH",
+   "rank": "major",
+   "u": 0.318,
+   "v": 0.46359999999999996,
+   "extentU": 0.21,
+   "extentV": 0.0238
+  },
+  {
+   "key": "eastern_kingdom",
+   "text": "THE EASTERN KINGDOM",
+   "rank": "major",
+   "u": 0.6679999999999999,
+   "v": 0.5546,
+   "extentU": 0.182,
+   "extentV": 0.0238
+  },
+  {
+   "key": "mage_kingdoms",
+   "text": "THE MAGE KINGDOMS",
+   "rank": "major",
+   "u": 0.619,
+   "v": 0.7435999999999999,
+   "extentU": 0.154,
+   "extentV": 0.020999999999999998
+  },
+  {
+   "key": "northern_lands",
+   "text": "THE NORTHERN LANDS",
+   "rank": "major",
+   "u": 0.5489999999999999,
+   "v": 0.21860000000000002,
+   "extentU": 0.16799999999999998,
+   "extentV": 0.018199999999999997
+  },
+  {
+   "key": "northern_ranges",
+   "text": "THE GREAT NORTHERN RANGES",
+   "rank": "major",
+   "u": 0.40900000000000003,
+   "v": 0.3131,
+   "extentU": 0.21,
+   "extentV": 0.015399999999999999,
+   "curve": "follows beltAxis"
+  },
+  {
+   "key": "wheat_country",
+   "text": "the wheat country",
+   "rank": "minor",
+   "u": 0.46359999999999996,
+   "v": 0.5826,
+   "extentU": 0.06999999999999999,
+   "extentV": 0.012599999999999998
+  },
+  {
+   "key": "green_valleys",
+   "text": "the green valleys",
+   "rank": "minor",
+   "u": 0.27949999999999997,
+   "v": 0.6245999999999999,
+   "extentU": 0.08399999999999999,
+   "extentV": 0.012599999999999998
+  },
+  {
+   "key": "silent_battlefield",
+   "text": "Silent Battlefield",
+   "rank": "minor",
+   "u": 0.7541,
+   "v": 0.4251,
+   "extentU": 0.063,
+   "extentV": 0.0112
+  },
+  {
+   "key": "artifact_isles",
+   "text": "Artifact Isles",
+   "rank": "minor",
+   "u": 0.857,
+   "v": 0.8940999999999999,
+   "extentU": 0.055999999999999994,
+   "extentV": 0.0112
+  },
+  {
+   "key": "still_water",
+   "text": "Still Water",
+   "rank": "minor",
+   "u": 0.262,
+   "v": 0.4041,
+   "extentU": 0.049,
+   "extentV": 0.0112
+  },
+  {
+   "key": "forest_of_eyes",
+   "text": "Forest of Eyes",
+   "rank": "minor",
+   "u": 0.24520000000000003,
+   "v": 0.4888,
+   "extentU": 0.063,
+   "extentV": 0.0112
+  },
+  {
+   "key": "unknown_sea",
+   "text": "THE UNKNOWN SEA",
+   "rank": "major",
+   "u": 0.36,
+   "v": 0.06,
+   "extentU": 0.26,
+   "extentV": 0.026
+  },
+  {
+   "key": "western_sea",
+   "text": "THE WESTERN SEA",
+   "rank": "major",
+   "u": 0.05,
+   "v": 0.56,
+   "extentU": 0.026,
+   "extentV": 0.24,
+   "vertical": true
+  },
+  {
+   "key": "eastern_sea",
+   "text": "THE EASTERN SEA",
+   "rank": "major",
+   "u": 0.955,
+   "v": 0.6,
+   "extentU": 0.026,
+   "extentV": 0.2,
+   "vertical": true
+  },
+  {
+   "key": "southern_sea",
+   "text": "THE SOUTHERN SEA",
+   "rank": "major",
+   "u": 0.4,
+   "v": 0.95,
+   "extentU": 0.2,
+   "extentV": 0.02
+  }
+ ]
+}

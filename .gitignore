@@ -14,3 +14,5 @@ __pycache__/
 # Headless-render scratch inside the map candidates (keep final.png and sheet.png)
 studio/pieces/world-map/candidates/*/shots/
 *.stackdump
+studio/pieces/world-map/candidates/*/backup_pre_polish*/
+studio/pieces/world-map/candidates/*/polish*_before_after.png

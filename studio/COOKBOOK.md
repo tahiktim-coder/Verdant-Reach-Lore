@@ -555,3 +555,11 @@ Also worth keeping: the glitter path in `animLake` (sparse dashes, re-rolled 3 t
 - **Every technique with its verdict** belongs in `art/technique-library.md`. **The repeated faults, turned into checks,** are in `art/quality-rubric.md`.
 - **Tooling gaps to fix with the engine:** `shoot.js` cannot pass arguments or render every step, and the default height (384) is wrong for Hero. The `drive.js` above is the stopgap.
 - **Untested for all nine:** a real phone, touch, sound.
+
+## World atlas of the Verdant Reach
+
+What it is: a 2048 px shaded-relief atlas of the continent with names, frame, compass and scale (`pieces/world-atlas/`, exports in `maps/`).
+
+How it was built, in plain words: the land was designed first as shapes (coast features, mountain crests, lakes, a flat wheat plain), then eroded with simulated rain so the mountains grew real valleys, then rivers were traced down the eroded ground. The painting is a hillshade from one low north-west light over quiet elevation colours, with haze toward the north, banded sea, tapered rivers and textured forests. Names and marks are a separate layer: region names searched along gentle arcs and placed first, small names kept off rivers, peaks and each other.
+
+What went wrong, and the fix: a vector clip-art map (blocky regions, icons, a straight mountain wall) was rejected; a 320 px pixel map became a blotchy island with specks and labels everywhere and was rejected; the relief atlas worked because the terrain was eroded before painting and the canvas was large enough for real lettering. Within the atlas: the first coast was a box that filled the square (fixed by redesigning the coast and leaving sea margin); region names at a larger size could not find room after the small names were placed (fixed by placing region names first and sizing each to its region).

@@ -1,0 +1,24 @@
+  coast: 8.69 s
+  design: 6.34 s
+  remap scale on mountains: p5 0.30  p50 0.62  p95 1.16
+  stream power 1024: 46.7 s
+  upsample: 4.77 s
+  droplets: 8.98 s
+  stream power 2048: 21.08 s
+  sea cliffs: 3351 low shore cells cut back
+  specks removed: 6 land bits, 0 water holes
+  hollows: 780 breached, 1950 shallow ones filled, 4 lakes kept
+  lakes + flow: 2.22 s
+  masks: 3.95 s
+  route checks: 0.74 s
+  write: 0.33 s
+
+LOWEST WAYS THROUGH THE NORTHERN RANGES (highest point that must be crossed)
+  North -> Reach   lowest 0.376 at (0.336, 0.306)   next 0.491 at (0.367, 0.305)   third 0.496 at (0.305, 0.298)
+  North -> East    lowest 0.332 at (0.596, 0.306)   next 0.440 at (0.802, 0.297)   third 0.457 at (0.567, 0.314)
+  band profile (u: lowest crossing inside a 0.045 wide band):
+  0.17:-  0.19:0.51  0.21:0.60  0.24:0.57  0.26:0.58  0.28:0.56  0.30:0.48  0.32:0.38  0.34:0.38  0.36:0.40  0.38:0.53  0.40:0.56  0.42:0.60  0.45:0.59  0.47:0.55  0.49:0.52  0.51:0.54  0.53:0.58  0.55:0.48  0.57:0.35  0.59:0.33  0.61:0.33  0.64:0.43  0.66:0.51  0.68:0.51  0.70:0.53  0.72:0.56  0.74:0.60  0.76:0.57  0.78:-
+LAKES still_water level 0.22186 cells 4937 | alpine_lake_north level 0.27529 cells 1054 | alpine_lake_west level 0.42898 cells 880 | alpine_lake_east level 0.31693 cells 841
+RIVERS still_water_outflow: 5 pts, ends sea, mouth (0.20923, 0.42798) | reach_river: 136 pts, ends sea, mouth (0.27661, 0.55981) | border_river: 325 pts, ends sea, mouth (0.50513, 0.7522) | east_river: 171 pts, ends sea, mouth (0.74878, 0.48218) | alpine_river: 79 pts, ends sea, mouth (0.3147, 0.81616)
+pit-filled cells (not lakes): 13557, deepest fill 0.00415
+TOTAL 103.8 s
