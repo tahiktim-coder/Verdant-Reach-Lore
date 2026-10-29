@@ -20,6 +20,7 @@ Exported 2026-10-29 from the world bible at https://github.com/tahiktim-coder/Ve
 - 13-writing-guide.md: Writing Guide
 - 15-still-water.md: Still Water
 - 16-kolobok.md: Kolobok: the Invisible Loaf
+- 19-underfoot.md: Underfoot: the Lantern Giant
 - 18-unplaced-ideas.md: Unplaced Ideas
 - 17-studio-and-games.md: The Reach Studio and the Games
 - 14-visual-references.md: Visual References
@@ -91,11 +92,15 @@ When two real pieces of lore conflict, the goal is a fix that keeps the stronges
 | [12-archive.md](12-archive.md) | Rejected ideas, the Agartha experiment, unadopted assistant ideas |
 | [13-writing-guide.md](13-writing-guide.md) | Design principles and rules for writing new Verdant Reach material |
 | [14-visual-references.md](14-visual-references.md) | Catalog of your 43 reference images and the lore in their captions, plus mood notes |
+
 | [15-still-water.md](15-still-water.md) | Still Water: the lake, the talking fish, the three wishes, the red sun that is not a sun, the three endings, the story map |
 | [16-kolobok.md](16-kolobok.md) | Kolobok the invisible loaf, the stone folk and pebble folk, NOT OURS, flour and flour bells |
 | [17-studio-and-games.md](17-studio-and-games.md) | The Reach Studio: the tiny-engine plan, the pixel-scenes method, the quality bar, the palettes with their hex ramps, every piece with its link, the Reachbound roster, the games' scripts |
 | [18-unplaced-ideas.md](18-unplaced-ideas.md) | Ideas from your notebook not yet placed in the world: Relic Vine, the sun as a prison, the speech-delay elixir, the kneeling knight and the sand golem, real stories, design interests, The Loom |
+| [19-underfoot.md](19-underfoot.md) | Underfoot, the lantern giant: a walled hill town on an Elder Frontier, a Verdant Knight's seven nights, the knight's record and the dawn (all proposals from the game) |
 
+
+One-file export of the whole bible for pasting into another AI session: [VERDANT-REACH-FULL-LORE.md](VERDANT-REACH-FULL-LORE.md) (rebuild it after edits). A ready prompt for a lore-improvement session: [PROMPT-FOR-LORE-SESSION.md](PROMPT-FOR-LORE-SESSION.md).
 ### Core identity in one paragraph
 
 Verdant Reach is an enormous, ancient land of castles, not countries, inside a larger medieval-fantasy world. Ambient magic there is extremely weak, yet the land is full of magical creatures. Because so little magical energy is available, its mages and knights built a precise, intellectual, low-power tradition: they outthink the world instead of overpowering it. Its castles hold knowledge older than most foreign kingdoms. Its scholar-knights travel everywhere as trusted neutral figures. Its many independent and secret orders make the Reach almost impossible for outsiders to understand or conquer. Outside it lie very different magical civilizations, and beneath everything lies a forgotten arcane-mechanical past whose machines are still running. Through all of this, people still travel, eat honey from local castles, study in libraries, raise dragons and drink tea in inns run by ghosts.
@@ -2156,6 +2161,49 @@ Proposed by the studio's Claude, built into the prototype, not confirmed by you.
 
 ---
 
+# FILE: 19-underfoot.md
+
+## Underfoot: the Lantern Giant
+
+Underfoot is the fourth sister project: a small browser stealth game about hiding in a walled hill town from a giant nearly three kilometres tall that comes each night with a lantern on a chain and takes what its light finds. The game is yours and built (https://tahiktim-coder.github.io/underfoot/, source at github.com/tahiktim-coder/underfoot). What this file proposes is only the link to the Reach and the game's words; they came from the Underfoot session of 2026-10-29, and nothing here is canon until you mark it.
+
+Related files: [07-creatures-and-peoples.md](07-creatures-and-peoples.md) (Giants), [03-knights-and-orders.md](03-knights-and-orders.md) (Verdant Knights), [01-the-reach.md](01-the-reach.md) (the Elder Frontiers), [06-places.md](06-places.md) (the Cavern of Giants), [17-studio-and-games.md](17-studio-and-games.md).
+
+### How tags are used in this file
+
+- **[STUDIO PROPOSAL]** here means the Underfoot session proposed it on 2026-10-29 and you have not confirmed it. **[PROVISIONAL]** means your own earlier framing of the game, recorded in that session, not locked. **[GAME TEXT]** is the game's actual script. **[LEGEND]** is what the knight believes, not necessarily what is.
+
+### Premise
+
+- **[PROVISIONAL]** Your framings of the game, in order: on 2026-10-14, a thing that comes at night and judges who stays and who goes, held lightly, with "basic and fun" before any lore; on 2026-10-15, "not canon, a score game where you hide and some things happen"; on 2026-10-21, the giant is "some ancient cursed knight", flavour only. The cursed warrior of [08-characters-and-stories.md](08-characters-and-stories.md) and the Summit Road is a separate figure; nothing links them.
+- **[STUDIO PROPOSAL]** The town is a walled hill town in a valley on an Elder Frontier of the Reach (the landscape class of ancient or enormous forces, [01-the-reach.md](01-the-reach.md)). The giant is one of the ancient giants ([07-creatures-and-peoples.md](07-creatures-and-peoples.md): "what the giants are is open"): this one wears plate of old iron and a great helm, its face never seen whole (from the shoulders up it stands in cloud), and carries a lantern on a chain the length of a valley. It comes down the valley each night, searches the streets with the light, takes whoever the light holds, and goes back up the valley by morning.
+- **[STUDIO PROPOSAL]** The player is a Verdant Knight (the red cape; [03-knights-and-orders.md](03-knights-and-orders.md): educated, a guardian, a keeper of old knowledge), alone in the town for seven nights. The knight's only job in the game is to stay out of the light; the knight's record on the night cards is the lore voice.
+- **[LEGEND]** The knight believes it goes back toward the Cavern of Giants. The Cavern is canon; that this giant comes from it or returns to it is not, and the game only says "toward".
+- **[STUDIO PROPOSAL]** Where the town sits is open. The game says "down the valley" and "back up the valley", never a compass direction, so it does not place the town against the working atlas (where the Cavern is to the south-west). Your call later: a valley below the Cavern, or somewhere else and the knight's belief wrong.
+- **[STUDIO PROPOSAL]** What it is, in the game's own words, is never said. Open questions kept open on purpose: who armoured it, whether it judges or merely collects, whether the town is the last of several, whether the knight was sent.
+
+### Game text
+
+- **[GAME TEXT]** Title: "UNDERFOOT" / "Something is walking the valley." / "It takes what its light finds." / "Stay in the dark." / "Seven nights to dawn."
+- **[GAME TEXT]** The HUD's one label for it: "Quiet", "It is coming", "It is here", "It is still here" (after a catch), "It is looking", "It is giving up", "It sees you", "It is passing", "Dawn". Over the knight: "Hidden", "Half seen", "Seen".
+- **[GAME TEXT]** The knight's record, one line on each night's card:
+  1. "It came down the valley, lantern first."
+  2. "The old maps mark this valley an Elder Frontier."
+  3. "No order remembers who armoured it."
+  4. "It does not take the ones who stay dark."
+  5. "By morning it is always gone back up the valley."
+  6. "One more night."
+- **[GAME TEXT]** The dawn card, after the seventh night: "Dawn." / "Seven nights. It went back up the valley, toward the Cavern of Giants." / the score.
+- **[GAME TEXT]** The over card: "It found you." / "Night N. You lasted S s, your best B s." / one of "Caught in the open.", "Caught in the half light.", "You stayed too long under it.", "It chased you down." / the score.
+
+### What the game shows, and what it leaves open
+
+- **[STUDIO PROPOSAL]** Shown by play, as the game's rules rather than world facts: the giant's light is the only thing that finds you; deep shadow is safe, the edge of the light is not; it follows your footsteps a few seconds behind and comes along your path once it has seen you; the townspeople it takes burn where they stand and leave a stain; after seven nights it does not come back.
+- **[STUDIO PROPOSAL]** Left open: everything about the giant's nature, the order that made its armour, why this town, whether the knight was sent, what the dawn means for the town after.
+
+
+---
+
 # FILE: 18-unplaced-ideas.md
 
 ## Unplaced Ideas
@@ -2211,7 +2259,7 @@ Ideas from your notebook that are real and yours but not placed in the Verdant R
 
 What the Reach Studio is, how its pixel pieces are made, what has been built so far, and which parts of it count as lore. The studio lives in `studio/` in this folder. Its lore notes (`studio/lore/*.md`) are top-tier sources, equal to **[CANON]** in this bible. The games are made inside the world and their scripts are quoted here, but their numbers, tiers and counts are never lore. See [12-archive.md](12-archive.md) ("Verdant Reach as a real RPG/game") and [10-contradictions-and-fixes.md](10-contradictions-and-fixes.md).
 
-Related files: the Still Water file ([15-still-water.md](15-still-water.md)) and the Kolobok file ([16-kolobok.md](16-kolobok.md)) for the lore inside the two games, [03-knights-and-orders.md](03-knights-and-orders.md) for the covenant and the Hunter, [14-visual-references.md](14-visual-references.md) for the TikTok images, [18-unplaced-ideas.md](18-unplaced-ideas.md) for your notebook.
+Related files: the Still Water file ([15-still-water.md](15-still-water.md)), the Kolobok file ([16-kolobok.md](16-kolobok.md)) and the Underfoot file ([19-underfoot.md](19-underfoot.md)) for the lore inside the games, [03-knights-and-orders.md](03-knights-and-orders.md) for the covenant and the Hunter, [14-visual-references.md](14-visual-references.md) for the TikTok images, [18-unplaced-ideas.md](18-unplaced-ideas.md) for your notebook.
 
 ### How tags are used in this file
 
@@ -2351,6 +2399,7 @@ One line each, with the live link, where the files live under `studio/`, and you
 - **[CANON]** **The Summit Road.** https://claude.ai/artifact/9EhJvwBE3e9GQ9RrEdZUPF. A looping vignette (216 wide): a dark walking figure, "the cursed warrior", walks forever up a paved slab road along the crest of a symmetric ridge of ancient terraces toward a colossal hazy summit crowned with green-white lightning; colossal blades, "relics: colossal blades left from the war of gods", stand leaning in the ground along both sides of the road; a cloud sea fills the flanks; god rays; green motes of Old magic rise; a green-glowing sword, carried in his right hand with the blade trailing, drags behind him and sparks where its tip touches the road; high wind, a low drone and thunder. Six captions loop; a tap triggers a big lightning strike and advances to the next caption; the summit never gets closer; there is no ending. New techniques: voxel-space terrain, depth fog in ramp space, god rays, an animated cloud sea, lightning with a palette flash, palette cycling on the blade, a walk cycle. Files: `examples/summit-road/` (`summit.js`, `summit-road.html`, `shell.html`, `build.py`). You liked its lighting, not the rest.
 - **[CANON]** **Reach vignettes: old rules vs upgraded.** https://claude.ai/artifact/Ehc9dDRkHuy6QPjuF1d7YZ. Three flat 2D scenes with a toggle between "Old rules" and "Upgraded": Knight's camp by the river (fire against the cool night, a knight on a log, a tent, a river mirroring the moon), The castle of the Order at dusk (layered ridges with parallax, candle-lit windows, banners, a flock crossing), Still Water at dawn (a half-risen sun, mist bands, a pier, a fisher with a line). The upgrades named in its code: a warm and cool split by light source, light pools with flicker, two-light rims, layered atmospheric depth with parallax, purposeful particles, palette-cycled shimmer, foreground framing, a vignette. No local file under `studio/` as of this bible; the artifact is the only copy.
 - **[CANON]** **Souls games pixel-art remakes** (tower, city, wolf). https://claude.ai/artifact/8bdZgzv7Njme7ghr6JiUps (from your artifact list; the studio folder records no link). One page titled "Souls games pixel-art", credited "after @nakofrish": three animated 216x216 scenes, The tower ("a dark gothic tower rising from a sea of clouds, a red-cloaked figure on the ledge below", with embers and circling birds), The city ("a cathedral city at sunset under storm clouds, with two bridges over a river" that mirrors the scene, and pillars of light), The wolf ("a giant wolf in a misty moonlit pine forest facing a small cloaked figure with a sword"). Not Reach content: nothing in the page names the Reach, the knights, the fish or Kolobok; the only ties are the shared technique ("Still Water engine") and your handle. You judged them below the bar. Files: `examples/souls/souls-scenes.html`.
+- **[CANON]** **Underfoot** (playable, built outside the studio's pixel method: a WebGL2 picture at 480 x 270 snapped to a palette). https://tahiktim-coder.github.io/underfoot/. You hide in a walled hill town from a giant nearly three kilometres tall whose lantern searches the streets; seven nights to dawn. Its words and its link to the Reach are proposals in [19-underfoot.md](19-underfoot.md).
 
 ### The Reachbound roster
 
@@ -2559,3 +2608,4 @@ Look notes from the pieces: one hue-shifting colour ramp per scene, the light so
 | 13 | A knight on a castle wall at night; something tall stands and waits on the far ridge | "Knights of the Order don't celebrate birthdays. Ask one why, and he'll tell you how many years he has left." |
 
 The traveller on the cards wears a steel helm, steel greaves and boots and a red cape, and card 13 calls him a knight. **[PROPOSED FIX]** He could be read as the red-caped knight of [08-characters-and-stories.md](08-characters-and-stories.md); the cards never name him. The deck continues the TikTok "Tips" series listed above and strengthens the idea of an in-world traveller's guide.
+

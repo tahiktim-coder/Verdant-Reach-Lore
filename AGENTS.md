@@ -7,7 +7,7 @@ Reach Studio game project built inside it. Read this file first, then the files 
 
 | Path | What it is |
 |---|---|
-| `README.md` and `01-*.md` to `18-*.md` | The world bible. `README.md` explains the status tags and the source hierarchy. Start there. |
+| `README.md` and `01-*.md` to `19-*.md` | The world bible. `README.md` explains the status tags and the source hierarchy. Start there. |
 | `10-contradictions-and-fixes.md` | Every known conflict in the lore, with proposed fixes that are **waiting for Farhad's decision**. Do not resolve them on your own. |
 | `11-open-questions.md` | Questions the lore leaves open on purpose. Do not invent answers casually. |
 | `13-writing-guide.md` | Rules for writing new Verdant Reach material. |

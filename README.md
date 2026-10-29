@@ -60,13 +60,14 @@ When two real pieces of lore conflict, the goal is a fix that keeps the stronges
 | [13-writing-guide.md](13-writing-guide.md) | Design principles and rules for writing new Verdant Reach material |
 | [14-visual-references.md](14-visual-references.md) | Catalog of your 43 reference images and the lore in their captions, plus mood notes |
 
-One-file export of the whole bible for pasting into another AI session: [VERDANT-REACH-FULL-LORE.md](VERDANT-REACH-FULL-LORE.md) (rebuild it after edits). A ready prompt for a lore-improvement session: [PROMPT-FOR-LORE-SESSION.md](PROMPT-FOR-LORE-SESSION.md).
 | [15-still-water.md](15-still-water.md) | Still Water: the lake, the talking fish, the three wishes, the red sun that is not a sun, the three endings, the story map |
 | [16-kolobok.md](16-kolobok.md) | Kolobok the invisible loaf, the stone folk and pebble folk, NOT OURS, flour and flour bells |
 | [17-studio-and-games.md](17-studio-and-games.md) | The Reach Studio: the tiny-engine plan, the pixel-scenes method, the quality bar, the palettes with their hex ramps, every piece with its link, the Reachbound roster, the games' scripts |
 | [18-unplaced-ideas.md](18-unplaced-ideas.md) | Ideas from your notebook not yet placed in the world: Relic Vine, the sun as a prison, the speech-delay elixir, the kneeling knight and the sand golem, real stories, design interests, The Loom |
 | [19-underfoot.md](19-underfoot.md) | Underfoot, the lantern giant: a walled hill town on an Elder Frontier, a Verdant Knight's seven nights, the knight's record and the dawn (all proposals from the game) |
 
+
+One-file export of the whole bible for pasting into another AI session: [VERDANT-REACH-FULL-LORE.md](VERDANT-REACH-FULL-LORE.md) (rebuild it after edits). A ready prompt for a lore-improvement session: [PROMPT-FOR-LORE-SESSION.md](PROMPT-FOR-LORE-SESSION.md).
 ## Core identity in one paragraph
 
 Verdant Reach is an enormous, ancient land of castles, not countries, inside a larger medieval-fantasy world. Ambient magic there is extremely weak, yet the land is full of magical creatures. Because so little magical energy is available, its mages and knights built a precise, intellectual, low-power tradition: they outthink the world instead of overpowering it. Its castles hold knowledge older than most foreign kingdoms. Its scholar-knights travel everywhere as trusted neutral figures. Its many independent and secret orders make the Reach almost impossible for outsiders to understand or conquer. Outside it lie very different magical civilizations, and beneath everything lies a forgotten arcane-mechanical past whose machines are still running. Through all of this, people still travel, eat honey from local castles, study in libraries, raise dragons and drink tea in inns run by ghosts.
