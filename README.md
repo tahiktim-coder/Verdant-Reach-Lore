@@ -65,6 +65,7 @@ One-file export of the whole bible for pasting into another AI session: [VERDANT
 | [16-kolobok.md](16-kolobok.md) | Kolobok the invisible loaf, the stone folk and pebble folk, NOT OURS, flour and flour bells |
 | [17-studio-and-games.md](17-studio-and-games.md) | The Reach Studio: the tiny-engine plan, the pixel-scenes method, the quality bar, the palettes with their hex ramps, every piece with its link, the Reachbound roster, the games' scripts |
 | [18-unplaced-ideas.md](18-unplaced-ideas.md) | Ideas from your notebook not yet placed in the world: Relic Vine, the sun as a prison, the speech-delay elixir, the kneeling knight and the sand golem, real stories, design interests, The Loom |
+| [19-underfoot.md](19-underfoot.md) | Underfoot, the lantern giant: a walled hill town on an Elder Frontier, a Verdant Knight's seven nights, the knight's record and the dawn (all proposals from the game) |
 
 ## Core identity in one paragraph
 
