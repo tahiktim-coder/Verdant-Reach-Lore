@@ -59,6 +59,8 @@ When two real pieces of lore conflict, the goal is a fix that keeps the stronges
 | [12-archive.md](12-archive.md) | Rejected ideas, the Agartha experiment, unadopted assistant ideas |
 | [13-writing-guide.md](13-writing-guide.md) | Design principles and rules for writing new Verdant Reach material |
 | [14-visual-references.md](14-visual-references.md) | Catalog of your 43 reference images and the lore in their captions, plus mood notes |
+
+One-file export of the whole bible for pasting into another AI session: [VERDANT-REACH-FULL-LORE.md](VERDANT-REACH-FULL-LORE.md) (rebuild it after edits). A ready prompt for a lore-improvement session: [PROMPT-FOR-LORE-SESSION.md](PROMPT-FOR-LORE-SESSION.md).
 | [15-still-water.md](15-still-water.md) | Still Water: the lake, the talking fish, the three wishes, the red sun that is not a sun, the three endings, the story map |
 | [16-kolobok.md](16-kolobok.md) | Kolobok the invisible loaf, the stone folk and pebble folk, NOT OURS, flour and flour bells |
 | [17-studio-and-games.md](17-studio-and-games.md) | The Reach Studio: the tiny-engine plan, the pixel-scenes method, the quality bar, the palettes with their hex ramps, every piece with its link, the Reachbound roster, the games' scripts |
